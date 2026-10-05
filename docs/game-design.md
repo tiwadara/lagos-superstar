@@ -83,7 +83,7 @@ Stories are self-contained cards, not a decision tree ([ADR 0005](adr/0005-stori
 
 1. In week 22, the December booking.
 2. Otherwise, the first follow-up whose condition is met.
-3. Otherwise, with an 85% chance, a random story whose `when` condition fits the player.
+3. Otherwise, a random story whose `when` condition fits the player: always in week 1, and with an 85% chance after that.
 
 Each story appears once per game. How to write one is in the [story-writing guide](story-writing-guide.md).
 
@@ -92,5 +92,4 @@ Each story appears once per game. How to write one is in the [story-writing guid
 These are tracked as epics and issues on GitHub. See the [roadmap](roadmap.md).
 
 - **Money stops mattering late in the game.** Median cash for a sensible player stays near ₦100,000 until week 16, then reaches about ₦840,000 by week 26 and about ₦1.9m after December. Rent and debt stop being decisions.
-- **Little replay variety.** A sensible player sees about 20 of the 24 stories in every game.
-- **Week 1 never has a story.** Every story needs week 2 or later.
+- **Little replay variety.** A sensible player sees about 20 of the 26 stories in every game.

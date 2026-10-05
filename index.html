@@ -123,6 +123,8 @@ details li{margin-top:4px}
 .act:disabled{cursor:not-allowed;background:transparent;border-style:dashed}
 .act:disabled .act-name,.act:disabled .act-cost{opacity:.5}
 .endweek{padding:12px 16px 0}
+.tip{margin:0 16px 10px;padding:8px 12px;border-radius:8px;background:var(--note-bg);color:var(--accent);font-size:.9rem;font-weight:600}
+.fine{font-size:.85rem;color:var(--muted)}
 .more{padding:14px 16px 0}
 .more ul{list-style:none;padding:0;margin:6px 0 0}
 .more li{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid var(--line);font-size:.92rem}
@@ -131,12 +133,12 @@ details li{margin-top:4px}
 .earlier{padding:14px 16px 0}
 .earlier h2{font-size:.92rem;color:var(--muted);font-weight:700}
 .earlier p{font-size:.9rem;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--line)}
-.foot{padding:12px 16px 28px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.foot{padding:12px 16px 84px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
 
 /* Sheet */
 .sheet{position:fixed;inset:0;z-index:20;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 .sheet[hidden]{display:none}
-.sheet-card{background:var(--bg);width:100%;max-width:480px;max-height:92%;overflow-y:auto;overscroll-behavior:contain;border-radius:16px 16px 0 0;border-top:8px solid var(--danfo);padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+.sheet-card{background:var(--bg);width:100%;max-width:480px;max-height:92%;overflow-y:auto;overscroll-behavior:contain;border-radius:16px 16px 0 0;border-top:8px solid var(--danfo);padding:18px 16px calc(76px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(28px);opacity:.4}to{transform:none;opacity:1}}
 @media (min-width:560px){.sheet{align-items:center}.sheet-card{border-radius:16px;padding-bottom:18px}}
 .sheet h2{font-family:var(--display);font-weight:400;font-size:1.6rem;line-height:1.05;text-transform:uppercase}
@@ -231,7 +233,7 @@ const OPENERS=[
   'A danfo conductor shouts your stage name as a bus stop joke. You take it as press.'
 ];
 const SONG_TITLES=['Conductor, My Change','Monday Morning Hold-Up','Jollof and Regret','Two-Bedroom in Lekki','Bolt Driver Cancelled','Sapa Is a Teacher','Agege Bread Love','No Light Again','Third Mainland at 5pm','Small Chops','Shine Your Eye','Mummy’s Prayer','Detty Forever','Yaba Left','Owambe Sunday','Generator Lullaby','One Room, One Dream','Who Send Me?','Island Girl, Mainland Boy','Transfer Has Entered','Keke to Heaven','Low Battery','Aunty, Calm Down','Odogwu in Traffic'];
-const STAGE_NAMES=['Lil Mandate','Omo Yaba','Temi Gold','Fine Boy Dayo','Queen Ada','Kashy Wonder','Bella Vibez','Young Sapa','Sisi Mainland','Ebuka Flames','Zino Wavy','Lady Shalewa'];
+const STAGE_NAMES=['Ronke Riddim','Omo Yaba','Temi Gold','Fine Boy Dayo','Queen Ada','Kashy Wonder','Bella Vibez','Young Sapa','Sisi Mainland','Ebuka Flames','Zino Wavy','Lady Shalewa'];
 
 function qWord(q){return q<30?'a rough demo':q<50?'a decent record':q<68?'a bop':q<85?'a proper jam':'a hit';}
 function songTitle(s){
@@ -408,6 +410,24 @@ function doAction(s,id){
 /* ---------- story events ---------- */
 const anySong=s=>s.vault.length+s.songs.length>0;
 const EVENTS=[
+  {id:'houserules',title:'House rules',who:'Your landlord, on moving day',when:s=>s.week===1,
+    text:'“No noise after 10pm. No visitors after 9pm. And no music business people in my compound.” He looks at your speaker for a long time.',
+    choices:[
+      {label:'Promise to keep it quiet',hint:'Free. Your rehearsals get softer.',run:()=>({text:'You practise in whispers all week. It does wonders for your breath control and nothing for your confidence.',fx:{skill:1,hype:-2}})},
+      {label:'Dash him something for the compound gen',cost:10000,hint:'A little goodwill goes far.',run:()=>({text:'He pockets it. “Just don’t disturb my sleep.” Loud rehearsals are back on.',fx:{skill:3}})},
+      {label:'Sing for him on the spot',hint:s=>odds(s,'skill',30),run:s=>chk(s,'skill',30)
+        ?{text:'Halfway through the chorus he stops frowning. By evening he has told three neighbours about “the singer upstairs.”',fx:{fans:40,hype:6}}
+        :{text:'“Hmm. Keep it down after 10.” He walks off humming a different song.',fx:{hype:-2}}}
+    ]},
+  {id:'mamaput',title:'Eat now, pay later',who:'Iya Sikirat, the food seller at your junction',when:s=>s.week===1,
+    text:'“New face! You be musician? Eat now, pay me end of month. I trust singers.” Her amala is the best on the street, and the month is long.',
+    choices:[
+      {label:'Eat on credit',hint:'₦12,000 of food now. She will come back for it.',run:s=>({text:'You eat like someone with a record deal. She writes your name in a small blue book.',fx:{money:12000,flag:{mamaPut:s.week}}})},
+      {label:'Pay cash like a serious person',hint:'Your usual food money. The street notices.',run:()=>({text:'She nods with respect and adds extra meat. Street cred is built one plate at a time.',fx:{cred:3}})},
+      {label:'Offer to sing at her shop on Saturday',hint:s=>odds(s,'skill',30),run:s=>chk(s,'skill',30)
+        ?{text:'Half the junction gathers to listen. She feeds you free for a week and tells everyone your name.',fx:{money:8000,fans:50,hype:5}}
+        :{text:'Your voice cracks on the high note. She still gives you a plate, out of pity.',fx:{skill:1}}}
+    ]},
   {id:'mum',title:'Mummy is calling',who:'Your mother, from Ibadan',when:s=>s.week>=2,
     text:'“Your mate Tobi is now at a bank in Marina. With official car. This music thing, is it paying?”',
     choices:[
@@ -611,6 +631,13 @@ const EVENTS=[
     ]}
 ];
 const FOLLOWUPS=[
+  {id:'mamaPutBack',title:'The blue book',who:'Iya Sikirat, at your door',
+    when:s=>s.flags.mamaPut&&s.week>=s.flags.mamaPut+3,
+    text:'She has the small blue book open at your page. “₦12,000. Today. I trusted you.”',
+    choices:[
+      {label:'Pay her',cost:12000,hint:'Square the account.',run:()=>({text:'She crosses out your name, then adds you to her prayer list.',fx:{cred:2}})},
+      {label:'Beg for one more week',hint:'Free. The whole street is listening.',run:()=>({text:'She agrees, loudly enough for the whole street to hear what you owe. At the junction, your name is now a warning.',fx:{cred:-5}})}
+    ]},
   {id:'jingleFallout',title:'Rice and ₦1,000 notes',who:'Every timeline in Nigeria',
     when:s=>s.flags.jingle&&s.week>=s.flags.jingle+3,
     text:s=>'The Chief has been filmed sharing rice and ₦1,000 notes at a rally, and it is going badly online. '+(s.flags.alias?(s.flags.blown?'Worse: a blog has matched Lil Mandate’s voice to yours.':'The jingle plays under every clip. Nobody has connected Lil Mandate to you.'):'Your jingle is the soundtrack of every clip.'),
@@ -658,7 +685,7 @@ function pickEvent(s){
   const due=FOLLOWUPS.find(e=>!s.seen.includes(e.id)&&e.when(s));
   if(due)return due;
   const pool=EVENTS.filter(e=>!s.seen.includes(e.id)&&e.when(s));
-  if(!pool.length||!R.p(0.85))return null;
+  if(!pool.length||(s.week>1&&!R.p(0.85)))return null;
   return R.pick(pool);
 }
 function choiceState(s,c){
@@ -779,18 +806,19 @@ if(typeof document!=='undefined'){
       '<main class="pad stack">'+
       '<p class="lede">You have a one-room in Yaba, a cracked phone and a voice. Detty December is 26 weeks away. Get on that stage.</p>'+
       (saved?'<button class="secondary" data-cmd="continue">'+(saved.over?'See how '+h(saved.name)+' ended':'Continue as '+h(saved.name)+', week '+saved.week)+'</button>':'')+
-      '<div><label class="field" for="name">Your stage name</label><div class="name-row"><input id="name" maxlength="18" autocomplete="off" autocapitalize="words" placeholder="Lil Mandate"><button type="button" data-cmd="suggest">Suggest one</button></div></div>'+
+      '<div><label class="field" for="name">Your stage name</label><div class="name-row"><input id="name" maxlength="18" autocomplete="off" autocapitalize="words" placeholder="Omo Yaba"><button type="button" data-cmd="suggest">Suggest one</button></div></div>'+
       '<fieldset><legend>Where you are coming from</legend>'+
       Object.entries(BACKGROUNDS).map(([id,b],i)=>'<label class="origin"><input type="radio" name="bg" value="'+id+'"'+(i===0?' checked':'')+'><b>'+h(b.name)+'</b><span>'+h(b.desc)+'</span></label>').join('')+
       '</fieldset>'+
       '<button class="primary" data-cmd="start">Start week 1</button>'+
-      '<details><summary>How it works</summary><ul>'+
+      '<details'+(saved?'':' open')+'><summary>How it works</summary><ul>'+
       '<li>Each week you get 3 moves. Spend them, then end the week.</li>'+
       '<li>Skill makes better songs. Hype makes a release travel, and it fades every week.</li>'+
       '<li>Street cred and links both help a release spread. Cred opens doors on the mainland, links open doors on the Island.</li>'+
       '<li>Feeding and rent come out whether you sang or not.</li>'+
       '<li>Something always happens. Your choices follow you.</li>'+
       '</ul></details>'+
+      '<p class="fine">All characters, companies and events are fictional.</p>'+
       '</main>';
   }
 
@@ -821,6 +849,7 @@ if(typeof document!=='undefined'){
       '<section class="meters" aria-label="Your stats">'+meters.map(([l,v])=>'<div><div class="meter-top"><span>'+l+'</span><b>'+v+'</b></div><div class="bar"><i style="width:'+v+'%"></i></div></div>').join('')+'</section>'+
       '<section class="latest'+(ui.fresh?' fresh':'')+'" aria-live="polite"><p>'+h(latest?latest.text:s.opener)+'</p>'+(latest?chipsHtml(latest.chips):'')+'</section>'+
       '<div class="moves-head"><span class="moves-left">'+pipsHtml(s.energy,Math.max(3,s.energy))+' '+(s.energy===1?'1 move left':s.energy+' moves left')+'</span><span class="rent'+(weeksToRent===0?' soon':'')+'">'+rentTxt+'</span></div>'+
+      (s.week===1?'<p class="tip">Tap a move to spend it. When you are done, end the week and see what Lagos does next.</p>':'')+
       '<section class="acts" aria-label="Moves">'+ACTIONS.map(a=>{
         const st=actionState(s,a);
         const cost=[a.energy?pipsHtml(a.energy,a.energy):'',st.cost?nairaShort(st.cost):'',!a.energy&&!st.cost?'Free':''].filter(Boolean).join('');

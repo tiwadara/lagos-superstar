@@ -58,7 +58,7 @@ flowchart TD
   C --> D{pickEvent}
   D -- week 22 --> E[DECEMBER booking]
   D -- a follow-up is due --> F[First due FOLLOWUP]
-  D -- 85% chance, if any fit --> G[Random eligible EVENT]
+  D -- always in week 1, then 85% chance, if any fit --> G[Random eligible EVENT]
   D -- otherwise --> H[Quiet week]
   E & F & G --> I[Player picks a choice: choose]
   I --> J[wrapWeek]
