@@ -15,7 +15,7 @@ The content framework for The Next Lagos Star. Read this before writing or editi
 
 Every person, company, brand, blog, label, radio station and investor is invented. Real places, real foods and real things Lagos lives with (NEPA, danfos, Third Mainland Bridge, Computer Village) are welcome. Never name or clearly imitate a real artist, politician, company or public figure. See [ADR 0007](adr/0007-fictional-people-and-companies.md).
 
-Before adding a new name, check the cast already in the game: Aunty Bisi, Big Tunde of Gbedu Empire, Chad Whitlock of Afrowave Capital, Lil Kobo, Zaddy Blaze, Smooth Lanre of Vibe 99.9 FM, Mama Tobi Comedy, Barrister Amaka, Beatz by Sapa, Chief Dr. Bamidele Oyelaran, Kogbagidi Herbal Bitters, Amebo Central, Eko Rave, SapaLoan and the talent show Who Get Voice?. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
+Before adding a new name, check the cast already in the game: Aunty Bisi, Big Tunde of Gbedu Empire, Chad Whitlock of Afrowave Capital, Lil Kobo, Zaddy Blaze, Smooth Lanre of Vibe 99.9 FM, Mama Tobi Comedy, Barrister Amaka, Beatz by Sapa, Chief Dr. Bamidele Oyelaran, Kogbagidi Herbal Bitters, Amebo Central, Eko Rave, SapaLoan, the talent show Who Get Voice?, and Iya Sikirat, the food seller at your junction. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
 
 ## Anatomy of a card
 
