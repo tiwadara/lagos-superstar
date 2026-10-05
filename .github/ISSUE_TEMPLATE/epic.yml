@@ -1,0 +1,33 @@
+name: Epic
+description: A large goal made of several tasks.
+labels: ["epic"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What players or contributors get when this is done.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why now
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope and out of scope
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: After creating the epic, add its tasks as sub-issues.
