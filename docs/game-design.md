@@ -24,7 +24,7 @@ Each week:
 
 1. **Spend 3 moves.** Pick from the moves below. Some cost money, recording costs two moves, and promo costs none.
 2. **End the week.** A story usually happens and you choose how to handle it.
-3. **Pay the bills.** Streams pay in, food and transport go out, hype cools, and rent is due every fourth week.
+3. **Pay the bills.** Streams pay in, food and transport go out, your people cost money once you are famous, hype cools, and rent is due every fourth week.
 
 After week 26 comes the December show and an ending.
 
@@ -52,13 +52,25 @@ After week 26 comes the December show and an ending.
 | Money | Pays for moves and choices. Below zero, debt grows 10% a week |
 | Fans | The score. Decides the venue, the December offer and the ending |
 
+## Money in and out
+
+| Each week | Amount |
+| --- | --- |
+| Streams | Up to `fans × 1.5`, mostly from recent releases. Each song's share fades 10% a week, down to a 10% tail. Full pay needs about three fresh songs |
+| Food, data, transport | −₦15,000 |
+| Your people (stylist, security, cousins) | −₦15,000 when Buzzing, −₦50,000 when Next rated, −₦120,000 when a Lagos star |
+| Rent, every fourth week | −₦100,000 to start. The landlord may raise it |
+| Debt | 10% interest a week while cash is below zero, plus −3 street cred and −2 links |
+
+The money target is in [balance](balance.md#targets): a sensible player should be out of debt but under ₦300,000 at week 20.
+
 ## Deals
 
 Deals are the game's long-term trade: money or help now, a share of your music income for the rest of the game. See [Who takes a cut](architecture.md#who-takes-a-cut) for the order.
 
 | Deal | Story | Cut |
 | --- | --- | --- |
-| Gbedu Empire, standard contract | `label` | Pays back ₦3,000,000 first, then keeps 70% |
+| Gbedu Empire, standard contract | `label` | Pays back the ₦1,500,000 advance first, then keeps 70% |
 | Gbedu Empire, negotiated | `label` | 20%, you keep your masters |
 | Aunty Bisi, manager | `manager` | 20%, plus 8 on every stat check and 2 links a week |
 | Chad, Afrowave Capital | `investor` | 30% |
@@ -91,5 +103,5 @@ Each story appears once per game. How to write one is in the [story-writing guid
 
 These are tracked as epics and issues on GitHub. See the [roadmap](roadmap.md).
 
-- **Money stops mattering late in the game.** Median cash for a sensible player stays near ₦100,000 until week 16, then reaches about ₦840,000 by week 26 and about ₦1.9m after December. Rent and debt stop being decisions.
+- **Taking every bag is the best strategy.** A player who always takes the biggest payout reaches Next rated far more often than one who doesn't (#52).
 - **Little replay variety.** A sensible player sees about 20 of the 26 stories in every game.

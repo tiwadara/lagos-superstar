@@ -71,14 +71,15 @@ flowchart TD
 
 `wrapWeek` does the weekly bookkeeping in this order:
 
-1. Stream income: `fans × 1.5 × min(1, released songs ÷ 3)`, paid through `takeHome`.
+1. Stream income from `streamGross`: `fans × 1.5 × min(1, w ÷ 3)`, where `w` adds up each released song's weight `max(0.1, 0.9 ^ weeks since release) × (0.5 + quality ÷ 100)`. Paid through `takeHome`.
 2. Food, data and transport: −₦15,000.
-3. Rent on every fourth week.
-4. Aunty Bisi adds 2 links a week if she manages you.
-5. Hype cools: `round(hype × 0.8 − 2)`.
-6. If cash is below zero: 10% interest on the debt, −3 street cred, −2 links.
-7. Next week: moves reset to `max(1, 3 + energyNext)`, new opener and slogan.
-8. Cash below −₦400,000 ends the game with `debtEnding`.
+3. Your people: `PEOPLE_COST` by tier, from ₦15,000 a week at Buzzing.
+4. Rent on every fourth week.
+5. Aunty Bisi adds 2 links a week if she manages you.
+6. Hype cools: `round(hype × 0.8 − 2)`.
+7. If cash is below zero: 10% interest on the debt, −3 street cred, −2 links.
+8. Next week: moves reset to `max(1, 3 + energyNext)`, new opener and slogan.
+9. Cash below −₦400,000 ends the game with `debtEnding`.
 
 ## Who takes a cut
 

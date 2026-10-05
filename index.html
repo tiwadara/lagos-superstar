@@ -481,9 +481,9 @@ const EVENTS=[
   {id:'wedding',title:'Owambe money',who:'A senator’s daughter, Ikoyi',when:s=>s.week>=3,
     text:'They want you for three hours of other people’s songs at the reception. Guests will spray dollars.',
     choices:[
-      {label:'Take the gig',hint:'Good money. It will finish you.',run:()=>({text:'Your knees hurt, your set was all covers, and you are picking one-dollar notes out of your collar.',fx:{earn:R.i(250,450)*1000,energyNext:-1,cred:-2}})},
+      {label:'Take the gig',hint:'Good money. It will finish you.',run:()=>({text:'Your knees hurt, your set was all covers, and you are picking one-dollar notes out of your collar.',fx:{earn:R.i(120,200)*1000,energyNext:-1,cred:-2}})},
       {label:'Only if you can sing two of your own',hint:s=>odds(s,'hype',30),run:s=>chk(s,'hype',30)
-        ?{text:'They agree. During your second song the bride’s friends are holding phones up to the speakers.',fx:{earn:200000,fansUp:[200,0.05],links:5}}
+        ?{text:'They agree. During your second song the bride’s friends are holding phones up to the speakers.',fx:{earn:120000,fansUp:[200,0.05],links:5}}
         :{text:'“Who is this one?” They hire a live band from Ibadan instead.'}},
       {label:'Decline',hint:'You are an artist, not a jukebox.',run:()=>({text:'You spend Saturday at home, an artist, eating bread.',fx:{cred:2}})}
     ]},
@@ -541,10 +541,10 @@ const EVENTS=[
         :{text:'It is just bad.',fx:{hype:6}}}
     ]},
   {id:'jingle',title:'His Excellency-to-be',who:'Chief Dr. Bamidele Oyelaran, governorship aspirant',when:s=>s.week>=5&&s.fans>=1500,
-    text:'He wants a campaign jingle. His aide opens a Ghana-must-go bag: ₦2,000,000, cash. “Just something the youths can dance to.”',
+    text:'He wants a campaign jingle. His aide opens a Ghana-must-go bag: ₦1,200,000, cash. “Just something the youths can dance to.”',
     choices:[
-      {label:'Take the bag',hint:'₦2,000,000. Your name on it.',run:s=>({text:'The jingle is, annoyingly, your catchiest work. It plays from every campaign bus in Alimosho.',fx:{money:2000000,cred:-12,links:8,flag:{jingle:s.week}}})},
-      {label:'Do it under a fake name for half',hint:'₦1,000,000. Nobody will know. Probably.',run:s=>({text:'“Lil Mandate” is born. Nobody will ever connect him to you. Probably.',fx:{money:1000000,flag:{jingle:s.week,alias:true,blown:R.p(0.5)}}})},
+      {label:'Take the bag',hint:'₦1,200,000. Your name on it.',run:s=>({text:'The jingle is, annoyingly, your catchiest work. It plays from every campaign bus in Alimosho.',fx:{money:1200000,cred:-12,links:8,flag:{jingle:s.week}}})},
+      {label:'Do it under a fake name for half',hint:'₦600,000. Nobody will know. Probably.',run:s=>({text:'“Lil Mandate” is born. Nobody will ever connect him to you. Probably.',fx:{money:600000,flag:{jingle:s.week,alias:true,blown:R.p(0.5)}}})},
       {label:'Decline, respectfully',hint:'Clean hands.',run:()=>({text:'The aide zips the bag slowly, so you can watch it close.',fx:{cred:6,links:-3}})}
     ]},
   {id:'beef',title:'Subliminals',who:'Lil Kobo, your mate from the open-mic days',when:s=>s.fans>=1500,
@@ -582,29 +582,29 @@ const EVENTS=[
         :{text:'He calls your bluff. You pay the increase, plus a “caution fee.”',fx:{rent:40000,money:-20000}}}
     ]},
   {id:'investor',title:'Afrobeats to the world',who:'Chad Whitlock, Afrowave Capital, Austin',when:s=>s.week>=7&&s.fans>=3000&&!s.flags.investor,
-    text:'He has been in Lagos for four days and calls it “Lasgidi.” He offers $3,000, about ₦4.5m, for 30% of everything you ever earn. “We are going to scale you, bro.”',
+    text:'He has been in Lagos for four days and calls it “Lasgidi.” He offers $1,000, about ₦1.5m, for 30% of everything you ever earn. “We are going to scale you, bro.”',
     choices:[
-      {label:'Take the dollars',hint:'₦4,500,000 now. 30% of you, forever.',run:s=>({text:'You sign on his iPad at a rooftop bar in VI. He calls you “a portfolio company.”',fx:{money:4500000,links:6,flag:{investor:s.week}}})},
+      {label:'Take the dollars',hint:'₦1,500,000 now. 30% of you, forever.',run:s=>({text:'You sign on his iPad at a rooftop bar in VI. He calls you “a portfolio company.”',fx:{money:1500000,links:6,flag:{investor:s.week}}})},
       {label:'Counter: 30% of one song only',hint:s=>odds(s,'links',30),run:s=>chk(s,'links',30)
-        ?{text:'He blinks, calls somebody in Austin, and agrees. He says he respects “the hustle.”',fx:{money:1500000}}
+        ?{text:'He blinks, calls somebody in Austin, and agrees. He says he respects “the hustle.”',fx:{money:500000}}
         :{text:'He says he will “circle back.” He does not.'}},
       {label:'Pass',hint:'Nobody owns you.',run:()=>({text:'He funds a skit-maker instead.',fx:{cred:3}})}
     ]},
   {id:'label',title:'The contract',who:'Big Tunde, Gbedu Empire Records',when:s=>s.week>=8&&s.fans>=8000&&!s.flags.signed&&!s.flags.signedGood,
-    text:'He slides 47 pages across the desk. ₦3,000,000 advance. Five albums. They own the masters. “Standard,” he says, of a contract that is standard nowhere.',
+    text:'He slides 47 pages across the desk. ₦1,500,000 advance. Five albums. They own the masters. “Standard,” he says, of a contract that is standard nowhere.',
     choices:[
-      {label:'Sign it',hint:'₦3,000,000 today. Read nothing.',run:s=>{s.recoup=3000000;return {text:'You sign. There is champagne. Somewhere on page 31, the word “recoupable” is waiting for you.',fx:{money:3000000,hype:20,links:12,flag:{signed:true},note:'Your music income now pays back the advance first'}};}},
+      {label:'Sign it',hint:'₦1,500,000 today. Read nothing.',run:s=>{s.recoup=1500000;return {text:'You sign. There is champagne. Somewhere on page 31, the word “recoupable” is waiting for you.',fx:{money:1500000,hype:20,links:12,flag:{signed:true},note:'Your music income now pays back the advance first'}};}},
       {label:'Hire a lawyer to negotiate',cost:150000,hint:s=>odds(s,'links',35),run:s=>chk(s,'links',35)
-        ?{text:'Barrister Amaka removes eleven clauses. ₦2m advance, two singles, and you keep your masters.',fx:{money:2000000,hype:12,links:8,flag:{signedGood:true},note:'Gbedu Empire takes 20% of music income'}}
+        ?{text:'Barrister Amaka removes eleven clauses. ₦1m advance, two singles, and you keep your masters.',fx:{money:1000000,hype:12,links:8,flag:{signedGood:true},note:'Gbedu Empire takes 20% of music income'}}
         :{text:'Big Tunde does not negotiate with “upcoming artists.” The offer is gone, and so is the lawyer’s fee.',fx:{cred:3}}},
       {label:'Stay independent',hint:'Own everything. Fund everything.',run:()=>({text:'Big Tunde laughs. “They always come back.” You plan to be the one who does not.',fx:{cred:8}})}
     ]},
   {id:'brand',title:'Kogbagidi Herbal Bitters',who:'“For man power and waist pain”',when:s=>s.fans>=15000,
-    text:'They want you as brand ambassador. ₦3,000,000. You must drink it on camera and smile afterwards.',
+    text:'They want you as brand ambassador. ₦1,200,000. You must drink it on camera and smile afterwards.',
     choices:[
-      {label:'Drink the bitters',hint:'₦3,000,000. The streets will laugh.',run:()=>({text:'Your face is on a billboard at Ojota, holding a small brown bottle. Your smile is doing a lot of work.',fx:{earn:3000000,cred:-8}})},
+      {label:'Drink the bitters',hint:'₦1,200,000. The streets will laugh.',run:()=>({text:'Your face is on a billboard at Ojota, holding a small brown bottle. Your smile is doing a lot of work.',fx:{earn:1200000,cred:-8}})},
       {label:'Hold out for a bank or a telco',hint:s=>odds(s,'links',45),run:s=>chk(s,'links',45)
-        ?{text:'Somebody’s cousin works in marketing at a bank. You are now the face of a savings account.',fx:{earn:5000000,hype:8}}
+        ?{text:'Somebody’s cousin works in marketing at a bank. You are now the face of a savings account.',fx:{earn:2000000,hype:8}}
         :{text:'No bank calls. Kogbagidi signs Lil Kobo.'}},
       {label:'Decline',hint:'Keep your face.',run:()=>({text:'You keep your dignity and your waist pain.',fx:{cred:4}})}
     ]},
@@ -703,14 +703,23 @@ function choose(s,ev,i){
 }
 
 /* ---------- end of week ---------- */
+// Streams come mostly from recent releases: each song's share fades 10% a week, down to a 10% catalogue tail.
+function streamGross(s){
+  let w=0;for(const x of s.songs)w+=Math.max(0.1,Math.pow(0.9,s.week-x.week))*(0.5+x.q/100);
+  return Math.round(s.fans*1.5*Math.min(1,w/3));
+}
+// Fame costs money every week.
+const PEOPLE_COST={'Buzzing':15000,'Next rated':50000,'Lagos star':120000};
 function wrapWeek(s){
   const lines=[],wk=s.week;
-  const gross=Math.round(s.fans*1.5*Math.min(1,s.songs.length/3));
+  const gross=streamGross(s);
   if(gross>0){
     const t=takeHome(s,gross);s.money+=t.net;
     lines.push({l:'Streams',v:'+'+naira(t.net),k:'up',sub:t.net<gross?naira(gross-t.net)+' went to '+listOf(t.who):''});
   }else lines.push({l:'Streams',v:'₦0',sub:s.songs.length?'':'You have not released anything yet'});
   s.money-=15000;lines.push({l:'Food, data, transport',v:naira(-15000),k:'down'});
+  const crew=PEOPLE_COST[tierOf(s.fans).name]||0;
+  if(crew){s.money-=crew;lines.push({l:'Your people',v:naira(-crew),k:'down',sub:'Stylist, security, and cousins who suddenly remember you'});}
   if(wk%4===0){s.money-=s.rent;lines.push({l:'Rent',v:naira(-s.rent),k:'down'});}
   if(s.flags.manager)s.links=clamp(s.links+2,0,100);
   const h0=s.hype;s.hype=Math.max(0,Math.round(s.hype*0.8-2));
@@ -815,7 +824,7 @@ if(typeof document!=='undefined'){
       '<li>Each week you get 3 moves. Spend them, then end the week.</li>'+
       '<li>Skill makes better songs. Hype makes a release travel, and it fades every week.</li>'+
       '<li>Street cred and links both help a release spread. Cred opens doors on the mainland, links open doors on the Island.</li>'+
-      '<li>Feeding and rent come out whether you sang or not.</li>'+
+      '<li>Feeding and rent come out whether you sang or not. Fame costs money too: the bigger you get, the more your people cost.</li>'+
       '<li>Something always happens. Your choices follow you.</li>'+
       '</ul></details>'+
       '<p class="fine">All characters, companies and events are fictional.</p>'+
