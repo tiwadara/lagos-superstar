@@ -1,0 +1,25 @@
+name: Bug
+description: Something in the game is broken or wrong.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to make it happen
+      description: Background, week, and the moves or choices that led to it.
+      placeholder: |
+        1. Start as the Island kid
+        2. In week 7, take Chad's dollars
+        3. ...
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: Android phone, Chrome

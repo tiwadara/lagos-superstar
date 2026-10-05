@@ -1,0 +1,42 @@
+name: Story idea
+description: Pitch a new story card or follow-up for the game.
+labels: ["story", "area: content"]
+body:
+  - type: markdown
+    attributes:
+      value: Read the [story-writing guide](https://github.com/tiwadara/lagos-superstar/blob/main/docs/story-writing-guide.md) first. All people and companies must be fictional.
+  - type: input
+    id: title
+    attributes:
+      label: Title and who
+      placeholder: "Stems hostage. Your producer, Beatz by Sapa"
+    validations:
+      required: true
+  - type: textarea
+    id: situation
+    attributes:
+      label: The situation
+      description: 25 to 45 words, ending on the decision.
+    validations:
+      required: true
+  - type: textarea
+    id: choices
+    attributes:
+      label: Choices and what they trade
+      description: Two or three. At least one must be free.
+      placeholder: |
+        - Pay him (₦80,000): keep the relationship, +links
+        - Call him out online (free): +hype, -links
+        - Learn to make beats (free): +skill, costs a day
+    validations:
+      required: true
+  - type: input
+    id: when
+    attributes:
+      label: When it can appear
+      placeholder: Week 3 or later, after the first recorded song
+  - type: textarea
+    id: followup
+    attributes:
+      label: Does it come back later?
+      description: Optional. What happens weeks later, and which choice sets it up.
