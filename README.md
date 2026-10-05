@@ -6,9 +6,11 @@ This is the first playable prototype. It has one career, the music artist. All c
 
 ## Play it
 
-Open `index.html` in a browser. There is nothing to install or build.
+Play online at https://next-lagos-star.netlify.app.
 
-To get a public link, turn on GitHub Pages for this repo (Settings, then Pages, then deploy from the `main` branch). The game is served from the root because the file is named `index.html`.
+To play locally, open `index.html` in a browser. There is nothing to install or build.
+
+The site is hosted on Netlify, which serves the repo root as it is, with no build command. Once the Netlify project is linked to this repo, every push to `main` goes live.
 
 Progress is saved in the browser's local storage, so each player's game stays on their own device.
 
