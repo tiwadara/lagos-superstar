@@ -39,6 +39,14 @@ node .claude/skills/write-story/try-story.js <id> [week] [fans] [money] [backgro
 
 This prints whether the story can appear for that player, and what each choice does, including both sides of a check or gamble. Try a player who meets `when` and one who is broke (money `0`). Fix anything that warns: a duplicate id, or every choice costing money.
 
+Then check every card at once:
+
+```
+node lint-stories.js
+```
+
+It must report no errors: the same check runs on every pull request. Fix warnings unless there is a good reason, and say why in the pull request.
+
 ## 5. Check balance
 
 ```

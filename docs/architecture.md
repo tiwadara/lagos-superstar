@@ -108,6 +108,8 @@ The interface keeps a small `ui` object (`screen`, `sheet`, `prev`, `fresh`, `co
 
 Renaming any of them, adding a `<script>` block before the game script, or using the page above the interface block will break the simulator. Run `node simulate.js 200` after any change to the rules.
 
+`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `STAGE_NAMES` and `BACKGROUNDS`. Both run on every pull request in `.github/workflows/check.yml`.
+
 ## Deploys
 
 | Event | Result |
