@@ -64,4 +64,5 @@ Big payouts are where balance usually breaks. Late-game money already piles up (
 - [ ] Stat checks show their odds in the hint.
 - [ ] All names are fictional and not already used for something else.
 - [ ] The text reads well on a phone: 25 to 45 words, one decision.
+- [ ] `node lint-stories.js` reports no errors. It also runs on every pull request.
 - [ ] `node simulate.js` shows no ending more than about 5 points away from the [baseline](balance.md#current-baseline), or the change explains why.

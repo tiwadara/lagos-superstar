@@ -23,9 +23,20 @@ Everything is tracked in GitHub issues.
 4. **Check it.**
    - Play it: open `index.html` in a browser, at phone width as well as desktop.
    - Balance: run `node simulate.js` and compare with the [baseline](docs/balance.md#current-baseline).
-   - Stories: run `node .claude/skills/write-story/try-story.js <id>`.
+   - Stories: run `node lint-stories.js`, and `node .claude/skills/write-story/try-story.js <id>` for each new or changed story.
 5. **Open a pull request** and fill in the template. Link the issue with "Closes #123".
 6. **Review and merge.** After merging, Netlify deploys `main` to https://next-lagos-star.netlify.app within a minute.
+
+## Automatic checks
+
+Every pull request and every push to `main` runs the **Check** workflow (`.github/workflows/check.yml`). It takes about a minute:
+
+1. `node lint-stories.js` checks every story card: unique ids, required fields, a free choice for broke players, known effects, flags that follow-ups wait for, and no names from `STAGE_NAMES`. Long text and stat checks without odds in the hint are warnings and do not fail.
+2. `node simulate.js --check` plays 2,000 games per row and fails if the script is broken, the results contain `NaN`, a balance target in [docs/balance.md](docs/balance.md#targets) is missed, or the game has moved too far from `balance-baseline.json`.
+
+A red check means the change would break the live game or its balance: do not merge until it is green.
+
+If you changed the balance on purpose, the check will fail on the baseline. Run `node simulate.js 4000 --save-baseline`, commit the new `balance-baseline.json`, update the tables in `docs/balance.md`, and explain the change in the pull request. Small balance changes can stay inside the check's noise, so still compare `node simulate.js` with the baseline yourself when you touch numbers.
 
 ## Big decisions
 
