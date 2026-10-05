@@ -114,7 +114,7 @@ node simulate.js
 
 It plays 2,000 games for each kind of player (sensible, random, lazy) from each starting background and prints how often each ending happens. With the current numbers a sensible player usually ends at "Buzzing" or "Next rated", and "Lagos star" is rare. If a new story makes one ending far more common, its rewards are probably too large.
 
-Pass a number to change how many games are played, for example `node simulate.js 5000`.
+Pass a number to change how many games are played, for example `node simulate.js 5000`. Add `--detail` to see cash and fans week by week and how much each story moves a game, or `--stories=all` to compare players who pick story choices at random, for the most cash, or to stay clean. [docs/balance.md](docs/balance.md) has the targets and the current numbers.
 
 ## Ideas for what comes next
 
