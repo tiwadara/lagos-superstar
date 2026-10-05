@@ -11,7 +11,8 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 ## Commands
 
 ```
-node simulate.js 500    # balance check, about a second; 2000 by default
+node simulate.js 500    # balance numbers, about a second; 2000 by default
+node simulate.js --check    # balance targets and baseline, about 40 seconds; runs on every pull request
 node lint-stories.js    # checks every story card; also runs on every pull request
 node .claude/skills/write-story/try-story.js <story id>    # run every choice of one story
 ```
@@ -22,7 +23,7 @@ There is no install, build or test runner. Open `index.html` in a browser to pla
 
 - Merging to `main` deploys to the live site straight away (`docs/adr/0003-static-hosting-on-netlify.md`). Work on a branch and keep `main` playable.
 - Code above `if (typeof document !== 'undefined')` must never touch the page. `simulate.js` runs it in Node and reads the names listed in `docs/architecture.md`. Do not rename them.
-- After changing rules or stories, run `node simulate.js` and compare with the baseline in `docs/balance.md`.
+- After changing rules or stories, run `node simulate.js --check`. If you changed balance on purpose, run `node simulate.js 4000 --save-baseline`, commit `balance-baseline.json`, and update `docs/balance.md`.
 - Changing the shape of the game state can break saved games. Read `docs/adr/0004-saves-in-local-storage.md` first.
 - Every person, company and brand in the game is fictional (`docs/adr/0007-fictional-people-and-companies.md`).
 - Match the existing code style: compact, one-line cards, short helper names.

@@ -35,6 +35,7 @@ Progress is saved in the browser's local storage, so each player's game stays on
 | `index.html` | The whole game: styles, content, rules and interface in one file |
 | `simulate.js` | Plays thousands of games without a browser, to check balance |
 | `lint-stories.js` | Checks every story card for mistakes. Runs on every pull request with the simulator |
+| `balance-baseline.json` | The simulator's saved results, which `node simulate.js --check` compares against |
 | `README.md` | This file |
 | `docs/` | Game design, story-writing guide, balance, architecture, roadmap and decision records. Start at [docs/README.md](docs/README.md) |
 | `CONTRIBUTING.md` | How work is planned on GitHub and how a change reaches the live game |
@@ -114,6 +115,8 @@ node simulate.js
 ```
 
 It plays 2,000 games for each kind of player (sensible, random, lazy) from each starting background and prints how often each ending happens. With the current numbers a sensible player usually ends at "Buzzing" or "Next rated", and "Lagos star" is rare. If a new story makes one ending far more common, its rewards are probably too large.
+
+Run `node simulate.js --check` to test the balance targets and compare with the saved baseline in `balance-baseline.json`. The same check runs on every pull request.
 
 Pass a number to change how many games are played, for example `node simulate.js 5000`. Add `--detail` to see cash and fans week by week and how much each story moves a game, or `--stories=all` to compare players who pick story choices at random, for the most cash, or to stay clean. [docs/balance.md](docs/balance.md) has the targets and the current numbers.
 

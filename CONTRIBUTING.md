@@ -29,12 +29,14 @@ Everything is tracked in GitHub issues.
 
 ## Automatic checks
 
-Every pull request and every push to `main` runs the **Check** workflow (`.github/workflows/check.yml`). It takes under a minute:
+Every pull request and every push to `main` runs the **Check** workflow (`.github/workflows/check.yml`). It takes about a minute:
 
 1. `node lint-stories.js` checks every story card: unique ids, required fields, a free choice for broke players, known effects, flags that follow-ups wait for, and no names from `STAGE_NAMES`. Long text and stat checks without odds in the hint are warnings and do not fail.
-2. `node simulate.js 300` plays the game in Node and fails if the script is broken or the results contain `NaN`.
+2. `node simulate.js --check` plays 2,000 games per row and fails if the script is broken, the results contain `NaN`, a balance target in [docs/balance.md](docs/balance.md#targets) is missed, or the game has moved too far from `balance-baseline.json`.
 
-A red check means the change would break the live game: do not merge until it is green. Balance is not yet checked automatically ([#17](https://github.com/tiwadara/lagos-superstar/issues/17)), so still compare `node simulate.js` with the baseline yourself.
+A red check means the change would break the live game or its balance: do not merge until it is green.
+
+If you changed the balance on purpose, the check will fail on the baseline. Run `node simulate.js 4000 --save-baseline`, commit the new `balance-baseline.json`, update the tables in `docs/balance.md`, and explain the change in the pull request. Small balance changes can stay inside the check's noise, so still compare `node simulate.js` with the baseline yourself when you touch numbers.
 
 ## Big decisions
 

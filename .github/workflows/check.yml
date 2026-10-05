@@ -21,9 +21,9 @@ jobs:
       - name: Check every story card
         run: node lint-stories.js
 
-      - name: Play 300 games per row
+      - name: Play the game and check balance
         shell: bash
-        run: node simulate.js 300 | tee simulate-output.txt
+        run: node simulate.js --check | tee simulate-output.txt
 
       - name: Check the results have no broken numbers
         shell: bash

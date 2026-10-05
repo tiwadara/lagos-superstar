@@ -31,15 +31,35 @@ The simulator plays every combination of three kinds of player and three startin
 
 ## Targets
 
-These come from the README and the current build. A change that moves an ending more than about 5 points away from the baseline below should explain why in its pull request.
+These are the design targets, with random story choices, for every starting background. `node simulate.js --check` tests them on every pull request. The numbers live in `TARGETS` at the top of `simulate.js`. Change both places together, and say why in the pull request.
 
-| Player | Target |
-| --- | --- |
-| Sensible | Usually Buzzing or Next rated. Lagos star is rare, under 5%. Almost never Sapa won |
-| Random | Mostly Buzzing or Area champion. Sometimes Sapa won |
-| Lazy | Never Next rated or Lagos star. Usually Sapa won or Area champion |
+| Player | Target | Checked as |
+| --- | --- | --- |
+| Sensible | Usually Buzzing or Next rated | Buzzing + Next rated at least 90% |
+| Sensible | Lagos star is rare | Lagos star at most 5% |
+| Sensible | Almost never Sapa won | Sapa won at most 1% |
+| Sensible | Money stays tight but out of debt: under ₦300,000 at the end of week 20, after rent. Agreed on 5 October 2026 ([#3](https://github.com/tiwadara/lagos-superstar/issues/3)) | Median cash at week 20 between −₦25,000 and ₦300,000. The ₦25,000 allows for noise |
+| Random | Mostly Buzzing or Area champion | Buzzing + Area champion at least 60% |
+| Random | Sometimes Sapa won | Sapa won between 2% and 25% |
+| Lazy | Never Next rated or Lagos star | Next rated + Lagos star at most 0.5% |
+| Lazy | Usually Sapa won or Area champion | Sapa won + Area champion at least 80% |
 
-**Money:** a sensible player's median cash at the end of week 20, after rent, stays under ₦300,000 for every background, and above zero. Agreed on 5 October 2026 (#3), so that rent and debt still shape decisions late in the game.
+## The automatic balance check
+
+`node simulate.js --check` takes about 40 seconds. It plays 2,000 games per row with random story choices and with the money-chaser, then:
+
+1. Tests the targets above.
+2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass.
+
+These limits come from measuring noise. On the unchanged game the check passed 12 runs out of 12. It fails when the investor or jingle payout is doubled, or the side hustle pays double. Smaller changes can stay within the noise. Removing the weekly cost of fame, for example, moves the sensible player's week 20 cash by ₦30,000 to ₦50,000, which the check does not reliably catch. So when you change numbers, still compare the full tables yourself.
+
+When a change moves balance on purpose:
+
+```
+node simulate.js 4000 --save-baseline   # about a minute; 4,000 games per row keeps the baseline steady
+```
+
+Commit the new `balance-baseline.json`, update the tables below, and explain the change in the pull request.
 
 ## Current baseline
 
