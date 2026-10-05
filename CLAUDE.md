@@ -12,6 +12,7 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 
 ```
 node simulate.js 500    # balance check, about a second; 2000 by default
+node lint-stories.js    # checks every story card; also runs on every pull request
 node .claude/skills/write-story/try-story.js <story id>    # run every choice of one story
 ```
 

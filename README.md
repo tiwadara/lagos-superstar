@@ -34,12 +34,13 @@ Progress is saved in the browser's local storage, so each player's game stays on
 | --- | --- |
 | `index.html` | The whole game: styles, content, rules and interface in one file |
 | `simulate.js` | Plays thousands of games without a browser, to check balance |
+| `lint-stories.js` | Checks every story card for mistakes. Runs on every pull request with the simulator |
 | `README.md` | This file |
 | `docs/` | Game design, story-writing guide, balance, architecture, roadmap and decision records. Start at [docs/README.md](docs/README.md) |
 | `CONTRIBUTING.md` | How work is planned on GitHub and how a change reaches the live game |
 | `CLAUDE.md` | A short guide for AI coding agents working in this repo |
 | `.claude/skills/write-story/` | A Claude skill for writing stories, with `try-story.js` to run every choice of a story |
-| `.github/` | Issue templates (bug, story idea, task, epic) and the pull request template |
+| `.github/` | Issue templates (bug, story idea, task, epic), the pull request template, and the Check workflow that runs on every pull request |
 
 The script inside `index.html` is laid out in this order:
 
