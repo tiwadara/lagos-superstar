@@ -8,7 +8,7 @@ All epics: [issues labelled `epic`](https://github.com/tiwadara/lagos-superstar/
 
 | Epic | Goal | Tasks |
 | --- | --- | --- |
-| [#7 Ready for players](https://github.com/tiwadara/lagos-superstar/issues/7) | Fix known rough edges, check accessibility, run a first playtest with a feedback form | [#8](https://github.com/tiwadara/lagos-superstar/issues/8) [#9](https://github.com/tiwadara/lagos-superstar/issues/9) [#10](https://github.com/tiwadara/lagos-superstar/issues/10) [#11](https://github.com/tiwadara/lagos-superstar/issues/11) [#12](https://github.com/tiwadara/lagos-superstar/issues/12) [#13](https://github.com/tiwadara/lagos-superstar/issues/13) |
+| [#7 Ready for players](https://github.com/tiwadara/lagos-superstar/issues/7) | Fix known rough edges, check accessibility, run a first playtest with a feedback form | [#8](https://github.com/tiwadara/lagos-superstar/issues/8) [#9](https://github.com/tiwadara/lagos-superstar/issues/9) [#10](https://github.com/tiwadara/lagos-superstar/issues/10) [#11](https://github.com/tiwadara/lagos-superstar/issues/11) [#12](https://github.com/tiwadara/lagos-superstar/issues/12) [#13](https://github.com/tiwadara/lagos-superstar/issues/13) [#44](https://github.com/tiwadara/lagos-superstar/issues/44) [#45](https://github.com/tiwadara/lagos-superstar/issues/45) |
 | [#2 Economy and balance](https://github.com/tiwadara/lagos-superstar/issues/2) | Keep money a real decision all game; let the simulator play strategies | [#3](https://github.com/tiwadara/lagos-superstar/issues/3) [#4](https://github.com/tiwadara/lagos-superstar/issues/4) [#5](https://github.com/tiwadara/lagos-superstar/issues/5) [#6](https://github.com/tiwadara/lagos-superstar/issues/6) |
 | [#14 Checks on every pull request](https://github.com/tiwadara/lagos-superstar/issues/14) | Script, story and balance checks run before anything reaches the live game | [#15](https://github.com/tiwadara/lagos-superstar/issues/15) [#16](https://github.com/tiwadara/lagos-superstar/issues/16) [#17](https://github.com/tiwadara/lagos-superstar/issues/17) |
 
@@ -16,6 +16,7 @@ All epics: [issues labelled `epic`](https://github.com/tiwadara/lagos-superstar/
 
 | Epic | Goal | Tasks |
 | --- | --- | --- |
+| [#46 Brand and visual identity](https://github.com/tiwadara/lagos-superstar/issues/46) | Its own brand that can grow beyond music, a design system and two signature animations | [#47](https://github.com/tiwadara/lagos-superstar/issues/47) [#48](https://github.com/tiwadara/lagos-superstar/issues/48) [#49](https://github.com/tiwadara/lagos-superstar/issues/49) [#50](https://github.com/tiwadara/lagos-superstar/issues/50) |
 | [#22 Replay variety](https://github.com/tiwadara/lagos-superstar/issues/22) | More stories and follow-ups, drawn so each game feels different | [#23](https://github.com/tiwadara/lagos-superstar/issues/23) [#24](https://github.com/tiwadara/lagos-superstar/issues/24) [#25](https://github.com/tiwadara/lagos-superstar/issues/25) |
 | [#18 Stories as data](https://github.com/tiwadara/lagos-superstar/issues/18) | Writers add stories in a data file without touching the rules | [#19](https://github.com/tiwadara/lagos-superstar/issues/19) [#20](https://github.com/tiwadara/lagos-superstar/issues/20) [#21](https://github.com/tiwadara/lagos-superstar/issues/21) |
 | [#26 Recurring characters](https://github.com/tiwadara/lagos-superstar/issues/26) | A cast with faces and a memory of how you treated them | [#27](https://github.com/tiwadara/lagos-superstar/issues/27) [#28](https://github.com/tiwadara/lagos-superstar/issues/28) [#29](https://github.com/tiwadara/lagos-superstar/issues/29) [#30](https://github.com/tiwadara/lagos-superstar/issues/30) |
@@ -39,6 +40,8 @@ flowchart LR
   T36["#36 Seeded random"] --> T37["#37 Daily story by date"]
   T36 -.-> T17
   T16["#16 Story linter"] -.-> E18
+  E46["#46 Brand"] --> T30["#30 Portraits"]
+  E46 --> T38["#38 Share your result"]
 ```
 
 Solid arrows mean "needs first". Dotted arrows mean "helps".
@@ -50,6 +53,7 @@ These tasks end in an ADR. See [docs/adr](adr/README.md).
 | Task | Decision |
 | --- | --- |
 | [#19](https://github.com/tiwadara/lagos-superstar/issues/19) | Data format for stories |
+| [#47](https://github.com/tiwadara/lagos-superstar/issues/47) | Brand name, scope and visual direction |
 | [#30](https://github.com/tiwadara/lagos-superstar/issues/30) | Portrait style for characters |
 | [#32](https://github.com/tiwadara/lagos-superstar/issues/32) | What carries over between seasons |
 | [#40](https://github.com/tiwadara/lagos-superstar/issues/40) | Career framework: what is shared and what belongs to each career |
