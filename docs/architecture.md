@@ -100,6 +100,8 @@ flowchart TD
 
 The interface keeps a small `ui` object (`screen`, `sheet`, `prev`, `fresh`, `confirmRestart`) and redraws with `innerHTML` on every change. There are three screens (title, game, end) and one bottom sheet (`#sheet`) that shows a story, then the result and the end-of-week summary. Clicks are handled in one listener on `document` using `data-act`, `data-choice` and `data-cmd` attributes.
 
+While the sheet is open, the rest of the page is `inert`, so keyboard focus stays inside the sheet. When it closes, `sheetFocus` moves focus to what changed: the week's opening line or the ending title. Keep both behaviours when changing the sheet. Buttons and links are at least 44px tall, and `prefers-reduced-motion` turns every animation off. The pages pass an axe-core audit (WCAG 2.1 AA) in light and dark mode.
+
 ## What the simulator depends on
 
 `simulate.js` extracts the first `<script>…</script>` block with a regex and evaluates it with `new Function`, then reads these names:
