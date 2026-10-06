@@ -30,5 +30,6 @@ Bug fixes, new stories and balance tweaks do not need one.
 | [0005](0005-stories-as-independent-cards.md) | Stories are independent cards, not a decision tree | Accepted |
 | [0006](0006-headless-simulator-for-balance.md) | A headless simulator checks balance | Accepted |
 | [0007](0007-fictional-people-and-companies.md) | All people and companies are fictional | Accepted |
+| [0008](0008-careers-share-one-engine.md) | Careers share one city, one engine and one cast | Proposed |
 
 ADRs 0002 to 0007 were recorded on 5 October 2026 for decisions already in the first playable build.
