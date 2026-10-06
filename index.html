@@ -173,6 +173,18 @@ details li{margin-top:4px}
 .tally li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
 .tally b{font-variant-numeric:tabular-nums;text-align:right}
 
+/* Feedback form */
+.feedback{border-top:2px solid var(--ink);padding-top:14px}
+.feedback > * + *{margin-top:12px}
+.feedback h2{font-size:1.15rem}
+.feedback textarea,.feedback input[type=text]{display:block;width:100%;font-weight:400;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);padding:8px 12px;font-family:inherit;font-size:1rem;margin-top:4px}
+.feedback .opts{display:flex;flex-wrap:wrap;gap:6px}
+.feedback .opts label{display:inline-flex;align-items:center;gap:6px;min-height:44px;border:2px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;font-weight:500}
+.feedback .opts label:has(input:checked){border-color:var(--ink);font-weight:700}
+.feedback .opts input{accent-color:var(--ink);margin:0}
+.feedback .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.fb-status{font-weight:700;color:var(--accent)}
+
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }
@@ -181,6 +193,11 @@ details li{margin-top:4px}
 <body>
 <div id="app"></div>
 <div id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden></div>
+<!-- Netlify Forms reads this hidden copy at deploy time. The visible form is built in feedbackHtml() and posts the same fields. -->
+<form name="feedback" data-netlify="true" netlify-honeypot="company" hidden>
+  <input name="company"><input name="ending"><input name="background"><input name="week"><input name="fans">
+  <input name="duration"><textarea name="confused"></textarea><input name="favourite"><input name="again"><textarea name="anything"></textarea>
+</form>
 
 <script>
 'use strict';
@@ -871,9 +888,39 @@ if(typeof document!=='undefined'){
         '<h3>Who takes a cut</h3>'+(deals.length?'<ul>'+deals.map(d=>'<li><span>'+h(d[0])+'</span><span>'+h(d[1])+'</span></li>').join('')+'</ul>':'<p class="act-sub">Nobody. Everything you earn is yours.</p>')+
       '</details>'+
       (s.log.length>1?'<section class="earlier"><h2>Earlier this week</h2>'+s.log.slice(1).map(l=>'<p>'+h(l.text)+'</p>').join('')+'</section>':'')+
-      '<div class="foot">'+(ui.confirmRestart?'<span>Throw this career away?</span><button class="link" data-cmd="restart-yes">Yes, start over</button><button class="link" data-cmd="restart-no">Keep playing</button>':'<button class="link" data-cmd="restart">Start over</button>')+'</div>'+
+      '<div class="foot">'+(ui.confirmRestart?'<span>Throw this career away?</span><button class="link" data-cmd="restart-yes">Yes, start over</button><button class="link" data-cmd="restart-no">Keep playing</button>':'<button class="link" data-cmd="restart">Start over</button>')+'<button class="link" data-cmd="feedback">Send feedback</button></div>'+
       '</main>';
     ui.prev={money:s.money,fans:s.fans};ui.fresh=false;
+  }
+
+  // Playtest feedback, sent to Netlify Forms. No name is sent, not even the stage name.
+  function feedbackHtml(inSheet){
+    const opts=(name,list)=>'<div class="opts">'+list.map(v=>'<label><input type="radio" name="'+name+'" value="'+h(v)+'">'+h(v)+'</label>').join('')+'</div>';
+    return '<form class="feedback" data-feedback novalidate>'+
+      '<h2'+(inSheet?' id="sheet-title" tabindex="-1"':'')+'>Tell us how it went</h2>'+
+      '<p class="act-sub">One minute. We never ask for your name.</p>'+
+      '<fieldset><legend>How long did you play?</legend>'+opts('duration',['Under 10 minutes','10 to 20 minutes','20 to 40 minutes','Over 40 minutes'])+'</fieldset>'+
+      '<label class="field" for="fb-confused">Did anything confuse or bore you? Which week?<textarea id="fb-confused" name="confused" rows="3" maxlength="1000"></textarea></label>'+
+      '<label class="field" for="fb-favourite">Your favourite story or moment<input type="text" id="fb-favourite" name="favourite" maxlength="200"></label>'+
+      '<fieldset><legend>Would you play again?</legend>'+opts('again',['Yes','Maybe','No'])+'</fieldset>'+
+      '<label class="field" for="fb-anything">Anything else?<textarea id="fb-anything" name="anything" rows="2" maxlength="1000"></textarea></label>'+
+      '<label class="hp" aria-hidden="true">Leave this empty<input type="text" name="company" tabindex="-1" autocomplete="off"></label>'+
+      '<button class="primary" type="submit">Send feedback</button>'+
+      (inSheet?'<button class="secondary" type="button" data-cmd="close-sheet">Back to the game</button>':'')+
+      '<p class="fb-status" role="status" aria-live="polite"></p>'+
+      '</form>';
+  }
+  function sendFeedback(form){
+    const status=form.querySelector('.fb-status'),btn=form.querySelector('[type=submit]');
+    const data=new URLSearchParams(new FormData(form));
+    if(!['duration','confused','favourite','again','anything'].some(k=>(data.get(k)||'').trim())){status.textContent='Answer at least one question first.';return;}
+    data.set('form-name','feedback');
+    data.set('ending',S&&S.over?S.over.title:'Still playing');
+    if(S){data.set('background',S.bg);data.set('week',String(S.week));data.set('fans',String(S.fans));}
+    btn.disabled=true;status.textContent='Sending…';
+    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:data.toString()})
+      .then(r=>{if(!r.ok)throw new Error(r.status);form.innerHTML='<h2'+(form.querySelector('#sheet-title')?' id="sheet-title" tabindex="-1"':'')+'>Thank you</h2><p class="fb-status" role="status">Your feedback is in. It helps decide what we build next.</p>'+(ui.sheet?'<button class="secondary" type="button" data-cmd="close-sheet">Back to the game</button>':'');})
+      .catch(()=>{btn.disabled=false;status.textContent='That did not send. Check your connection and try again.';});
   }
 
   function renderEnd(){
@@ -886,6 +933,7 @@ if(typeof document!=='undefined'){
       '<p class="verdict">'+h(o.verdict)+'</p>'+
       (o.notes.length?'<ul class="notes">'+o.notes.map(n=>'<li>'+h(n)+'</li>').join('')+'</ul>':'')+
       '<ul class="tally">'+o.tally.map(r=>'<li><span>'+h(r[0])+'</span><b>'+h(r[1])+'</b></li>').join('')+'</ul>'+
+      feedbackHtml(false)+
       '<button class="primary" data-cmd="again">Play again</button>'+
       '</main>';
   }
@@ -894,7 +942,9 @@ if(typeof document!=='undefined'){
     const sh=ui.sheet;
     if(!sh){sheetEl.hidden=true;sheetEl.innerHTML='';document.body.style.overflow='';return;}
     const s=S;let html='<div class="sheet-card">';
-    if(sh.phase==='event'){
+    if(sh.phase==='feedback'){
+      html+=feedbackHtml(true);
+    }else if(sh.phase==='event'){
       const ev=sh.ev,choices=val(ev.choices,s);
       html+='<h2 id="sheet-title" tabindex="-1">'+h(ev.title)+'</h2><p class="who">'+h(ev.who)+'</p><p class="story">'+h(val(ev.text,s))+'</p><div class="choices">'+
         choices.map((c,i)=>{const st=choiceState(s,c);return '<button class="choice" data-choice="'+i+'"'+(st.ok?'':' disabled')+'><span class="choice-label">'+h(c.label)+'</span><span class="choice-cost">'+(st.cost?naira(st.cost):'')+'</span><span class="choice-hint">'+h(st.ok?val(c.hint,s)||'':'You cannot afford this.')+'</span></button>';}).join('')+
@@ -959,11 +1009,16 @@ if(typeof document!=='undefined'){
         if(!S.over&&S.week>TOTAL_WEEKS)S.over=finale(S);
         if(S.over)ui.screen='end';
         save();render();window.scrollTo(0,0);break;
+      case 'feedback':ui.sheet={phase:'feedback'};renderSheet();break;
+      case 'close-sheet':ui.sheet=null;renderSheet();break;
       case 'restart':ui.confirmRestart=true;renderGame();break;
       case 'restart-no':ui.confirmRestart=false;renderGame();break;
       case 'restart-yes':
       case 'again':clearSave();S=null;ui.screen='title';ui.sheet=null;ui.confirmRestart=false;render();window.scrollTo(0,0);break;
     }
+  });
+  document.addEventListener('submit',e=>{
+    if(e.target.matches('[data-feedback]')){e.preventDefault();sendFeedback(e.target);}
   });
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'&&e.target&&e.target.id==='name'){e.preventDefault();startGame();}
