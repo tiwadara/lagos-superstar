@@ -117,7 +117,7 @@ Renaming any of them, adding a `<script>` block before the game script, or using
 | Push or merge to `main` | Netlify deploys to https://next-lagos-star.netlify.app in a few seconds |
 | Pull request | Netlify builds a deploy preview, if previews are on for the project |
 
-Netlify publishes the whole repo root, so `README.md`, `simulate.js` and `docs/` are public too. The repo is public, so nothing secret is exposed, but see the tooling epic for tidying this.
+Netlify publishes the whole repo root, but `_redirects` returns 404 for everything except the game: the docs, tools, baseline and repo settings. When you add a new file or folder at the root that players don't need, add a line for it to `_redirects`.
 
 ## Player feedback
 
