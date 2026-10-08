@@ -5,7 +5,7 @@ description: Write, edit or review a story card (an entry in EVENTS, FOLLOWUPS o
 
 # Write a story for The Next Lagos Star
 
-Stories live in `index.html` in the `EVENTS` list (random weekly stories), `FOLLOWUPS` (stories that wait for a flag set earlier) and `DECEMBER` (the week-22 booking). Each is a self-contained card. See `docs/adr/0005-stories-as-independent-cards.md`.
+Stories live in `stories.js`, next to `index.html`: the `EVENTS` list (random weekly stories), `FOLLOWUPS` (stories that wait for a flag set earlier), `DECEMBER` (music's week-22 booking) and `PREMIERES` (the actor's). The cast is `CAST`, at the top of the same file. Each story is a self-contained card. See `docs/adr/0005-stories-as-independent-cards.md` and `docs/adr/0009-story-data-file.md`. A story change touches only `stories.js`; never edit the rules in `index.html` for one.
 
 ## 1. Read before writing
 
@@ -16,18 +16,20 @@ Stories live in `index.html` in the `EVENTS` list (random weekly stories), `FOLL
 ## 2. Check what already exists
 
 ```
-grep -n "{id:'" index.html                         # every story id (and the move ids)
-grep -no "flag:{[a-zA-Z]*" index.html | sort -u     # flags already in use
+grep -n "^  {id:'" stories.js                        # every story id (the first is the template)
+grep -o "flag:{[a-zA-Z]*" stories.js | sort -u      # flags already in use
+grep -n "^  [a-z]*:{name:" stories.js               # the cast
 grep -n "STAGE_NAMES=" index.html                   # names players can take, never use them for characters
 ```
 
-Reuse an existing character where one fits. The cast is the `CAST` list in `index.html`. Tag the card with `cast:'id'` (or a list of ids), and add any new recurring character to `CAST` first.
+Reuse an existing character where one fits. The cast is the `CAST` list at the top of `stories.js`. Tag the card with `cast:'id'` (or a list of ids), and add any new recurring character to `CAST` first.
 
 ## 3. Write the card
 
 - A story that sets a flag a follow-up waits for needs `once: 'career'`, because follow-ups happen once per career and the story would otherwise come back in a later season without its consequence. The linter checks this. A story that only makes sense from the second year on gets `fromSeason: 2` (see `docs/adr/0010-seasons-carry-over.md`).
 - Decide whose story it is: one career (`careers: ['actor']`), a city story for every career (no tag, wording through `by(s, {music, actor})`), or a crossover. See the Careers section of the guide.
-- Add it to `EVENTS`, or to `FOLLOWUPS` if it waits for a flag. Keep the existing one-line, no-space code style of the surrounding cards.
+- Start from the commented template at the top of `stories.js`. Add the card to `EVENTS`, or to `FOLLOWUPS` if it waits for a flag. Keep the existing one-line, no-space code style of the surrounding cards.
+- A card may only call the game's helpers (`by`, `chk`, `odds`, `rel`, `R`) inside its functions. `stories.js` loads before the game script, so a call outside a function breaks the page. Never touch the page from `stories.js`.
 - Give `when` a minimum week. Line fan thresholds up with the tiers (1,000, 10,000, 100,000).
 - Two or three choices, at least one with no `cost`.
 - Use `chk(s, stat, need)` with `odds(s, stat, need)` as the hint for stat checks, and `R.p(x)` with a hint like "A gamble." for luck.

@@ -23,3 +23,4 @@ We will keep the game in one `index.html` with plain JavaScript and CSS, no fram
 - The only external requests are two Google Fonts. The page works if they fail to load.
 - The file is long (about 940 lines). Sections are marked with comments, and [architecture.md](../architecture.md) maps them.
 - Moving stories into a data file is planned and needs its own ADR. It must keep the no-build property or replace this ADR.
+- Amended by [ADR 0009](0009-story-data-file.md): the story cards now live in `stories.js`, loaded by a plain `<script>` tag next to `index.html`. Still no framework and no build, and opening `index.html` from disk still works.

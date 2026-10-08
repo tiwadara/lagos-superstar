@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-// Checks every story card in index.html against the rules in docs/story-writing-guide.md.
+// Checks every story card in stories.js against the rules in docs/story-writing-guide.md.
 // Usage: node lint-stories.js
 // Exits with code 1 if any error is found. Warnings are printed but do not fail.
-const fs = require('fs');
-const path = require('path');
+const { loadGame } = require('./load-game');
 
-const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, CAREERS, STAGE_NAMES, CAST };')();
+const G = loadGame(['newGame', 'val', 'EVENTS', 'FOLLOWUPS', 'CAREERS', 'STAGE_NAMES', 'CAST']);
 
 const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note', 'rel'];
 const MAX_WORDS = 60;
