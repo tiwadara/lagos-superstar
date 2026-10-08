@@ -28,6 +28,8 @@ Each week:
 
 After week 26 comes the December show and an ending.
 
+Above the moves, one line tells the player what to do next (`nextGoal`). The most urgent need wins: debt, then rent due this week, then the first song, the first release, a song waiting in the vault, low hype, and finally the next song.
+
 ## Moves
 
 | Move | Moves used | Cost | What it does |

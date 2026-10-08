@@ -2,11 +2,12 @@
 // Plays thousands of games with no browser, to check balance after you add or
 // change stories.
 //
-// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check]
+// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check] [--seed=N]
 //   --stories  how simulated players pick story choices (default random, "all" prints every strategy)
 //   --detail   also print cash and fans by week, and each story's effect on games
 //   --check    play random and money-chasing story choices, compare with TARGETS below and with
 //              balance-baseline.json, and exit with code 1 if anything is missed. About 40 seconds.
+//   --seed=N   play the same games every run, for repeatable results
 //   --save-baseline  play the same games as --check and write balance-baseline.json. Use 4000 games per row
 //              (node simulate.js 4000 --save-baseline) so the baseline itself is steady.
 const fs = require('fs');
@@ -29,8 +30,8 @@ const players = {
     const since = s.lastRelease ? s.week - s.lastRelease : 9;
     if (s.vault.length && since >= 2 && can(s, 'release')) return can(s, 'promo') && s.money > 150000 ? 'promo' : 'release';
     if (!s.vault.length && s.energy >= 2 && can(s, 'record') && s.skill >= 30) return 'record';
-    if (s.skill < 55 && Math.random() < 0.5) return 'rehearse';
-    const r = Math.random();
+    if (s.skill < 55 && G.R.f() < 0.5) return 'rehearse';
+    const r = G.R.f();
     if (r < 0.3) return 'post';
     if (r < 0.55) return 'show';
     if (r < 0.7 && can(s, 'network')) return 'network';
@@ -44,7 +45,7 @@ const players = {
   },
   // Never earns money, never records.
   lazy(s) {
-    return s.energy <= 0 ? null : Math.random() < 0.5 ? 'post' : 'rehearse';
+    return s.energy <= 0 ? null : G.R.f() < 0.5 ? 'post' : 'rehearse';
   }
 };
 
@@ -117,6 +118,8 @@ const SAVE = args.find(a => a.startsWith('--save-baseline'));
 const BASELINE_FILE = SAVE && SAVE.includes('=') ? SAVE.split('=')[1] : path.join(__dirname, 'balance-baseline.json');
 const N = parseInt(args.find(a => /^\d+$/.test(a)), 10) || 2000;
 const DETAIL = args.includes('--detail');
+const seedArg = args.find(a => a.startsWith('--seed='));
+if (seedArg) G.R.seed(parseInt(seedArg.split('=')[1], 10) || 0);
 const storyArg = (args.find(a => a.startsWith('--stories=')) || '--stories=random').split('=')[1];
 const strategies = CHECK || SAVE ? ['random', 'money'] : storyArg === 'all' ? Object.keys(pickers) : [storyArg];
 if (!strategies.every(k => pickers[k])) { console.error('Unknown --stories value. Use random, money, purist or all.'); process.exit(1); }

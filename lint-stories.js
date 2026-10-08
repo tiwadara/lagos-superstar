@@ -7,10 +7,11 @@ const path = require('path');
 
 const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, DECEMBER, STAGE_NAMES, BACKGROUNDS };')();
+const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, DECEMBER, STAGE_NAMES, BACKGROUNDS, CAST };')();
 
 const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note'];
 const MAX_WORDS = 60;
+const castOf = e => e.cast === undefined ? [] : [].concat(e.cast);
 const RUNS = 30; // each choice is run this many times per test player, to reach both sides of checks and gambles
 
 const errors = [], warnings = [];
@@ -108,6 +109,9 @@ for (const { e, kind } of cards) {
     for (const f of waits) if (!flagsSet.has(f)) err(id, `waits for flag "${f}", but no choice sets it`);
   }
 
+  // Cast: each cast tag (a string or a list) must point at a character in CAST.
+  for (const c of castOf(e)) if (!G.CAST[c]) err(id, `cast "${c}" is not in CAST`);
+
   // 5. Draw fields: weight is a positive number, group is a name. Only EVENTS are drawn at random.
   if (e.weight !== undefined && !(typeof e.weight === 'number' && e.weight > 0)) err(id, `weight must be a number above 0, not ${JSON.stringify(e.weight)}`);
   if (e.group !== undefined && (typeof e.group !== 'string' || !e.group)) err(id, 'group must be a name, such as \'scam\'');
@@ -116,6 +120,12 @@ for (const { e, kind } of cards) {
   // 6. Names players can be given are never used in stories.
   const allText = [e.title, G.val(e.who, basePlayers[0]), e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
   for (const name of G.STAGE_NAMES) if (allText.includes(name)) err(id, `uses "${name}", which is in STAGE_NAMES. Players can be given that name`);
+}
+
+// Every cast member appears in at least one story.
+for (const [cid, c] of Object.entries(G.CAST)) {
+  if (!cards.some(({ e }) => castOf(e).includes(cid))) warn('CAST', `${c.name} (${cid}) is in no story`);
+  if (G.STAGE_NAMES.includes(c.name)) err('CAST', `${c.name} is also in STAGE_NAMES`);
 }
 
 // A group with one story shuts nothing out.

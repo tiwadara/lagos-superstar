@@ -9,6 +9,7 @@ node simulate.js                     # 2,000 games per row, a few seconds
 node simulate.js 500                 # quicker while iterating
 node simulate.js 1000 --detail       # also cash and fans by week, and each story's effect
 node simulate.js 1000 --stories=all  # compare story-choice strategies
+node simulate.js 500 --seed=42       # the same results every run, to compare two versions exactly
 ```
 
 The simulator plays every combination of three kinds of player and three starting backgrounds. It prints how often each ending happens, with the median fans and money at the end.
