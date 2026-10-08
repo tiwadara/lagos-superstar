@@ -9,6 +9,7 @@ The content framework for The Next Lagos Star. Read this before writing or editi
 - **Specific over general.** Name the place, the price, the time: "Lekki-Epe Expressway, 11pm", "₦20,000", "day nine".
 - **Let characters talk.** One line of quoted speech, in their own voice, often does more than a paragraph. Pidgin and Yoruba belong in dialogue, kept short enough for any reader to follow.
 - **Funny, not mocking.** Laugh at the system (the checkpoint, the loan app, the 47-page contract), not at people for being poor, from a place, or how they speak.
+- **Use the player's name.** Write `{n}` anywhere in story text, results, openers or slogans, and the game shows the player's stage name there. Use it once per story at most, in a character's mouth: “{n}, abi?”.
 - **Plain English in labels.** Choice labels are actions in the imperative: "Pay the chairman", "Call him out online".
 
 ## Fiction rule
