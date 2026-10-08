@@ -118,3 +118,15 @@ Renaming any of them, adding a `<script>` block before the game script, or using
 | Pull request | Netlify builds a deploy preview, if previews are on for the project |
 
 Netlify publishes the whole repo root, but `_redirects` returns 404 for everything except the game: the docs, tools, baseline and repo settings. When you add a new file or folder at the root that players don't need, add a line for it to `_redirects`.
+
+## Player feedback
+
+The end screen, and a "Send feedback" link in the game's footer, show a short playtest form (`feedbackHtml` and `sendFeedback` in the interface block). It posts to `/` as a [Netlify Form](https://docs.netlify.com/forms/setup/) named `feedback`. Netlify only accepts the post because of the hidden copy of the form near the top of `<body>`, which it reads at deploy time. If you add, rename or remove a field, change both, or Netlify drops the field.
+
+| Field | Filled by |
+| --- | --- |
+| `duration`, `confused`, `favourite`, `again`, `anything` | The player. All optional, but at least one is needed to send |
+| `ending`, `background`, `week`, `fans` | The game, automatically |
+| `company` | Nobody. A honeypot field: bots fill it and Netlify discards those posts |
+
+The form never sends the player's stage name. Free text can still contain anything a player types. Read submissions in Netlify under the `next-lagos-star` project, then Forms, then `feedback`. Form detection is enabled for the project.

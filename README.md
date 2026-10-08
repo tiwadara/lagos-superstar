@@ -14,6 +14,8 @@ The site is hosted on Netlify, which serves the repo root as it is, with no buil
 
 Progress is saved in the browser's local storage, so each player's game stays on their own device.
 
+Players can send playtest feedback from the end screen or the "Send feedback" link during a game. Submissions arrive in Netlify under the project's Forms tab. See [docs/architecture.md](docs/architecture.md#player-feedback).
+
 ## How a game goes
 
 - Each week you get 3 moves: rehearse, record, release, post content, play a show, show face on the Island, side hustle, or buy promo.
