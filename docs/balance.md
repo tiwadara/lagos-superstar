@@ -32,7 +32,7 @@ The simulator plays every combination of three kinds of player and three startin
 
 ## Targets
 
-These are the design targets, with random story choices, for every starting background. `node simulate.js --check` tests them on every pull request. The numbers live in `TARGETS` at the top of `simulate.js`. Change both places together, and say why in the pull request.
+These are the design targets for the music career, with random story choices, for every starting background. Each target in `TARGETS` names its career, and rows in `balance-baseline.json` are keyed `career/player/background/strategy`, so a new career brings its own targets ([ADR 0008](adr/0008-careers-share-one-engine.md)). `node simulate.js --check` tests them on every pull request. The numbers live in `TARGETS` at the top of `simulate.js`. Change both places together, and say why in the pull request.
 
 | Player | Target | Checked as |
 | --- | --- | --- |

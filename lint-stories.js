@@ -7,7 +7,7 @@ const path = require('path');
 
 const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, DECEMBER, STAGE_NAMES, BACKGROUNDS, CAST };')();
+const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, CAREERS, STAGE_NAMES, CAST };')();
 
 const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note'];
 const MAX_WORDS = 60;
@@ -19,19 +19,24 @@ const err = (id, msg) => errors.push(`${id}: ${msg}`);
 const warn = (id, msg) => warnings.push(`${id}: ${msg}`);
 const words = t => String(t).trim().split(/\s+/).length;
 const clone = s => JSON.parse(JSON.stringify(s));
+// All the words on a card, including inside its functions.
+const cardText = e => [e.title, typeof e.who === 'function' ? e.who.toString() : e.who, e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
 
 const cards = [
   ...G.EVENTS.map(e => ({ e, kind: 'event' })),
   ...G.FOLLOWUPS.map(e => ({ e, kind: 'follow-up' })),
-  { e: G.DECEMBER, kind: 'december' }
+  ...[...new Set(Object.values(G.CAREERS).map(c => c.december))].map(e => ({ e, kind: 'december' }))
 ];
+const careerIds = Object.keys(G.CAREERS);
+// Which test players a card is for: its careers, or every career when it has no careers tag.
+const forCard = (e, players) => players.filter(s => !e.careers || e.careers.includes(s.career));
 
-// Test players: weak and broke, strong and rich, for each background, late enough that most stories fit.
+// Test players: weak and broke, strong and rich, for each career and background, late enough that most stories fit.
 function testPlayers(extraFlags) {
   const out = [];
-  for (const bg of Object.keys(G.BACKGROUNDS)) {
+  for (const cid of careerIds) for (const bg of Object.keys(G.CAREERS[cid].backgrounds)) {
     for (const level of [0, 100]) {
-      const s = G.newGame('Test', bg);
+      const s = G.newGame('Test', bg, cid);
       Object.assign(s, { week: 10, fans: level ? 200000 : 50, money: level ? 5000000 : 0, skill: level, hype: level, cred: level, links: level });
       Object.assign(s.flags, extraFlags);
       out.push(s);
@@ -63,7 +68,7 @@ function runChoice(e, c, s) {
 }
 const basePlayers = testPlayers({});
 for (const { e } of cards) {
-  for (const s of basePlayers) {
+  for (const s of forCard(e, basePlayers)) {
     const choices = G.val(e.choices, s);
     if (Array.isArray(choices)) for (const c of choices) if (typeof c.run === 'function') runChoice(e, c, s);
   }
@@ -77,13 +82,13 @@ for (const { e, kind } of cards) {
   for (const field of ['title', 'who', 'text', 'choices']) if (e[field] === undefined) err(id, `missing ${field}`);
   if (kind !== 'december' && typeof e.when !== 'function') err(id, 'missing when(s)');
 
-  for (const s of [...basePlayers, ...flaggedPlayers]) {
+  for (const s of forCard(e, [...basePlayers, ...flaggedPlayers])) {
     const text = G.val(e.text, s);
     if (typeof text !== 'string' || !text.trim()) { err(id, 'text is empty'); break; }
     if (words(text) > MAX_WORDS) { warn(id, `story text is ${words(text)} words; aim for 25 to 45`); break; }
   }
 
-  const lists = [...basePlayers, ...flaggedPlayers].map(s => ({ s, choices: G.val(e.choices, s) }));
+  const lists = forCard(e, [...basePlayers, ...flaggedPlayers]).map(s => ({ s, choices: G.val(e.choices, s) }));
   for (const { s, choices } of lists) {
     if (!Array.isArray(choices) || !choices.length) { err(id, 'choices must be a non-empty list'); break; }
     if (!choices.some(c => !c.cost)) { err(id, 'every choice costs money, so a broke player is stuck. Add a free choice'); break; }
@@ -112,13 +117,23 @@ for (const { e, kind } of cards) {
   // Cast: each cast tag (a string or a list) must point at a character in CAST.
   for (const c of castOf(e)) if (!G.CAST[c]) err(id, `cast "${c}" is not in CAST`);
 
+  // Careers: a careers tag lists career ids. With more than one career, untagged stories are city stories that
+  // every career draws, so they should not lean on one career's words.
+  if (e.careers !== undefined) {
+    if (!Array.isArray(e.careers) || !e.careers.length) err(id, 'careers must be a list of career ids, such as [\'music\']');
+    else for (const c of e.careers) if (!G.CAREERS[c]) err(id, `career "${c}" is not in CAREERS`);
+  } else if (careerIds.length > 1 && kind !== 'december') {
+    const said = cardText(e).match(/\b(songs?|singles?|streams?|studio|record(ed|ing)?|verses?|hook|sing(s|ing)?|sang|musician|music)\b/i);
+    if (said) warn(id, `has no careers tag but says "${said[0]}". Tag it, or word it for every career`);
+  }
+
   // 5. Draw fields: weight is a positive number, group is a name. Only EVENTS are drawn at random.
   if (e.weight !== undefined && !(typeof e.weight === 'number' && e.weight > 0)) err(id, `weight must be a number above 0, not ${JSON.stringify(e.weight)}`);
   if (e.group !== undefined && (typeof e.group !== 'string' || !e.group)) err(id, 'group must be a name, such as \'scam\'');
   if (kind !== 'event' && (e.weight !== undefined || e.group !== undefined)) warn(id, 'weight and group only change how EVENTS are drawn, so they do nothing here');
 
   // 6. Names players can be given are never used in stories.
-  const allText = [e.title, G.val(e.who, basePlayers[0]), e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
+  const allText = cardText(e);
   for (const name of G.STAGE_NAMES) if (allText.includes(name)) err(id, `uses "${name}", which is in STAGE_NAMES. Players can be given that name`);
 }
 

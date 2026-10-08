@@ -16,10 +16,12 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | Part | What is in it | Touches the page? |
 | --- | --- | --- |
 | Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
-| Content | `BACKGROUNDS`, `TIERS`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
+| Content | `TIER_MINS`, `tierOf`, `nextTier`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
 | Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
-| Weekly moves | `venue`, the `ACTIONS` list, `actionState`, `doAction` | No |
-| Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `pickEvent`, `choiceState`, `choose` | No |
+| Weekly moves | `venue`, the `ACTIONS` list, `movesOf`, `nextGoal`, `actionState`, `doAction` | No |
+| Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `forCareer`, `pickEvent`, `choiceState`, `choose` | No |
+| End of week | `streamGross`, `PEOPLE_COST`, `wrapWeek` | No |
+| Careers | `CAREERS`, `careerOf`, and each career's own functions, such as `musicVenue`, `musicGoal` and `musicFinale` | No |
 | End of week | `wrapWeek` | No |
 | Endings | `tally`, `debtEnding`, `finale`, `newGame` | No |
 | Interface | everything inside `if (typeof document !== 'undefined')` | Yes |
@@ -28,12 +30,12 @@ Everything above the interface block must stay free of `document`, `window` and 
 
 ## Game state
 
-`newGame(name, backgroundId)` returns one plain object. Everything about a game lives in it, and it is saved to `localStorage` as JSON after every change.
+`newGame(name, backgroundId, careerId)` returns one plain object. `careerId` defaults to `'music'`. Everything about a game lives in it, and it is saved to `localStorage` as JSON after every change.
 
 | Field | Meaning |
 | --- | --- |
 | `v` | Save format version. Currently `1` |
-| `name`, `bg` | Stage name and starting background id |
+| `name`, `career`, `bg` | Stage name, career id and starting background id. A save without `career` is a music save |
 | `week` | Current week, 1 to 26. Becomes 27 after the last `wrapWeek` |
 | `energy`, `energyNext` | Moves left this week, and the change to next week's moves |
 | `money`, `fans` | Cash in naira (can go negative) and fan count |
@@ -47,6 +49,28 @@ Everything above the interface block must stay free of `document`, `window` and 
 | `over` | `null` while playing, then the ending object from `finale` or `debtEnding` |
 
 Changing the shape of this object can break saved games. If a change is not backwards compatible, bump `v` and either migrate old saves or let `load()` ignore them. `load()` currently ignores anything where `v !== 1`.
+
+## Careers
+
+The game is built for several careers in one city ([ADR 0008](adr/0008-careers-share-one-engine.md)). The week, money, stats, stat checks, deals, story picking, the cast and saves are shared. Each career in `CAREERS` brings the rest:
+
+| Key | What it is | Music |
+| --- | --- | --- |
+| `name`, `desc`, `lede`, `opener`, `how` | Title screen and first-week text | "Music artist", the one-room in Yaba |
+| `backgrounds` | Starting backgrounds, with starting stats | Choir kid, street freestyler, Island kid |
+| `tiers` | Names for the five fan tiers in `TIER_MINS` | Upcoming artist up to Lagos star |
+| `verdicts` | The ending line for each tier, top first | |
+| `venue(s)` | The venue ladder for shows and promo prices | Open mic in Yaba up to your concert in Ikeja |
+| `goal(s)` | The "Next:" line on the game screen | `musicGoal` |
+| `income` | Weekly income: a label, `gross(s)` and the line shown before the first release | Streams, from `streamGross` |
+| `december` | The week 22 booking card | `DECEMBER` |
+| `finaleShow(s, booking)` | The December show text and its effects | `musicFinale` |
+| `debtVerdict` | The ending line when Sapa wins | The bank job in Marina |
+| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs and deals" |
+
+Moves in `ACTIONS` with `careers: ['music']` belong to that career; untagged moves (post content, show face, side hustle) are shared. Stories work the same way. The game state keeps released and unreleased work in `songs` and `vault` for every career.
+
+The title screen asks for the career only when there is more than one. To add a career, add an entry to `CAREERS`, tag its moves and stories, and give `simulate.js` a sensible player for it.
 
 ## How a week runs
 
@@ -71,7 +95,7 @@ flowchart TD
 
 `wrapWeek` does the weekly bookkeeping in this order:
 
-1. Stream income from `streamGross`: `fans × 1.5 × min(1, w ÷ 3)`, where `w` adds up each released song's weight `max(0.1, 0.9 ^ weeks since release) × (0.5 + quality ÷ 100)`. Paid through `takeHome`.
+1. The career's weekly income, `CAREERS[id].income`. For music that is streams, from `streamGross`: `fans × 1.5 × min(1, w ÷ 3)`, where `w` adds up each released song's weight `max(0.1, 0.9 ^ weeks since release) × (0.5 + quality ÷ 100)`. Paid through `takeHome`.
 2. Food, data and transport: −₦12,000.
 3. Your people: `PEOPLE_COST` by tier, from ₦15,000 a week at Buzzing.
 4. Rent on every fourth week.
@@ -106,11 +130,11 @@ While the sheet is open, the rest of the page is `inert`, so keyboard focus stay
 
 `simulate.js` extracts the first `<script>…</script>` block with a regex and evaluates it with `new Function`, then reads these names:
 
-`newGame`, `doAction`, `actionState`, `pickEvent`, `choose`, `choiceState`, `wrapWeek`, `finale`, `val`, `R`, `ACTIONS`, `BACKGROUNDS`, `TOTAL_WEEKS`
+`newGame`, `doAction`, `actionState`, `pickEvent`, `choose`, `choiceState`, `wrapWeek`, `finale`, `val`, `R`, `ACTIONS`, `CAREERS`, `TOTAL_WEEKS`, `EVENTS`, `FOLLOWUPS`
 
 Renaming any of them, adding a `<script>` block before the game script, or using the page above the interface block will break the simulator. Run `node simulate.js 200` after any change to the rules.
 
-`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `STAGE_NAMES`, `BACKGROUNDS` and `CAST`. Both run on every pull request in `.github/workflows/check.yml`.
+`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `CAREERS`, `STAGE_NAMES` and `CAST`. Both run on every pull request in `.github/workflows/check.yml`.
 
 ## Deploys
 

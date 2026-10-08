@@ -28,6 +28,7 @@ Brands and places that are not people (Kogbagidi Herbal Bitters, Amebo Central, 
 | --- | --- |
 | `id` | Unique, camelCase, a word or two: `areaboys`, `jingleFallout` |
 | `cast` | Optional. The `CAST` id of the character in the story, or a list of ids |
+| `careers` | Optional. The careers the story belongs to, such as `['music']`. Leave it out for a city story that any career can draw, and then avoid one career's words: with more than one career, `node lint-stories.js` warns about words like "song" or "studio" in untagged stories |
 | `title` | One to four words. A headline, not a summary: "Checkpoint", "Stems hostage" |
 | `who` | Who is speaking or where we are: "Your landlord, at your door, 7am" |
 | `when` | When the story may appear. Always set a minimum week. Use fan thresholds that line up with the tiers (1,000, 10,000, 100,000) |
