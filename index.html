@@ -90,6 +90,7 @@ details li{margin-top:4px}
 
 /* Game screen */
 .tier{padding:10px 16px 0;font-size:.92rem;color:var(--muted)}
+.goal{margin:0 16px 10px;font-size:.95rem}
 .tier b{color:var(--ink)}
 .meters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px 16px 0}
 .meter-top{display:flex;justify-content:space-between;align-items:baseline;font-size:.82rem;color:var(--muted)}
@@ -385,6 +386,17 @@ const ACTIONS=[
       return {text:'Three blogs and a dancer with 300k followers post you on the same day. Totally organic.',fx:{hype:R.i(15,22)}};
     }}
 ];
+// One line telling the player what to do next (#59). Most urgent first.
+function nextGoal(s){
+  const due=s.week%4===0,studio=s.flags.freeStudio?0:40000;
+  if(s.money<0)return 'Get out of debt. SapaLoan adds 10% every week you owe.';
+  if(due&&s.money<s.rent)return 'Find '+naira(s.rent-s.money)+' more before rent is due this week.';
+  if(!s.vault.length&&!s.songs.length)return s.money>=studio?'Record your first song. It takes 2 moves.':'Raise '+naira(studio)+' for a studio session. Try a side hustle.';
+  if(s.vault.length&&!s.songs.length)return 'Release your first song so people can hear it.';
+  if(s.vault.length&&(!s.lastRelease||s.week-s.lastRelease>=2))return 'Release “'+s.vault.slice().sort((a,b)=>b.q-a.q)[0].title+'” from your vault.';
+  if(s.hype<15)return 'Build hype before your next release. Post content or play a show.';
+  return s.money>=studio?'Record your next song while the hype is up.':'Play shows and hustle to fund your next studio session.';
+}
 function actionState(s,a){
   const cost=val(a.cost,s)||0;
   if(a.can&&!a.can(s))return {ok:false,why:a.why,cost};
@@ -858,6 +870,7 @@ if(typeof document!=='undefined'){
       '<section class="meters" aria-label="Your stats">'+meters.map(([l,v])=>'<div><div class="meter-top"><span>'+l+'</span><b>'+v+'</b></div><div class="bar"><i style="width:'+v+'%"></i></div></div>').join('')+'</section>'+
       '<section class="latest'+(ui.fresh?' fresh':'')+'" aria-live="polite"><p>'+h(latest?latest.text:s.opener)+'</p>'+(latest?chipsHtml(latest.chips):'')+'</section>'+
       '<div class="moves-head"><span class="moves-left">'+pipsHtml(s.energy,Math.max(3,s.energy))+' '+(s.energy===1?'1 move left':s.energy+' moves left')+'</span><span class="rent'+(weeksToRent===0?' soon':'')+'">'+rentTxt+'</span></div>'+
+      '<p class="goal"><b>Next:</b> '+h(nextGoal(s))+'</p>'+
       (s.week===1?'<p class="tip">Tap a move to spend it. When you are done, end the week and see what Lagos does next.</p>':'')+
       '<section class="acts" aria-label="Moves">'+ACTIONS.map(a=>{
         const st=actionState(s,a);
