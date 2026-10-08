@@ -15,7 +15,7 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 
 | Part | What is in it | Touches the page? |
 | --- | --- | --- |
-| Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R`, `clamp`, `val`, money and fan formatting | No |
+| Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
 | Content | `BACKGROUNDS`, `TIERS`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
 | Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `actionState`, `doAction` | No |
@@ -100,6 +100,8 @@ flowchart TD
 
 The interface keeps a small `ui` object (`screen`, `sheet`, `prev`, `fresh`, `confirmRestart`) and redraws with `innerHTML` on every change. There are three screens (title, game, end) and one bottom sheet (`#sheet`) that shows a story, then the result and the end-of-week summary. Clicks are handled in one listener on `document` using `data-act`, `data-choice` and `data-cmd` attributes.
 
+While the sheet is open, the rest of the page is `inert`, so keyboard focus stays inside the sheet. When it closes, `sheetFocus` moves focus to what changed: the week's opening line or the ending title. Keep both behaviours when changing the sheet. Buttons and links are at least 44px tall, and `prefers-reduced-motion` turns every animation off. The pages pass an axe-core audit (WCAG 2.1 AA) in light and dark mode.
+
 ## What the simulator depends on
 
 `simulate.js` extracts the first `<script>…</script>` block with a regex and evaluates it with `new Function`, then reads these names:
@@ -117,4 +119,16 @@ Renaming any of them, adding a `<script>` block before the game script, or using
 | Push or merge to `main` | Netlify deploys to https://next-lagos-star.netlify.app in a few seconds |
 | Pull request | Netlify builds a deploy preview, if previews are on for the project |
 
-Netlify publishes the whole repo root, so `README.md`, `simulate.js` and `docs/` are public too. The repo is public, so nothing secret is exposed, but see the tooling epic for tidying this.
+Netlify publishes the whole repo root, but `_redirects` returns 404 for everything except the game: the docs, tools, baseline and repo settings. When you add a new file or folder at the root that players don't need, add a line for it to `_redirects`.
+
+## Player feedback
+
+The end screen, and a "Send feedback" link in the game's footer, show a short playtest form (`feedbackHtml` and `sendFeedback` in the interface block). It posts to `/` as a [Netlify Form](https://docs.netlify.com/forms/setup/) named `feedback`. Netlify only accepts the post because of the hidden copy of the form near the top of `<body>`, which it reads at deploy time. If you add, rename or remove a field, change both, or Netlify drops the field.
+
+| Field | Filled by |
+| --- | --- |
+| `duration`, `confused`, `favourite`, `again`, `anything` | The player. All optional, but at least one is needed to send |
+| `ending`, `background`, `week`, `fans` | The game, automatically |
+| `company` | Nobody. A honeypot field: bots fill it and Netlify discards those posts |
+
+The form never sends the player's stage name. Free text can still contain anything a player types. Read submissions in Netlify under the `next-lagos-star` project, then Forms, then `feedback`. Form detection is enabled for the project.
