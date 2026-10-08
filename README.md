@@ -96,6 +96,13 @@ Effects you can put in `fx`:
 | `flag: { name: value }` | Remember something for later stories |
 | `note` | Extra line shown to the player |
 
+Two optional fields change how often a story is drawn:
+
+| Field | Meaning |
+| --- | --- |
+| `weight` | How likely the story is, against the others that fit. Defaults to 1. `2` comes up twice as often, `0.5` half as often |
+| `group` | A name shared by stories that exclude each other. Once one has appeared, the rest of its group never does in that game |
+
 To make a choice depend on a stat, use `chk(s, 'links', 30)` inside `run` and `odds(s, 'links', 30)` as the hint, so the player sees their chances.
 
 To make a choice come back later, set a flag with the current week, then add a card to `FOLLOWUPS` that waits for it:

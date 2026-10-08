@@ -112,7 +112,12 @@ for (const { e, kind } of cards) {
   // Cast: each cast tag (a string or a list) must point at a character in CAST.
   for (const c of castOf(e)) if (!G.CAST[c]) err(id, `cast "${c}" is not in CAST`);
 
-  // 5. Names players can be given are never used in stories.
+  // 5. Draw fields: weight is a positive number, group is a name. Only EVENTS are drawn at random.
+  if (e.weight !== undefined && !(typeof e.weight === 'number' && e.weight > 0)) err(id, `weight must be a number above 0, not ${JSON.stringify(e.weight)}`);
+  if (e.group !== undefined && (typeof e.group !== 'string' || !e.group)) err(id, 'group must be a name, such as \'scam\'');
+  if (kind !== 'event' && (e.weight !== undefined || e.group !== undefined)) warn(id, 'weight and group only change how EVENTS are drawn, so they do nothing here');
+
+  // 6. Names players can be given are never used in stories.
   const allText = [e.title, G.val(e.who, basePlayers[0]), e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
   for (const name of G.STAGE_NAMES) if (allText.includes(name)) err(id, `uses "${name}", which is in STAGE_NAMES. Players can be given that name`);
 }
@@ -122,6 +127,11 @@ for (const [cid, c] of Object.entries(G.CAST)) {
   if (!cards.some(({ e }) => castOf(e).includes(cid))) warn('CAST', `${c.name} (${cid}) is in no story`);
   if (G.STAGE_NAMES.includes(c.name)) err('CAST', `${c.name} is also in STAGE_NAMES`);
 }
+
+// A group with one story shuts nothing out.
+const groups = {};
+for (const e of G.EVENTS) if (e.group) (groups[e.group] = groups[e.group] || []).push(e.id);
+for (const [g, ids] of Object.entries(groups)) if (ids.length < 2) warn(ids[0], `is the only story in group "${g}", so the group does nothing`);
 
 // Report.
 for (const w of warnings) console.log('warning  ' + w);

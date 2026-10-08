@@ -58,7 +58,7 @@ flowchart TD
   C --> D{pickEvent}
   D -- week 22 --> E[DECEMBER booking]
   D -- a follow-up is due --> F[First due FOLLOWUP]
-  D -- always in week 1, then 85% chance, if any fit --> G[Random eligible EVENT]
+  D -- always in week 1, then 85% chance, if any fit --> G[Weighted random EVENT, one per group]
   D -- otherwise --> H[Quiet week]
   E & F & G --> I[Player picks a choice: choose]
   I --> J[wrapWeek]
@@ -72,7 +72,7 @@ flowchart TD
 `wrapWeek` does the weekly bookkeeping in this order:
 
 1. Stream income from `streamGross`: `fans × 1.5 × min(1, w ÷ 3)`, where `w` adds up each released song's weight `max(0.1, 0.9 ^ weeks since release) × (0.5 + quality ÷ 100)`. Paid through `takeHome`.
-2. Food, data and transport: −₦15,000.
+2. Food, data and transport: −₦12,000.
 3. Your people: `PEOPLE_COST` by tier, from ₦15,000 a week at Buzzing.
 4. Rent on every fourth week.
 5. Aunty Bisi adds 2 links a week if she manages you.

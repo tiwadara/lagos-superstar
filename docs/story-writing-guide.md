@@ -33,6 +33,8 @@ Brands and places that are not people (Kogbagidi Herbal Bitters, Amebo Central, 
 | `when` | When the story may appear. Always set a minimum week. Use fan thresholds that line up with the tiers (1,000, 10,000, 100,000) |
 | `text` | The situation, ending on the decision. A string, or a function of `s` when it changes with the player's state |
 | `choices` | Two or three. A list, or a function of `s` that returns one |
+| `weight` | Optional, `EVENTS` only. How likely the story is against others that fit. Default 1. Raise it for the stories that make a game, such as `feature`, and lower it for rare ones |
+| `group` | Optional, `EVENTS` only. Stories with the same group exclude each other in one game: `fuel` and `flood` are both `'crisis'`, `ponzi` and `deposit` are both `'scam'` |
 
 Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` that returns `{ text, fx }`. The `fx` keys are listed in the [README](../README.md#adding-a-story).
 
@@ -47,7 +49,7 @@ Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` t
 
 ## Follow-ups
 
-To make a choice come back later, set a flag to the current week (`flag: { jingle: s.week }`) and add a card to `FOLLOWUPS` whose `when` waits for it (`s.flags.jingle && s.week >= s.flags.jingle + 3`). Follow-ups jump the queue: the first one that is due always shows before a random story. Keep the wait between 2 and 6 weeks so it lands before December.
+To make a choice come back later, set a flag to the current week (`flag: { jingle: s.week }`) and add a card to `FOLLOWUPS` whose `when` waits for it (`s.flags.jingle && s.week >= s.flags.jingle + 3`). Follow-ups jump the queue: the first one that is due always shows before a random story. Keep the wait between 2 and 6 weeks so it lands before December. Deals and bags should come back with a cost that touches fans or hype, not only cash or cred (see [balance](balance.md#known-problems)).
 
 ## Sizing rewards
 

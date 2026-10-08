@@ -59,7 +59,7 @@ Above the moves, one line tells the player what to do next (`nextGoal`). The mos
 | Each week | Amount |
 | --- | --- |
 | Streams | Up to `fans × 1.5`, mostly from recent releases. Each song's share fades 10% a week, down to a 10% tail. Full pay needs about three fresh songs |
-| Food, data, transport | −₦15,000 |
+| Food, data, transport | −₦12,000 |
 | Your people (stylist, security, cousins) | −₦15,000 when Buzzing, −₦50,000 when Next rated, −₦120,000 when a Lagos star |
 | Rent, every fourth week | −₦100,000 to start. The landlord may raise it |
 | Debt | 10% interest a week while cash is below zero, plus −3 street cred and −2 links |
@@ -97,7 +97,7 @@ Stories are self-contained cards, not a decision tree ([ADR 0005](adr/0005-stori
 
 1. In week 22, the December booking.
 2. Otherwise, the first follow-up whose condition is met.
-3. Otherwise, a random story whose `when` condition fits the player: always in week 1, and with an 85% chance after that.
+3. Otherwise, a random story whose `when` condition fits the player: always in week 1, and with an 85% chance after that. Stories with a higher `weight` come up more often, and once a story from a `group` has appeared, the rest of that group is out for the game. A sensible player sees about half of the stories in a game, so each game draws a different set.
 
 Each story appears once per game. How to write one is in the [story-writing guide](story-writing-guide.md).
 
