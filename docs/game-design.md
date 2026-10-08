@@ -111,7 +111,7 @@ December is a yearly finale ([ADR 0010](adr/0010-seasons-carry-over.md)). After 
 | Hype | Back to 0 |
 | Money and debt, skill, street cred, links, rent | Stay as they are |
 | Deals and what is still owed to the label | Stay. A deal signed in season 1 keeps taking its cut |
-| Songs and roles, the vault, flags | Stay. Older songs keep fading, and a follow-up due after December arrives in January |
+| Songs and roles, the vault, flags, how people feel about you | Stay. Older songs keep fading, and a follow-up due after December arrives in January |
 | Stories | Most can happen again. Follow-ups, deal offers and the stories that start a follow-up happen once per career |
 | Season length, December booking, tier thresholds | Unchanged. The result names the tier reached that year, and says whether it is up or down on last year |
 

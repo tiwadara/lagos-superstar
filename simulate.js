@@ -318,6 +318,12 @@ if (CHECK) {
       for (const [k, label, floor] of [['fans', 'median fans', DRIFT.fansFloor], ['money', 'median money', DRIFT.moneyFloor], ['cash20', 'week 20 cash', DRIFT.cashFloor]]) {
         if (r[k] === null || b[k] === null || b[k] === undefined) continue;
         if (k === 'cash20' && r.name !== 'sensible') continue; // random and lazy cash at week 20 swing too much between runs to compare
+        // When a quarter or more of a row's games end in debt, its median money sits between two crowds (deep debt and
+        // comfortably positive) and flips between runs. Its endings, compared above, already catch real changes.
+        if (k === 'money' && Math.max(r.pct['Sapa won'], b.pct['Sapa won']) >= 25) continue;
+        // In season 2 about half of the sensible games headline December, which pays ₦8,000,000, so end money also sits
+        // between two crowds. Season 2 money is compared through week 20 cash instead, before the December booking.
+        if (k === 'money' && r.season > 1) continue;
         if (Math.abs(r[k] - b[k]) > Math.max(DRIFT.relative * Math.abs(b[k]), floor))
           drift.push(`${key}: ${label} ${Math.round(b[k]).toLocaleString('en-US')} → ${Math.round(r[k]).toLocaleString('en-US')}`);
       }

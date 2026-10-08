@@ -18,7 +18,7 @@ node simulate.js 500 --career=actor    # one career only
 node simulate.js 500 --seasons=2    # play each game on into a second season
 node test-saves.js    # old saves still load and play on; also runs on every pull request
 node lint-stories.js    # checks every story card; also runs on every pull request
-node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor
+node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [season] [--rel=kobo:-5]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor; --rel sets a relationship first
 ```
 
 There is no install, build or test runner. Open `index.html` in a browser to play.

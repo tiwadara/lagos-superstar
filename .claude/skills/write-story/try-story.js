@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 // Runs every choice of one story against a test player and prints what each does.
-// Usage: node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [season]
+// Usage: node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [season] [--rel=id:n,id:n]
 // Example: node .claude/skills/write-story/try-story.js police 6 2000 150000 street
+// --rel sets how CAST characters feel about the player first, such as --rel=kobo:-5 or --rel=sapa:3,mum:-2
 const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..', '..', '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, choose, choiceState, val, EVENTS, FOLLOWUPS, DECEMBER, CAREERS };')();
+const G = new Function(source + '\nreturn { newGame, choose, choiceState, val, EVENTS, FOLLOWUPS, DECEMBER, CAREERS, CAST };')();
 
-const [id, week = 10, fans = 5000, money = 500000, bg = 'choir', season = 1] = process.argv.slice(2);
-if (!id) { console.error('Usage: node try-story.js <story id> [week] [fans] [money] [background] [season]'); process.exit(1); }
+const argv = process.argv.slice(2);
+const [id, week = 10, fans = 5000, money = 500000, bg = 'choir', season = 1] = argv.filter(a => !a.startsWith('--'));
+const relArg = (argv.find(a => a.startsWith('--rel=')) || '').slice(6);
+const rels = relArg ? Object.fromEntries(relArg.split(',').map(p => { const [k, n] = p.split(':'); return [k, +n]; })) : {};
+if (!id) { console.error('Usage: node try-story.js <story id> [week] [fans] [money] [background] [season] [--rel=id:n,id:n]'); process.exit(1); }
 const all = [...G.EVENTS, ...G.FOLLOWUPS, ...new Set(Object.values(G.CAREERS).map(c => c.december))];
 const ev = all.find(e => e.id === id);
 if (!ev) { console.error('No story with id "' + id + '". Ids: ' + all.map(e => e.id).join(', ')); process.exit(1); }
@@ -25,10 +29,14 @@ const career = Object.keys(G.CAREERS).find(c => G.CAREERS[c].backgrounds[bg]);
 if (!career) { console.error('No background "' + bg + '". Backgrounds: ' + Object.values(G.CAREERS).map(c => Object.keys(c.backgrounds).join(', ')).join('; ')); process.exit(1); }
 const s = G.newGame('Test', bg, career);
 Object.assign(s, { week: +week, fans: +fans, money: +money, season: +season });
+for (const [k, n] of Object.entries(rels)) {
+  if (!G.CAST[k] || isNaN(n)) { console.error('Bad --rel "' + k + ':' + n + '". Use a CAST id and a number: ' + Object.keys(G.CAST).join(', ')); process.exit(1); }
+  s.rel[k] = n;
+}
 // A story with fromSeason waits for that season (docs/adr/0010-seasons-carry-over.md).
 const early = ev.fromSeason > s.season;
 const fits = !early && (ev.when ? ev.when(s) : true);
-console.log(`"${G.val(ev.title, s)}" (${ev.id}) for a ${bg} player (${career}) in week ${week} with ${fans} fans and ₦${money}`);
+console.log(`"${G.val(ev.title, s)}" (${ev.id}) for a ${bg} player (${career}) in week ${week} with ${fans} fans and ₦${money}` + (relArg ? `, relationships ${relArg}` : ''));
 console.log('Can appear now: ' + (fits ? 'yes' : early ? 'no, it waits for season ' + ev.fromSeason + ' (pass the season after the background)' : 'no, its when() is false for this player'));
 console.log('Story: ' + G.val(ev.text, s) + '\n');
 

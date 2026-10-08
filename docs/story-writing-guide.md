@@ -46,6 +46,8 @@ Keep the music version exactly as it was when you add an actor version to an exi
 | `choices` | Two or three. A list, or a function of `s` that returns one |
 | `weight` | Optional, `EVENTS` only. How likely the story is against others that fit. Default 1. Raise it for the stories that make a game, such as `feature`, and lower it for rare ones |
 | `group` | Optional, `EVENTS` only. Stories with the same group exclude each other in one game: `fuel` and `flood` are both `'crisis'`, `ponzi` and `deposit` are both `'scam'` |
+| `once` | Optional, `EVENTS` only. `'career'` makes the story happen once per career instead of once per season ([ADR 0010](adr/0010-seasons-carry-over.md)). Needed on any story that sets a flag a follow-up waits for, and on deal offers. The linter checks the first |
+| `fromSeason` | Optional. The first season the story can appear in, such as `2` for a story about last year |
 
 Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` that returns `{ text, fx }`. The `fx` keys are listed in the [README](../README.md#adding-a-story).
 
@@ -57,6 +59,12 @@ Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` t
 4. **Show the odds.** If a choice depends on a stat, use `chk(s, stat, need)` in `run` and `odds(s, stat, need)` as the `hint`. If it is pure luck, say so in the hint: "A gamble."
 5. **Say what it costs in the hint.** "Costs you a day.", "₦4,500,000 now. 30% of you, forever."
 6. **Every outcome gets its own line of story.** A result is never just numbers.
+
+## Relationships
+
+Every character in `CAST` remembers how you treated them. A choice that clearly helps or hurts someone adds `rel: { sapa: 2 }` or `rel: { kobo: -3 }` to its `fx`, and the player sees “Beatz by Sapa will remember that kindly” or “Lil Kobo will hold that against you”. Keep the values small, ±1 to ±3: a relationship runs from −10 to 10, and it should take a few stories to make an ally or an enemy. `node lint-stories.js` fails on an id that is not in `CAST`.
+
+Read it back with `rel(s, 'sapa')`, which is 0 for anyone the player has not met. Use it to give friends and enemies a different story, such as `text: s => rel(s, 'sapa') >= 2 ? ... : ...`, or different choices, or in `when` to wait for a relationship. Let a neutral player see something sensible too. Try each side with `try-story.js` and `--rel=sapa:3`.
 
 ## Follow-ups
 

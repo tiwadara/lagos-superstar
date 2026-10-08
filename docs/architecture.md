@@ -17,7 +17,7 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | --- | --- | --- |
 | Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
 | Content | `TIER_MINS`, `tierOf`, `nextTier`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
-| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `REACH` and `apply` (applies effects) | No |
+| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `rel` and `relWord` (relationships), `REACH` and `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `movesOf`, `nextGoal`, `actionState`, `doAction` | No |
 | Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `forCareer`, `pickEvent`, `choiceState`, `choose` | No |
 | End of week | `streamGross`, `PEOPLE_COST`, `wrapWeek` | No |
@@ -45,16 +45,17 @@ Everything above the interface block must stay free of `document`, `window` and 
 | `rent` | Rent due every fourth week. Starts at ₦100,000 |
 | `vault`, `songs` | Recorded songs not yet out, and released songs. Each is `{ title, q }`, released ones also have `week`. A song from an earlier season has a week of 0 or less (see below) |
 | `flags` | Anything a story needs to remember, such as `manager`, `investor`, `signed`, `jingle`, `dec`. A number flag of 26 or less is a week |
+| `rel` | How each `CAST` character feels about you, by id, from −10 to 10. Set by the `rel` effect, read with `rel(s, id)`. Saves from before relationships have no `rel`: `rel(s, id)` reads 0 and `apply` creates it on the first write. The game screen's details panel lists everyone in it under People, as Enemy, Cold, Neutral, Warm or Ally |
 | `seen` | Ids of stories already shown. Each story appears once per season; follow-ups and stories marked `once: 'career'` once per career |
 | `promoWeek`, `lastRelease`, `recoup` | Promo limiter, release fatigue, and the label advance still to pay back |
 | `log`, `opener`, `slogan` | Text shown on the game screen this week |
 | `over` | `null` while playing, then the ending object from `finale` or `debtEnding` |
 
-Changing the shape of this object can break saved games. If a change is not backwards compatible, bump `v` and add a step to `migrate(save)`, which `load()` calls on whatever is in `localStorage`. `migrate` turns a version 1 save into version 2 by adding `season: 1` and an empty `history`, gives a save without `career` the music career, leaves a version 2 save as it is, and returns `null` for anything else, which `load()` then ignores. The storage key is still `next-lagos-star-v1`. `node test-saves.js` loads real version 1 saves, migrates them and plays them on, and runs on every pull request. A field that old saves lack and `migrate` does not fill must be optional in the code.
+Changing the shape of this object can break saved games. If a change is not backwards compatible, bump `v` and add a step to `migrate(save)`, which `load()` calls on whatever is in `localStorage`. `migrate` turns a version 1 save into version 2 by adding `season: 1` and an empty `history`, gives a save without `career` the music career and one without `rel` an empty `rel`, leaves a version 2 save as it is, and returns `null` for anything else, which `load()` then ignores. The storage key is still `next-lagos-star-v1`. `node test-saves.js` loads real version 1 saves, migrates them and plays them on, and runs on every pull request. A field that old saves lack and `migrate` does not fill must be optional in the code.
 
 ### Seasons
 
-`newSeason(s)` starts the next season after a December ending ([ADR 0010](adr/0010-seasons-carry-over.md)). It adds the season to `history`, keeps 80% of fans, sets hype to 0, and keeps money, stats, deals, the vault, songs, flags and rent. Weeks stored in the state (number flags of 26 or less, each song's `week`, and `lastRelease`) move back by `YEAR`, 27 weeks, so "weeks since" keeps counting across the January break, which counts as one week. A follow-up due in December arrives in January. `seen` keeps follow-ups and `once: 'career'` stories and forgets the rest, and the December booking flag `dec` is cleared. A story with `fromSeason: 2` only appears from the second season.
+`newSeason(s)` starts the next season after a December ending ([ADR 0010](adr/0010-seasons-carry-over.md)). It adds the season to `history`, keeps 80% of fans, sets hype to 0, and keeps money, stats, deals, the vault, songs, flags, relationships (`rel`) and rent. Weeks stored in the state (number flags of 26 or less, each song's `week`, and `lastRelease`) move back by `YEAR`, 27 weeks, so "weeks since" keeps counting across the January break, which counts as one week. A follow-up due in December arrives in January. `seen` keeps follow-ups and `once: 'career'` stories and forgets the rest, and the December booking flag `dec` is cleared. A story with `fromSeason: 2` only appears from the second season.
 
 From the second season, `apply` scales every fan gain by `REACH ÷ (REACH + fans)`, with `REACH` at 50,000, so growth levels off instead of compounding without limit. Season 1 never uses it.
 
@@ -76,7 +77,7 @@ The game is built for several careers in one city ([ADR 0008](adr/0008-careers-s
 | `december` | The week 22 booking card | `DECEMBER` | `PREMIERES` |
 | `finaleShow(s, booking)` | The December show text and its effects | `musicFinale` | `actorFinale` |
 | `debtVerdict` | The ending line when Sapa wins | The bank job in Marina | The same job, with impressions |
-| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs and deals" | "acting income", "Your roles and deals" |
+| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs, deals and people" | "acting income", "Your roles, deals and people" |
 
 Moves in `ACTIONS` with `careers: ['music']` belong to that career; untagged moves (post content, show face, side hustle) are shared, and word themselves for each career. Stories work the same way. Text that differs by career uses `by(s, {music: ..., actor: ...})`, which falls back to the music version. A story's `title`, `who`, `text` and `choices` can all be functions of `s`. `putOut(s)` is the shared release maths, used by music releases and actor shoots. The game state keeps released and unreleased work in `songs` and `vault` for every career.
 

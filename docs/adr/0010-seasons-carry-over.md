@@ -36,6 +36,7 @@ Where the table left a choice open, the simplest option was taken:
 - **Fans** drop to 80% at once, when the new season starts, and the opening line says how many drifted away.
 - **Weeks.** Flags, songs and `lastRelease` store week numbers. They move back 27 weeks, so the January break counts as one week. A deal's follow-up that was due after December arrives early in the new year, and songs keep fading from where they were.
 - **Seen stories.** Follow-ups happen once per career. So does every story that starts a follow-up, plus the moving-day stories and the deal offers. The linter makes any story that starts a follow-up carry `once: 'career'`. The December booking resets.
+- **Relationships** (`rel`, #28) carry over unchanged, like flags: people remember you across years. A version 1 save without `rel` gets an empty one.
 - **January** has its own opening line and bus slogans, from each career's `year` entry in `CAREERS`.
 - **New stories.** `fromSeason: 2` keeps a story out of the first year. Three are written: a city story (`harvest`), one for music (`samesound`) and one for the actor (`typecast`).
 - **Growth levels off.** With thresholds unchanged, the second year starts where the first one ended, and fans and money compound: without a limit, the sensible player ended season 2 with hundreds of millions of fans. From the second season every fan gain is scaled by `50,000 ÷ (50,000 + fans)`. The first season is untouched.
