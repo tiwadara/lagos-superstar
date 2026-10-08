@@ -15,7 +15,7 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 
 | Part | What is in it | Touches the page? |
 | --- | --- | --- |
-| Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R`, `clamp`, `val`, money and fan formatting | No |
+| Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
 | Content | `BACKGROUNDS`, `TIERS`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
 | Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `actionState`, `doAction` | No |
