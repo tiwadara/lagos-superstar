@@ -25,6 +25,7 @@ Reuse an existing character where one fits. The cast is the `CAST` list in `inde
 
 ## 3. Write the card
 
+- A story that sets a flag a follow-up waits for needs `once: 'career'`, because follow-ups happen once per career and the story would otherwise come back in a later season without its consequence. The linter checks this. A story that only makes sense from the second year on gets `fromSeason: 2` (see `docs/adr/0010-seasons-carry-over.md`).
 - Decide whose story it is: one career (`careers: ['actor']`), a city story for every career (no tag, wording through `by(s, {music, actor})`), or a crossover. See the Careers section of the guide.
 - Add it to `EVENTS`, or to `FOLLOWUPS` if it waits for a flag. Keep the existing one-line, no-space code style of the surrounding cards.
 - Give `when` a minimum week. Line fan thresholds up with the tiers (1,000, 10,000, 100,000).
@@ -35,10 +36,10 @@ Reuse an existing character where one fits. The cast is the `CAST` list in `inde
 ## 4. Try every choice
 
 ```
-node .claude/skills/write-story/try-story.js <id> [week] [fans] [money] [background]
+node .claude/skills/write-story/try-story.js <id> [week] [fans] [money] [background] [season]
 ```
 
-This prints whether the story can appear for that player, and what each choice does, including both sides of a check or gamble. Try a player who meets `when` and one who is broke (money `0`). The background picks the career: `choir`, `street` or `island` for music, `drama`, `skits` or `theatre` for the actor. Try a city story or crossover with both. Fix anything that warns: a duplicate id, or every choice costing money.
+This prints whether the story can appear for that player, and what each choice does, including both sides of a check or gamble. Try a player who meets `when` and one who is broke (money `0`). The background picks the career: `choir`, `street` or `island` for music, `drama`, `skits` or `theatre` for the actor. Try a city story or crossover with both. For a second-season story (`fromSeason: 2`), add the season after the background, such as `choir 2`. Fix anything that warns: a duplicate id, or every choice costing money.
 
 Then check every card at once:
 

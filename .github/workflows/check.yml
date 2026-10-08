@@ -21,6 +21,9 @@ jobs:
       - name: Check every story card
         run: node lint-stories.js
 
+      - name: Check old saves still load and play on
+        run: node test-saves.js
+
       - name: Play the game and check balance
         shell: bash
         run: node simulate.js --check | tee simulate-output.txt

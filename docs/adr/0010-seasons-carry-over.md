@@ -1,6 +1,6 @@
 # 0010. A season ends in December and the career carries on
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-08
 - **Issue:** #32
 
@@ -28,6 +28,18 @@ At the end of each December, the player sees their season result and can start t
 | Tier thresholds | Unchanged. The season result names the tier reached that year |
 
 The game still ends early on "Sapa won". The player can also retire, which shows a career summary across all seasons.
+
+### How it was built (#33, #34)
+
+Where the table left a choice open, the simplest option was taken:
+
+- **Fans** drop to 80% at once, when the new season starts, and the opening line says how many drifted away.
+- **Weeks.** Flags, songs and `lastRelease` store week numbers. They move back 27 weeks, so the January break counts as one week. A deal's follow-up that was due after December arrives early in the new year, and songs keep fading from where they were.
+- **Seen stories.** Follow-ups happen once per career. So does every story that starts a follow-up, plus the moving-day stories and the deal offers. The linter makes any story that starts a follow-up carry `once: 'career'`. The December booking resets.
+- **January** has its own opening line and bus slogans, from each career's `year` entry in `CAREERS`.
+- **New stories.** `fromSeason: 2` keeps a story out of the first year. Three are written: a city story (`harvest`), one for music (`samesound`) and one for the actor (`typecast`).
+- **Growth levels off.** With thresholds unchanged, the second year starts where the first one ended, and fans and money compound: without a limit, the sensible player ended season 2 with hundreds of millions of fans. From the second season every fan gain is scaled by `50,000 ÷ (50,000 + fans)`. The first season is untouched.
+- **Retiring.** "Play again" ends the career. The end screen lists every season so far, which is the career summary.
 
 ## Consequences
 

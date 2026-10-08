@@ -17,13 +17,14 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | --- | --- | --- |
 | Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
 | Content | `TIER_MINS`, `tierOf`, `nextTier`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
-| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
+| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `REACH` and `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `movesOf`, `nextGoal`, `actionState`, `doAction` | No |
 | Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `forCareer`, `pickEvent`, `choiceState`, `choose` | No |
 | End of week | `streamGross`, `PEOPLE_COST`, `wrapWeek` | No |
 | Careers | `CAREERS`, `careerOf`, and each career's own functions, such as `musicVenue`, `musicGoal` and `musicFinale` | No |
 | End of week | `wrapWeek` | No |
 | Endings | `tally`, `debtEnding`, `finale`, `newGame` | No |
+| Seasons and saves | `YEAR`, `newSeason` (starts the next season), `migrate` (upgrades an older save) | No |
 | Interface | everything inside `if (typeof document !== 'undefined')` | Yes |
 
 Everything above the interface block must stay free of `document`, `window` and `localStorage`. That rule is what lets `simulate.js` run the rules in Node.
@@ -34,21 +35,28 @@ Everything above the interface block must stay free of `document`, `window` and 
 
 | Field | Meaning |
 | --- | --- |
-| `v` | Save format version. Currently `1` |
+| `v` | Save format version. Currently `2` |
 | `name`, `career`, `bg` | Stage name, career id and starting background id. A save without `career` is a music save |
-| `week` | Current week, 1 to 26. Becomes 27 after the last `wrapWeek` |
+| `season`, `history` | The season, from 1, and one entry per finished season: `{ season, title, rank, fans, money }` |
+| `week` | Current week of the season, 1 to 26. Becomes 27 after the last `wrapWeek` |
 | `energy`, `energyNext` | Moves left this week, and the change to next week's moves |
 | `money`, `fans` | Cash in naira (can go negative) and fan count |
 | `skill`, `hype`, `cred`, `links` | Stats from 0 to 100 |
 | `rent` | Rent due every fourth week. Starts at ₦100,000 |
-| `vault`, `songs` | Recorded songs not yet out, and released songs. Each is `{ title, q }`, released ones also have `week` |
-| `flags` | Anything a story needs to remember, such as `manager`, `investor`, `signed`, `jingle`, `dec` |
-| `seen` | Ids of stories already shown. Each story appears once per game |
+| `vault`, `songs` | Recorded songs not yet out, and released songs. Each is `{ title, q }`, released ones also have `week`. A song from an earlier season has a week of 0 or less (see below) |
+| `flags` | Anything a story needs to remember, such as `manager`, `investor`, `signed`, `jingle`, `dec`. A number flag of 26 or less is a week |
+| `seen` | Ids of stories already shown. Each story appears once per season; follow-ups and stories marked `once: 'career'` once per career |
 | `promoWeek`, `lastRelease`, `recoup` | Promo limiter, release fatigue, and the label advance still to pay back |
 | `log`, `opener`, `slogan` | Text shown on the game screen this week |
 | `over` | `null` while playing, then the ending object from `finale` or `debtEnding` |
 
-Changing the shape of this object can break saved games. If a change is not backwards compatible, bump `v` and either migrate old saves or let `load()` ignore them. `load()` currently ignores anything where `v !== 1`.
+Changing the shape of this object can break saved games. If a change is not backwards compatible, bump `v` and add a step to `migrate(save)`, which `load()` calls on whatever is in `localStorage`. `migrate` turns a version 1 save into version 2 by adding `season: 1` and an empty `history`, gives a save without `career` the music career, leaves a version 2 save as it is, and returns `null` for anything else, which `load()` then ignores. The storage key is still `next-lagos-star-v1`. `node test-saves.js` loads real version 1 saves, migrates them and plays them on, and runs on every pull request. A field that old saves lack and `migrate` does not fill must be optional in the code.
+
+### Seasons
+
+`newSeason(s)` starts the next season after a December ending ([ADR 0010](adr/0010-seasons-carry-over.md)). It adds the season to `history`, keeps 80% of fans, sets hype to 0, and keeps money, stats, deals, the vault, songs, flags and rent. Weeks stored in the state (number flags of 26 or less, each song's `week`, and `lastRelease`) move back by `YEAR`, 27 weeks, so "weeks since" keeps counting across the January break, which counts as one week. A follow-up due in December arrives in January. `seen` keeps follow-ups and `once: 'career'` stories and forgets the rest, and the December booking flag `dec` is cleared. A story with `fromSeason: 2` only appears from the second season.
+
+From the second season, `apply` scales every fan gain by `REACH ÷ (REACH + fans)`, with `REACH` at 50,000, so growth levels off instead of compounding without limit. Season 1 never uses it.
 
 ## Careers
 
@@ -92,6 +100,7 @@ flowchart TD
   J --> K{Over?}
   K -- debt past ₦400,000 --> L[debtEnding: Sapa won]
   K -- week > 26 --> M[finale: December show and ending tier]
+  M -- Start next season --> N[newSeason: week 1 of a new year] --> A
   K -- no --> A
 ```
 
@@ -132,11 +141,11 @@ While the sheet is open, the rest of the page is `inert`, so keyboard focus stay
 
 `simulate.js` extracts the first `<script>…</script>` block with a regex and evaluates it with `new Function`, then reads these names:
 
-`newGame`, `doAction`, `actionState`, `pickEvent`, `choose`, `choiceState`, `wrapWeek`, `finale`, `val`, `R`, `ACTIONS`, `CAREERS`, `TOTAL_WEEKS`, `EVENTS`, `FOLLOWUPS`
+`newGame`, `newSeason`, `doAction`, `actionState`, `pickEvent`, `choose`, `choiceState`, `wrapWeek`, `finale`, `val`, `R`, `ACTIONS`, `CAREERS`, `TOTAL_WEEKS`, `EVENTS`, `FOLLOWUPS`
 
 Renaming any of them, adding a `<script>` block before the game script, or using the page above the interface block will break the simulator. Run `node simulate.js 200` after any change to the rules.
 
-`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `CAREERS`, `STAGE_NAMES` and `CAST`. Both run on every pull request in `.github/workflows/check.yml`.
+`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `CAREERS`, `STAGE_NAMES` and `CAST`. `test-saves.js` reads the same names as the simulator, plus `migrate`. All three run on every pull request in `.github/workflows/check.yml`.
 
 ## Deploys
 

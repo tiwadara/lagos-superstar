@@ -4,7 +4,7 @@ The design framework for The Next Lagos Star: what the game is trying to be, and
 
 ## What the game is
 
-A life simulation of the Lagos entertainment industry. You arrive with a one-room in Yaba, a cracked phone and a voice, and you have 26 weeks to get on a Detty December stage.
+A life simulation of the Lagos entertainment industry. You arrive with a one-room in Yaba, a cracked phone and a voice, and you have 26 weeks to get on a Detty December stage. December ends the season, not the career: you can play on into the next year with everything you built and everything you signed.
 
 The current build has one career, the music artist. More careers are planned in the same city, with the same cast.
 
@@ -26,7 +26,7 @@ Each week:
 2. **End the week.** A story usually happens and you choose how to handle it.
 3. **Pay the bills.** Streams pay in, food and transport go out, your people cost money once you are famous, hype cools, and rent is due every fourth week.
 
-After week 26 comes the December show and an ending.
+After week 26 comes the December show and the season's result. From there the player can start the next season or play again from scratch.
 
 Above the moves, one line tells the player what to do next (`nextGoal`). The most urgent need wins: debt, then rent due this week, then the first song, the first release, a song waiting in the vault, low hype, and finally the next song.
 
@@ -99,7 +99,27 @@ Stories are self-contained cards, not a decision tree ([ADR 0005](adr/0005-stori
 2. Otherwise, the first follow-up whose condition is met.
 3. Otherwise, a random story whose `when` condition fits the player: always in week 1, and with an 85% chance after that. Stories with a higher `weight` come up more often, and once a story from a `group` has appeared, the rest of that group is out for the game. A sensible player sees about half of the stories in a game, so each game draws a different set.
 
-Each story appears once per game. How to write one is in the [story-writing guide](story-writing-guide.md).
+Each story appears once per season. Follow-ups, and the stories that start them, appear once per career (`once: 'career'`). How to write one is in the [story-writing guide](story-writing-guide.md).
+
+## Seasons
+
+December is a yearly finale ([ADR 0010](adr/0010-seasons-carry-over.md)). After a December ending, "Start season 2" begins a new year with the same name and career. "Sapa won" still ends the career.
+
+| Next season | What happens |
+| --- | --- |
+| Fans | 80% stay. The rest drift away over the holidays |
+| Hype | Back to 0 |
+| Money and debt, skill, street cred, links, rent | Stay as they are |
+| Deals and what is still owed to the label | Stay. A deal signed in season 1 keeps taking its cut |
+| Songs and roles, the vault, flags | Stay. Older songs keep fading, and a follow-up due after December arrives in January |
+| Stories | Most can happen again. Follow-ups, deal offers and the stories that start a follow-up happen once per career |
+| Season length, December booking, tier thresholds | Unchanged. The result names the tier reached that year, and says whether it is up or down on last year |
+
+January has its own opening line and bus slogans ("January. Everyone is broke."). Three stories only happen from the second season: your mother's church harvest (`harvest`), a radio presenter who says your new songs sound like last year's (`samesound`), and a producer who only wants you for last year's character (`typecast`).
+
+Because the second year starts with tens of thousands of fans, growth would compound without limit. From the second season, every fan gain is scaled down the more fans you already have (`REACH` in [architecture](architecture.md#seasons)). A good first year usually becomes Next rated in the second, and Lagos star stays rare. See [balance](balance.md#season-2).
+
+The end screen lists every season so far, so the career has a summary however long it runs.
 
 ## Careers
 
