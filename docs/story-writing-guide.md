@@ -22,13 +22,23 @@ When a story features a cast member, tag the card with `cast: 'bisi'`, or a list
 
 Brands and places that are not people (Kogbagidi Herbal Bitters, Amebo Central, Eko Rave, SapaLoan, the talent show Who Get Voice?) are not in `CAST`, but check the stories before reusing or inventing one.
 
+## Careers
+
+There are two careers, music and the Nollywood actor, in the same city with the same cast. When you write a story, decide whose it is:
+
+- **One career.** Tag it `careers: ['actor']`. Write it in that career's words.
+- **A city story.** Leave the tag off. Every career can draw it, so wherever the words differ, give both: `text: s => by(s, { music: 'Your show tonight is off.', actor: 'Your play tonight is off.' })`. Labels need `choices: s => [...]` so the label can use `by` too.
+- **A crossover.** Tag it with both careers and tell the same event from each side. Mama Tobi wants the musician's song and the actor's face for the same skit (`skit`); Zaddy Blaze wants a verse from one and a love interest for his video from the other (`feature`); the Chief wants a jingle or an advert (`jingle`). Use `choices: s => by(s, { music: [...], actor: [...] })` when the choices differ.
+
+Keep the music version exactly as it was when you add an actor version to an existing card. The music game must not change.
+
 ## Anatomy of a card
 
 | Field | Rules |
 | --- | --- |
 | `id` | Unique, camelCase, a word or two: `areaboys`, `jingleFallout` |
 | `cast` | Optional. The `CAST` id of the character in the story, or a list of ids |
-| `careers` | Optional. The careers the story belongs to, such as `['music']`. Leave it out for a city story that any career can draw, and then avoid one career's words: with more than one career, `node lint-stories.js` warns about words like "song" or "studio" in untagged stories |
+| `careers` | Optional. The careers the story belongs to, such as `['music']` or `['actor']`. Leave it out for a city story that any career can draw. `node lint-stories.js` warns when an actor would read a music word, like "song" or "studio", in an untagged story |
 | `title` | One to four words. A headline, not a summary: "Checkpoint", "Stems hostage" |
 | `who` | Who is speaking or where we are: "Your landlord, at your door, 7am" |
 | `when` | When the story may appear. Always set a minimum week. Use fan thresholds that line up with the tiers (1,000, 10,000, 100,000) |

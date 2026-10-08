@@ -11,6 +11,8 @@ const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, CAR
 
 const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note'];
 const MAX_WORDS = 60;
+// Words that only make sense for a musician. Untagged city stories should not show them to other careers.
+const MUSIC_WORDS = /\b(songs?|singles?|streams?|studio|record(ed|ing)?|verses?|hook|sing(s|ing|er|ers)?|sang|musician|music|album)\b/i;
 const castOf = e => e.cast === undefined ? [] : [].concat(e.cast);
 const RUNS = 30; // each choice is run this many times per test player, to reach both sides of checks and gambles
 
@@ -20,7 +22,7 @@ const warn = (id, msg) => warnings.push(`${id}: ${msg}`);
 const words = t => String(t).trim().split(/\s+/).length;
 const clone = s => JSON.parse(JSON.stringify(s));
 // All the words on a card, including inside its functions.
-const cardText = e => [e.title, typeof e.who === 'function' ? e.who.toString() : e.who, e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
+const cardText = e => [String(e.title), typeof e.who === 'function' ? e.who.toString() : e.who, e.text.toString(), JSON.stringify(e.choices, (k, v) => typeof v === 'function' ? v.toString() : v)].join(' ');
 
 const cards = [
   ...G.EVENTS.map(e => ({ e, kind: 'event' })),
@@ -123,8 +125,16 @@ for (const { e, kind } of cards) {
     if (!Array.isArray(e.careers) || !e.careers.length) err(id, 'careers must be a list of career ids, such as [\'music\']');
     else for (const c of e.careers) if (!G.CAREERS[c]) err(id, `career "${c}" is not in CAREERS`);
   } else if (careerIds.length > 1 && kind !== 'december') {
-    const said = cardText(e).match(/\b(songs?|singles?|streams?|studio|record(ed|ing)?|verses?|hook|sing(s|ing)?|sang|musician|music)\b/i);
-    if (said) warn(id, `has no careers tag but says "${said[0]}". Tag it, or word it for every career`);
+    // What a player in another career actually reads: the title, who, text, labels, hints and every result.
+    for (const s of forCard(e, [...basePlayers, ...flaggedPlayers]).filter(s => s.career !== 'music')) {
+      const seen = [G.val(e.title, s), G.val(e.who, s), G.val(e.text, s)];
+      for (const c of G.val(e.choices, s) || []) {
+        seen.push(c.label, G.val(c.hint, s) || '');
+        for (const res of runChoice(e, c, s)) seen.push(res.text || '', (res.fx && res.fx.note) || '');
+      }
+      const said = seen.join(' ').match(MUSIC_WORDS);
+      if (said) { warn(id, `has no careers tag, and ${/^[aeiou]/i.test(s.career) ? "an" : "a"} ${s.career} player reads "${said[0]}". Tag it, or word it with by(s, {...})`); break; }
+    }
   }
 
   // 5. Draw fields: weight is a positive number, group is a name. Only EVENTS are drawn at random.

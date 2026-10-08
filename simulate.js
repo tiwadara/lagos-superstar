@@ -2,7 +2,8 @@
 // Plays thousands of games with no browser, to check balance after you add or
 // change stories.
 //
-// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check] [--seed=N]
+// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check] [--seed=N] [--career=ID]
+//   --career   play one career only (default every career in CAREERS)
 //   --stories  how simulated players pick story choices (default random, "all" prints every strategy)
 //   --detail   also print cash and fans by week, and each story's effect on games
 //   --check    play random and money-chasing story choices, compare with TARGETS below and with
@@ -19,23 +20,31 @@ const G = new Function(source + `
   return { newGame, doAction, actionState, pickEvent, choose, choiceState,
            wrapWeek, finale, val, R, ACTIONS, CAREERS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
 
+// Every career needs an entry in MOVES below.
 const can = (s, id) => G.actionState(s, G.ACTIONS.find(a => a.id === id)).ok;
 
 // Three kinds of player. Add your own to test a strategy.
+// Each career's own moves, by the part they play, so the players below play every career the same way.
+const MOVES = {
+  music: { rehearse: 'rehearse', record: 'record', release: 'release', show: 'show', promo: 'promo' },
+  actor: { rehearse: 'lines', record: 'audition', release: 'shoot', show: 'stage', promo: 'publicist' }
+};
+const mv = s => MOVES[s.career];
 const players = {
   // Plans releases, keeps rent covered, mixes the other moves.
   sensible(s) {
-    if (s.energy <= 0) return can(s, 'promo') && s.money > 300000 && s.vault.length ? 'promo' : null;
+    const m = mv(s);
+    if (s.energy <= 0) return can(s, m.promo) && s.money > 300000 && s.vault.length ? m.promo : null;
     if (s.money < 60000 && can(s, 'hustle')) return 'hustle';
     const since = s.lastRelease ? s.week - s.lastRelease : 9;
-    if (s.vault.length && since >= 2 && can(s, 'release')) return can(s, 'promo') && s.money > 150000 ? 'promo' : 'release';
-    if (!s.vault.length && s.energy >= 2 && can(s, 'record') && s.skill >= 30) return 'record';
-    if (s.skill < 55 && G.R.f() < 0.5) return 'rehearse';
+    if (s.vault.length && since >= 2 && can(s, m.release)) return can(s, m.promo) && s.money > 150000 ? m.promo : m.release;
+    if (!s.vault.length && s.energy >= 2 && can(s, m.record) && s.skill >= 30) return m.record;
+    if (s.skill < 55 && G.R.f() < 0.5) return m.rehearse;
     const r = G.R.f();
     if (r < 0.3) return 'post';
-    if (r < 0.55) return 'show';
+    if (r < 0.55) return m.show;
     if (r < 0.7 && can(s, 'network')) return 'network';
-    return r < 0.85 ? 'rehearse' : 'hustle';
+    return r < 0.85 ? m.rehearse : 'hustle';
   },
   // Taps anything that is available.
   random(s) {
@@ -45,7 +54,7 @@ const players = {
   },
   // Never earns money, never records.
   lazy(s) {
-    return s.energy <= 0 ? null : G.R.f() < 0.5 ? 'post' : 'rehearse';
+    return s.energy <= 0 ? null : G.R.f() < 0.5 ? 'post' : mv(s).rehearse;
   }
 };
 
@@ -76,16 +85,18 @@ const pickers = {
 // At 2,000 games per row, results move between runs by up to about ±3 points on endings and ±₦15,000 on cash,
 // so the cash floor allows ₦25,000 below zero.
 // To change a target on purpose, edit it here and in docs/balance.md in the same pull request, and say why.
-const TARGETS = [
-  { career: 'music', player: 'sensible', rule: 'ends Buzzing or Next rated', min: 90, value: r => r.pct['Buzzing'] + r.pct['Next rated'] },
-  { career: 'music', player: 'sensible', rule: 'ends Lagos star', max: 5, value: r => r.pct['Lagos star'] },
-  { career: 'music', player: 'sensible', rule: 'ends Sapa won', max: 1, value: r => r.pct['Sapa won'] },
-  { career: 'music', player: 'sensible', rule: 'median cash at week 20', min: -25000, max: 300000, naira: true, value: r => r.cash20 },
-  { career: 'music', player: 'random', rule: 'ends Buzzing or Area champion', min: 60, value: r => r.pct['Buzzing'] + r.pct['Area champion'] },
-  { career: 'music', player: 'random', rule: 'ends Sapa won', min: 2, max: 25, value: r => r.pct['Sapa won'] },
-  { career: 'music', player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
-  { career: 'music', player: 'lazy', rule: 'ends Sapa won or Area champion', min: 80, value: r => r.pct['Sapa won'] + r.pct['Area champion'] }
+const RULES = [
+  { player: 'sensible', rule: 'ends Buzzing or Next rated', min: 90, value: r => r.pct['Buzzing'] + r.pct['Next rated'] },
+  { player: 'sensible', rule: 'ends Lagos star', max: 5, value: r => r.pct['Lagos star'] },
+  { player: 'sensible', rule: 'ends Sapa won', max: 1, value: r => r.pct['Sapa won'] },
+  { player: 'sensible', rule: 'median cash at week 20', min: -25000, max: 300000, naira: true, value: r => r.cash20 },
+  { player: 'random', rule: 'ends Buzzing or Area champion', min: 60, value: r => r.pct['Buzzing'] + r.pct['Area champion'] },
+  { player: 'random', rule: 'ends Sapa won', min: 2, max: 25, value: r => r.pct['Sapa won'] },
+  { player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
+  { player: 'lazy', rule: 'ends Sapa won or Area champion', min: 80, value: r => r.pct['Sapa won'] + r.pct['Area champion'] }
 ];
+// Every career has the same targets for now, so its ending names line up with music's ranks (ENDINGS below).
+const TARGETS = ['music', 'actor'].flatMap(career => RULES.map(r => ({ career, ...r })));
 
 // How far --check lets the game move from balance-baseline.json before it fails. Measured noise is well inside these.
 const DRIFT = { endingPoints: 7, relative: 0.3, fansFloor: 2000, moneyFloor: 100000, cashFloor: 45000 };
@@ -128,7 +139,10 @@ if ((CHECK || SAVE) && args.some(a => a.startsWith('--stories='))) { console.err
 // Endings by rank: the five tiers top first (named here as music names them), then the debt ending.
 const ENDINGS = ['Lagos star', 'Next rated', 'Buzzing', 'Area champion', 'Upcoming artist', 'Sapa won'];
 // With more than one career, every row starts with its career.
-const CAREER_IDS = Object.keys(G.CAREERS), MULTI = CAREER_IDS.length > 1;
+const careerArg = (args.find(a => a.startsWith('--career=')) || '').split('=')[1];
+if (careerArg && !G.CAREERS[careerArg]) { console.error('Unknown --career. Use ' + Object.keys(G.CAREERS).join(' or ') + '.'); process.exit(1); }
+if (careerArg && (CHECK || SAVE)) { console.error('--check and --save-baseline play every career. Leave out --career.'); process.exit(1); }
+const CAREER_IDS = careerArg ? [careerArg] : Object.keys(G.CAREERS), MULTI = CAREER_IDS.length > 1;
 const cl = c => MULTI ? c.padEnd(8) : '';
 const pct = n => ((n / N) * 100).toFixed(1).padStart(5) + '%';
 const at = (sorted, p) => sorted[Math.floor(sorted.length * p)];
@@ -142,9 +156,11 @@ console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stor
 const weekly = [];   // rows for --detail
 const rows = [];     // rows for --check
 const storyStats = {}; // story id -> { in: {fans, money}, out: {fans, money} }, sensible player only
-const storyIds = [...G.EVENTS, ...G.FOLLOWUPS].map(e => e.id).concat('december');
-const eventIds = new Set(G.EVENTS.map(e => e.id));
-const poolSeen = []; // share of EVENTS each sensible game sees, with the first strategy
+// Only the stories the careers being played can draw.
+const playable = e => !e.careers || e.careers.some(c => CAREER_IDS.includes(c));
+const storyIds = [...G.EVENTS, ...G.FOLLOWUPS].filter(playable).map(e => e.id).concat('december');
+const eventIds = new Set(G.EVENTS.filter(playable).map(e => e.id));
+const poolSeen = {}; // career -> stories from EVENTS each sensible game sees, with the first strategy
 
 for (const strategy of strategies) {
   for (const career of CAREER_IDS) {
@@ -158,7 +174,7 @@ for (const strategy of strategies) {
         if (!Number.isFinite(s.fans) || !Number.isFinite(s.money)) throw new Error('Broken numbers in a ' + background + ' game');
         count[ENDINGS[s.over.rank]]++;
         fans.push(s.fans); money.push(s.money);
-        if (name === 'sensible' && strategy === strategies[0]) poolSeen.push(s.seen.filter(id => eventIds.has(id)).length);
+        if (name === 'sensible' && strategy === strategies[0]) (poolSeen[career] = poolSeen[career] || []).push(s.seen.filter(id => eventIds.has(id)).length);
         for (const w of CHECKPOINTS) if (byWeek[w]) { weeks[w].money.push(byWeek[w].money); weeks[w].fans.push(byWeek[w].fans); }
         if (DETAIL && name === 'sensible') {
           for (const id of storyIds) {
@@ -179,8 +195,11 @@ for (const strategy of strategies) {
   }
 }
 
-const seenMid = median(poolSeen);
-console.log(`\nA sensible player sees a median of ${seenMid} of the ${eventIds.size} stories in EVENTS (${Math.round(seenMid / eventIds.size * 100)}%), plus any follow-ups.`);
+console.log('');
+for (const career of CAREER_IDS) {
+  const seenMid = median(poolSeen[career]), size = G.EVENTS.filter(e => !e.careers || e.careers.includes(career)).length;
+  console.log(`A sensible ${MULTI ? career + ' ' : ''}player sees a median of ${seenMid} of the ${size} stories in EVENTS (${Math.round(seenMid / size * 100)}%), plus any follow-ups.`);
+}
 
 if (DETAIL) {
   console.log('\nMedian cash and fans at the end of each week (games still running that week)\n');

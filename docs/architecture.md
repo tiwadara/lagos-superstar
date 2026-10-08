@@ -54,21 +54,23 @@ Changing the shape of this object can break saved games. If a change is not back
 
 The game is built for several careers in one city ([ADR 0008](adr/0008-careers-share-one-engine.md)). The week, money, stats, stat checks, deals, story picking, the cast and saves are shared. Each career in `CAREERS` brings the rest:
 
-| Key | What it is | Music |
-| --- | --- | --- |
-| `name`, `desc`, `lede`, `opener`, `how` | Title screen and first-week text | "Music artist", the one-room in Yaba |
-| `backgrounds` | Starting backgrounds, with starting stats | Choir kid, street freestyler, Island kid |
-| `tiers` | Names for the five fan tiers in `TIER_MINS` | Upcoming artist up to Lagos star |
-| `verdicts` | The ending line for each tier, top first | |
-| `venue(s)` | The venue ladder for shows and promo prices | Open mic in Yaba up to your concert in Ikeja |
-| `goal(s)` | The "Next:" line on the game screen | `musicGoal` |
-| `income` | Weekly income: a label, `gross(s)` and the line shown before the first release | Streams, from `streamGross` |
-| `december` | The week 22 booking card | `DECEMBER` |
-| `finaleShow(s, booking)` | The December show text and its effects | `musicFinale` |
-| `debtVerdict` | The ending line when Sapa wins | The bank job in Marina |
-| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs and deals" |
+| Key | What it is | Music | Actor |
+| --- | --- | --- | --- |
+| `name`, `desc`, `lede`, `opener`, `how` | Title screen and first-week text | "Music artist", the one-room in Yaba | "Nollywood actor", the same room |
+| `backgrounds` | Starting backgrounds, with starting stats | Choir kid, street freestyler, Island kid | Church drama star, skit maker, Theatre Arts graduate |
+| `moves` | The career's moves, in screen order, shared ones included | Rehearse, record, release, … | Rehearse lines, audition, shoot a role, … |
+| `openers`, `slogans` | The week's opening line and bus slogan, drawn at random | `OPENERS`, `SLOGANS` | `ACTOR_OPENERS`, slogans with one changed |
+| `tiers` | Names for the five fan tiers in `TIER_MINS` | Upcoming artist up to Lagos star | Extra up to Nollywood star |
+| `verdicts` | The ending line for each tier, top first | | |
+| `venue(s)` | The venue ladder for shows and promo prices | Open mic in Yaba up to your concert in Ikeja | Church drama in Ebute Metta up to the Muson Centre |
+| `goal(s)` | The "Next:" line on the game screen | `musicGoal` | `actorGoal` |
+| `income` | Weekly income: a label, `gross(s)` and the line shown before the first release | Streams, from `streamGross` | Streaming licences, half of `streamGross` |
+| `december` | The week 22 booking card | `DECEMBER` | `PREMIERES` |
+| `finaleShow(s, booking)` | The December show text and its effects | `musicFinale` | `actorFinale` |
+| `debtVerdict` | The ending line when Sapa wins | The bank job in Marina | The same job, with impressions |
+| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs and deals" | "acting income", "Your roles and deals" |
 
-Moves in `ACTIONS` with `careers: ['music']` belong to that career; untagged moves (post content, show face, side hustle) are shared. Stories work the same way. The game state keeps released and unreleased work in `songs` and `vault` for every career.
+Moves in `ACTIONS` with `careers: ['music']` belong to that career; untagged moves (post content, show face, side hustle) are shared, and word themselves for each career. Stories work the same way. Text that differs by career uses `by(s, {music: ..., actor: ...})`, which falls back to the music version. A story's `title`, `who`, `text` and `choices` can all be functions of `s`. `putOut(s)` is the shared release maths, used by music releases and actor shoots. The game state keeps released and unreleased work in `songs` and `vault` for every career.
 
 The title screen asks for the career only when there is more than one. To add a career, add an entry to `CAREERS`, tag its moves and stories, and give `simulate.js` a sensible player for it.
 

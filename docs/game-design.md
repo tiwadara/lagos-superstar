@@ -101,6 +101,36 @@ Stories are self-contained cards, not a decision tree ([ADR 0005](adr/0005-stori
 
 Each story appears once per game. How to write one is in the [story-writing guide](story-writing-guide.md).
 
+## Careers
+
+Every career plays in the same Lagos, with the same week, money, stats, cast and city stories ([ADR 0008](adr/0008-careers-share-one-engine.md)). The sections above describe music, the first career. Each career swaps in its own moves, venues, tier names, income, December booking and endings, and draws its own stories alongside the city ones.
+
+### Nollywood actor
+
+You arrive with the same one-room in Yaba and a face the camera likes. The goal is a Christmas premiere.
+
+| Music | Actor | How it differs |
+| --- | --- | --- |
+| Rehearse | Rehearse lines | Same: skill up, less as skill gets higher |
+| Record a song (2 moves, ₦40,000) | Go to an audition (2 moves, ₦30,000 for transport, headshots and a costume) | Adds a role offer. Its quality depends on skill. Sometimes the producer "will call you". The offer still lands, but it is smaller |
+| Release a song | Shoot a role | Plays the best offer. Fans as for a release, plus a role fee of ₦8,000 to ₦200,000 that grows with your fame and the role's quality |
+| Play a show | Stage play | Fans, cred and a small fee. The stage grows with your fans |
+| Buy promo | Hire a publicist | Hype up, once a week, priced by venue size |
+| Post content, show face, side hustle | Same | Shared moves |
+
+| | Actor |
+| --- | --- |
+| Backgrounds | Church drama star from Ebute Metta (skill, no money), skit maker from Ikorodu (cred and fans, little skill), Theatre Arts graduate from Unilag (money and links, little cred) |
+| Venue ladder | Church drama in Ebute Metta, a walk-on in a Lagos series, a supporting role on an Asaba set, the lead in a streaming series |
+| Tiers | Extra, Skit regular, Familiar face, Leading actor, Nollywood star. The fan thresholds are the same as music's |
+| Weekly income | Streaming licences: half of what music streams would pay, from roles already on screen. The rest of an actor's money comes as role fees when you shoot |
+| December | Christmas premieres. Over 100,000 fans, you lead a cinema premiere. Over 15,000, a supporting role. Or pay for a cameo, or make your own short film and screen it in a hall |
+| Endings | The same five tiers and the same debt ending, in the actor's words |
+
+Actor stories cover casting couches (told without anything explicit), unpaid "exposure" roles, Asaba producers who pay later, a director who rewrites your part, a co-star feud, a brand deal, the fictional Golden Clapper awards, dubbing, piracy at Alaba market, and fans who think you are your villain. Three stories are crossovers that the musician and the actor see from different sides: Mama Tobi Comedy's skit, Zaddy Blaze's music video, and the Chief's campaign.
+
+The actor cast adds a director, Ebube "Action" Nwachukwu; an Asaba producer, Alhaja Kudi of Kudi Pictures; and a rival, Princess Ifunanya.
+
 ## Known design issues
 
 These are tracked as epics and issues on GitHub. See the [roadmap](roadmap.md).
