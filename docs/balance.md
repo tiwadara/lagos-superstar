@@ -50,7 +50,7 @@ These are the design targets for the music career, with random story choices, fo
 `node simulate.js --check` takes about 2 minutes. It plays 2,000 games per row, for every career, with random story choices and with the money-chaser, then:
 
 1. Tests the targets above.
-2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass.
+2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass. Median money is not compared for a row where a quarter or more of games end in Sapa won, because its median flips between the debt and the positive games from run to run; that row's endings are still compared.
 
 These limits come from measuring noise. On the unchanged game the check passed 12 runs out of 12. It fails when the investor or jingle payout is doubled, or the side hustle pays double. Smaller changes can stay within the noise. Removing the weekly cost of fame, for example, moves the sensible player's week 20 cash by ₦30,000 to ₦50,000, which the check does not reliably catch. So when you change numbers, still compare the full tables yourself.
 
