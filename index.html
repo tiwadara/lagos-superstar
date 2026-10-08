@@ -70,7 +70,7 @@ h1,h2,h3,p{margin:0}
 .primary{display:block;width:100%;min-height:54px;border:0;border-radius:10px;background:var(--btn);color:var(--btn-ink);font-family:var(--display);font-size:1.05rem;padding:12px 16px}
 .primary:active{transform:translateY(1px)}
 .secondary{display:block;width:100%;min-height:50px;border:2px solid var(--ink);border-radius:10px;background:transparent;font-weight:700;padding:10px 16px}
-.link{background:none;border:0;padding:8px 4px;color:var(--muted);text-decoration:underline;font-size:.9rem}
+.link{background:none;border:0;padding:8px 4px;min-height:44px;color:var(--muted);text-decoration:underline;font-size:.9rem}
 
 /* Title screen form */
 label.field,legend{font-weight:700;display:block;margin-bottom:6px;padding:0}
@@ -84,7 +84,7 @@ fieldset{border:0;margin:0;padding:0}
 .origin span{color:var(--muted);font-size:.92rem}
 .origin:has(input:checked){border-color:var(--ink)}
 details{border-top:1px solid var(--line);padding-top:12px}
-summary{font-weight:700;cursor:pointer;padding:4px 0}
+summary{font-weight:700;cursor:pointer;padding:11px 0}
 details ul{margin:8px 0 0;padding-left:20px}
 details li{margin-top:4px}
 
@@ -926,8 +926,8 @@ if(typeof document!=='undefined'){
   function renderEnd(){
     const o=S.over;
     app.innerHTML=
-      '<header class="danfo danfo-title end-name"><p>'+h(S.name)+', after '+o.week+' weeks</p><h1 class="title">'+h(o.title)+'</h1></header>'+
-      '<div class="danfo danfo-title" style="padding-top:0"><div class="stripe">'+h(S.slogan||'No condition is permanent')+'</div><div class="stripe-thin"></div></div>'+
+      '<header><div class="danfo danfo-title end-name"><p>'+h(S.name)+', after '+o.week+' weeks</p><h1 class="title">'+h(o.title)+'</h1></div>'+
+      '<div class="danfo danfo-title" style="padding-top:0"><div class="stripe">'+h(S.slogan||'No condition is permanent')+'</div><div class="stripe-thin"></div></div></header>'+
       '<main class="pad stack">'+
       '<div><p class="lede">'+h(o.show)+'</p>'+chipsHtml(o.chips)+'</div>'+
       '<p class="verdict">'+h(o.verdict)+'</p>'+
@@ -938,8 +938,20 @@ if(typeof document!=='undefined'){
       '</main>';
   }
 
+  // While a sheet is open, the page behind it is inert, so keyboard focus stays in the sheet.
+  // When it closes, focus moves to what changed: the end screen's title, or this week's opening line.
+  let sheetOpen=false;
+  function sheetFocus(open){
+    app.inert=open;
+    if(!open&&sheetOpen)requestAnimationFrame(()=>{
+      const t=app.querySelector('.end-name .title, .latest');
+      if(t){t.setAttribute('tabindex','-1');t.focus({preventScroll:true});}
+    });
+    sheetOpen=open;
+  }
+
   function renderSheet(){
-    const sh=ui.sheet;
+    const sh=ui.sheet;sheetFocus(!!sh);
     if(!sh){sheetEl.hidden=true;sheetEl.innerHTML='';document.body.style.overflow='';return;}
     const s=S;let html='<div class="sheet-card">';
     if(sh.phase==='feedback'){
