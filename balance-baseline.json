@@ -2,7 +2,7 @@
   "saved": "2026-10-08",
   "games": 4000,
   "rows": {
-    "sensible/choir/random": {
+    "music/sensible/choir/random": {
       "pct": {
         "Lagos star": 0.47,
         "Next rated": 26.72,
@@ -15,7 +15,7 @@
       "money": 720529,
       "cash20": 1177
     },
-    "sensible/street/random": {
+    "music/sensible/street/random": {
       "pct": {
         "Lagos star": 0.3,
         "Next rated": 22.7,
@@ -28,7 +28,7 @@
       "money": 696040,
       "cash20": -3757
     },
-    "sensible/island/random": {
+    "music/sensible/island/random": {
       "pct": {
         "Lagos star": 0.27,
         "Next rated": 17.7,
@@ -41,7 +41,7 @@
       "money": 661041,
       "cash20": -7979
     },
-    "random/choir/random": {
+    "music/random/choir/random": {
       "pct": {
         "Lagos star": 0.03,
         "Next rated": 4.63,
@@ -54,7 +54,7 @@
       "money": 361842,
       "cash20": 24533
     },
-    "random/street/random": {
+    "music/random/street/random": {
       "pct": {
         "Lagos star": 0.03,
         "Next rated": 4.42,
@@ -67,7 +67,7 @@
       "money": 403571,
       "cash20": 31094
     },
-    "random/island/random": {
+    "music/random/island/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0.45,
@@ -80,7 +80,7 @@
       "money": 202676,
       "cash20": -257
     },
-    "lazy/choir/random": {
+    "music/lazy/choir/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
@@ -93,7 +93,7 @@
       "money": -425336,
       "cash20": 130000
     },
-    "lazy/street/random": {
+    "music/lazy/street/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
@@ -106,7 +106,7 @@
       "money": -421905,
       "cash20": 167037
     },
-    "lazy/island/random": {
+    "music/lazy/island/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
@@ -119,7 +119,7 @@
       "money": -405407,
       "cash20": -15679
     },
-    "sensible/choir/money": {
+    "music/sensible/choir/money": {
       "pct": {
         "Lagos star": 2.1,
         "Next rated": 66.72,
@@ -132,7 +132,7 @@
       "money": 922840,
       "cash20": 204374
     },
-    "sensible/street/money": {
+    "music/sensible/street/money": {
       "pct": {
         "Lagos star": 1.88,
         "Next rated": 59.55,
@@ -145,7 +145,7 @@
       "money": 870880,
       "cash20": 191990
     },
-    "sensible/island/money": {
+    "music/sensible/island/money": {
       "pct": {
         "Lagos star": 0.97,
         "Next rated": 53.13,
@@ -158,7 +158,7 @@
       "money": 833853,
       "cash20": 178825
     },
-    "random/choir/money": {
+    "music/random/choir/money": {
       "pct": {
         "Lagos star": 0.03,
         "Next rated": 11.65,
@@ -171,7 +171,7 @@
       "money": 1474423,
       "cash20": 871003
     },
-    "random/street/money": {
+    "music/random/street/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 9.65,
@@ -184,7 +184,7 @@
       "money": 1438491,
       "cash20": 864571
     },
-    "random/island/money": {
+    "music/random/island/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0.53,
@@ -197,7 +197,7 @@
       "money": 1192288,
       "cash20": 370073
     },
-    "lazy/choir/money": {
+    "music/lazy/choir/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
@@ -210,7 +210,7 @@
       "money": 1395400,
       "cash20": 1127433
     },
-    "lazy/street/money": {
+    "music/lazy/street/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
@@ -223,7 +223,7 @@
       "money": 1398236,
       "cash20": 1144000
     },
-    "lazy/island/money": {
+    "music/lazy/island/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,

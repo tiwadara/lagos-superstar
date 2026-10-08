@@ -57,7 +57,7 @@ These tasks end in an ADR. See [docs/adr](adr/README.md).
 
 | Task | Decision |
 | --- | --- |
-| [#40](https://github.com/tiwadara/lagos-superstar/issues/40) | Career framework: what is shared and what belongs to each career. Proposed in [ADR 0008](adr/0008-careers-share-one-engine.md) |
+| [#40](https://github.com/tiwadara/lagos-superstar/issues/40) | Career framework: what is shared and what belongs to each career. Decided in [ADR 0008](adr/0008-careers-share-one-engine.md) |
 | [#62](https://github.com/tiwadara/lagos-superstar/issues/62) | Where leaderboard scores live and how they stay honest. Proposed in [ADR 0013](adr/0013-leaderboard-on-netlify.md) |
 | [#19](https://github.com/tiwadara/lagos-superstar/issues/19) | Data format for stories. Proposed in [ADR 0009](adr/0009-story-data-file.md) |
 | [#47](https://github.com/tiwadara/lagos-superstar/issues/47) | Brand name, scope and visual direction. Proposed in [ADR 0011](adr/0011-brand-direction.md) |

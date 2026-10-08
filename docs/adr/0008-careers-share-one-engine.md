@@ -1,6 +1,6 @@
 # 0008. Careers share one city, one engine and one cast
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-06
 - **Issue:** #40
 

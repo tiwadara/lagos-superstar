@@ -30,7 +30,7 @@ Bug fixes, new stories and balance tweaks do not need one.
 | [0005](0005-stories-as-independent-cards.md) | Stories are independent cards, not a decision tree | Accepted |
 | [0006](0006-headless-simulator-for-balance.md) | A headless simulator checks balance | Accepted |
 | [0007](0007-fictional-people-and-companies.md) | All people and companies are fictional | Accepted |
-| [0008](0008-careers-share-one-engine.md) | Careers share one city, one engine and one cast | Proposed |
+| [0008](0008-careers-share-one-engine.md) | Careers share one city, one engine and one cast | Accepted |
 | [0009](0009-story-data-file.md) | Stories live in their own script file, mostly as data | Proposed |
 | [0010](0010-seasons-carry-over.md) | A season ends in December and the career carries on | Proposed |
 | [0011](0011-brand-direction.md) | Brand: keep the name, Nollywood poster style, danfo as an accent | Proposed, owner to decide |

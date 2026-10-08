@@ -17,7 +17,7 @@ const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const G = new Function(source + `
   return { newGame, doAction, actionState, pickEvent, choose, choiceState,
-           wrapWeek, finale, val, R, ACTIONS, BACKGROUNDS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
+           wrapWeek, finale, val, R, ACTIONS, CAREERS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
 
 const can = (s, id) => G.actionState(s, G.ACTIONS.find(a => a.id === id)).ok;
 
@@ -71,28 +71,28 @@ const pickers = {
 };
 
 // Balance targets, checked by `node simulate.js --check` on every pull request.
-// Each rule applies to every starting background for that player, with random story choices.
+// Each rule applies to every starting background for that career and player, with random story choices.
 // Endings are percentages of games. Cash is the median at the end of week 20, after rent, in naira.
 // At 2,000 games per row, results move between runs by up to about ±3 points on endings and ±₦15,000 on cash,
 // so the cash floor allows ₦25,000 below zero.
 // To change a target on purpose, edit it here and in docs/balance.md in the same pull request, and say why.
 const TARGETS = [
-  { player: 'sensible', rule: 'ends Buzzing or Next rated', min: 90, value: r => r.pct['Buzzing'] + r.pct['Next rated'] },
-  { player: 'sensible', rule: 'ends Lagos star', max: 5, value: r => r.pct['Lagos star'] },
-  { player: 'sensible', rule: 'ends Sapa won', max: 1, value: r => r.pct['Sapa won'] },
-  { player: 'sensible', rule: 'median cash at week 20', min: -25000, max: 300000, naira: true, value: r => r.cash20 },
-  { player: 'random', rule: 'ends Buzzing or Area champion', min: 60, value: r => r.pct['Buzzing'] + r.pct['Area champion'] },
-  { player: 'random', rule: 'ends Sapa won', min: 2, max: 25, value: r => r.pct['Sapa won'] },
-  { player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
-  { player: 'lazy', rule: 'ends Sapa won or Area champion', min: 80, value: r => r.pct['Sapa won'] + r.pct['Area champion'] }
+  { career: 'music', player: 'sensible', rule: 'ends Buzzing or Next rated', min: 90, value: r => r.pct['Buzzing'] + r.pct['Next rated'] },
+  { career: 'music', player: 'sensible', rule: 'ends Lagos star', max: 5, value: r => r.pct['Lagos star'] },
+  { career: 'music', player: 'sensible', rule: 'ends Sapa won', max: 1, value: r => r.pct['Sapa won'] },
+  { career: 'music', player: 'sensible', rule: 'median cash at week 20', min: -25000, max: 300000, naira: true, value: r => r.cash20 },
+  { career: 'music', player: 'random', rule: 'ends Buzzing or Area champion', min: 60, value: r => r.pct['Buzzing'] + r.pct['Area champion'] },
+  { career: 'music', player: 'random', rule: 'ends Sapa won', min: 2, max: 25, value: r => r.pct['Sapa won'] },
+  { career: 'music', player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
+  { career: 'music', player: 'lazy', rule: 'ends Sapa won or Area champion', min: 80, value: r => r.pct['Sapa won'] + r.pct['Area champion'] }
 ];
 
 // How far --check lets the game move from balance-baseline.json before it fails. Measured noise is well inside these.
 const DRIFT = { endingPoints: 7, relative: 0.3, fansFloor: 2000, moneyFloor: 100000, cashFloor: 45000 };
 
 const CHECKPOINTS = [4, 8, 12, 16, 20, 26];
-function play(background, player, picker) {
-  const s = G.newGame('Test', background);
+function play(career, background, player, picker) {
+  const s = G.newGame('Test', background, career);
   const byWeek = {};
   while (!s.over && s.week <= G.TOTAL_WEEKS) {
     for (let guard = 0; guard < 20; guard++) {
@@ -125,7 +125,11 @@ const strategies = CHECK || SAVE ? ['random', 'money'] : storyArg === 'all' ? Ob
 if (!strategies.every(k => pickers[k])) { console.error('Unknown --stories value. Use random, money, purist or all.'); process.exit(1); }
 if ((CHECK || SAVE) && args.some(a => a.startsWith('--stories='))) { console.error('--check and --save-baseline choose their own story strategies. Leave out --stories.'); process.exit(1); }
 
+// Endings by rank: the five tiers top first (named here as music names them), then the debt ending.
 const ENDINGS = ['Lagos star', 'Next rated', 'Buzzing', 'Area champion', 'Upcoming artist', 'Sapa won'];
+// With more than one career, every row starts with its career.
+const CAREER_IDS = Object.keys(G.CAREERS), MULTI = CAREER_IDS.length > 1;
+const cl = c => MULTI ? c.padEnd(8) : '';
 const pct = n => ((n / N) * 100).toFixed(1).padStart(5) + '%';
 const at = (sorted, p) => sorted[Math.floor(sorted.length * p)];
 const median = a => at(a.slice().sort((x, y) => x - y), 0.5);
@@ -133,7 +137,7 @@ const short = n => (n < 0 ? '-' : '') + (Math.abs(n) >= 1e6 ? (Math.abs(n) / 1e6
 
 const label = strategies.length > 1 ? 'Story choices by strategy: ' + strategies.join(', ') + '.' : storyArg === 'random' ? 'Story choices are random.' : 'Story choices: ' + storyArg + '.';
 console.log(`${N} games per row. ${label}\n`);
-console.log('player    start   ' + (strategies.length > 1 ? 'stories ' : '') + ENDINGS.map(e => e.padStart(17)).join('') + '   median fans   median money');
+console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stories ' : '') + ENDINGS.map(e => e.padStart(17)).join('') + '   median fans   median money');
 
 const weekly = [];   // rows for --detail
 const rows = [];     // rows for --check
@@ -143,15 +147,16 @@ const eventIds = new Set(G.EVENTS.map(e => e.id));
 const poolSeen = []; // share of EVENTS each sensible game sees, with the first strategy
 
 for (const strategy of strategies) {
+  for (const career of CAREER_IDS) {
   for (const [name, player] of Object.entries(players)) {
-    for (const background of Object.keys(G.BACKGROUNDS)) {
+    for (const background of Object.keys(G.CAREERS[career].backgrounds)) {
       const count = Object.fromEntries(ENDINGS.map(e => [e, 0]));
       const fans = [], money = [];
       const weeks = Object.fromEntries(CHECKPOINTS.map(w => [w, { money: [], fans: [] }]));
       for (let i = 0; i < N; i++) {
-        const { s, byWeek } = play(background, player, pickers[strategy]);
+        const { s, byWeek } = play(career, background, player, pickers[strategy]);
         if (!Number.isFinite(s.fans) || !Number.isFinite(s.money)) throw new Error('Broken numbers in a ' + background + ' game');
-        count[s.over.title]++;
+        count[ENDINGS[s.over.rank]]++;
         fans.push(s.fans); money.push(s.money);
         if (name === 'sensible' && strategy === strategies[0]) poolSeen.push(s.seen.filter(id => eventIds.has(id)).length);
         for (const w of CHECKPOINTS) if (byWeek[w]) { weeks[w].money.push(byWeek[w].money); weeks[w].fans.push(byWeek[w].fans); }
@@ -164,12 +169,13 @@ for (const strategy of strategies) {
         }
       }
       fans.sort((a, b) => a - b); money.sort((a, b) => a - b);
-      console.log(name.padEnd(10) + background.padEnd(8) + (strategies.length > 1 ? strategy.padEnd(8) : '') + ENDINGS.map(e => pct(count[e]).padStart(17)).join('') +
+      console.log(cl(career) + name.padEnd(10) + background.padEnd(8) + (strategies.length > 1 ? strategy.padEnd(8) : '') + ENDINGS.map(e => pct(count[e]).padStart(17)).join('') +
         String(at(fans, 0.5)).padStart(14) + String(at(money, 0.5)).padStart(15));
-      weekly.push({ name, background, strategy, weeks });
-      rows.push({ name, background, strategy, pct: Object.fromEntries(ENDINGS.map(e => [e, count[e] / N * 100])),
+      weekly.push({ career, name, background, strategy, weeks });
+      rows.push({ career, name, background, strategy, pct: Object.fromEntries(ENDINGS.map(e => [e, count[e] / N * 100])),
         fans: at(fans, 0.5), money: at(money, 0.5), cash20: weeks[20].money.length ? median(weeks[20].money) : null });
     }
+  }
   }
 }
 
@@ -178,9 +184,9 @@ console.log(`\nA sensible player sees a median of ${seenMid} of the ${eventIds.s
 
 if (DETAIL) {
   console.log('\nMedian cash and fans at the end of each week (games still running that week)\n');
-  console.log('player    start   ' + (strategies.length > 1 ? 'stories ' : '') + CHECKPOINTS.map(w => ('week ' + w).padStart(16)).join(''));
+  console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stories ' : '') + CHECKPOINTS.map(w => ('week ' + w).padStart(16)).join(''));
   for (const r of weekly) {
-    console.log(r.name.padEnd(10) + r.background.padEnd(8) + (strategies.length > 1 ? r.strategy.padEnd(8) : '') +
+    console.log(cl(r.career) + r.name.padEnd(10) + r.background.padEnd(8) + (strategies.length > 1 ? r.strategy.padEnd(8) : '') +
       CHECKPOINTS.map(w => r.weeks[w].money.length ? (short(median(r.weeks[w].money)) + ' / ' + short(median(r.weeks[w].fans)) + 'f').padStart(16) : '-'.padStart(16)).join(''));
   }
   console.log('\nStories, for the sensible player: how often each appears, and the median end of games with it and without it\n');
@@ -197,12 +203,12 @@ if (CHECK) {
   console.log('\nBalance targets (docs/balance.md)\n');
   const failed = [];
   for (const t of TARGETS) {
-    for (const r of rows.filter(r => r.name === t.player && r.strategy === 'random')) {
+    for (const r of rows.filter(r => r.career === t.career && r.name === t.player && r.strategy === 'random')) {
       const v = t.value(r);
       const ok = v !== null && (t.min === undefined || v >= t.min) && (t.max === undefined || v <= t.max);
       const show = x => t.naira ? (v === null ? 'none' : '₦' + Math.round(x).toLocaleString('en-US')) : x.toFixed(1) + '%';
       const range = [t.min !== undefined ? 'at least ' + show(t.min) : '', t.max !== undefined ? 'at most ' + show(t.max) : ''].filter(Boolean).join(' and ');
-      const line = `${ok ? 'pass' : 'FAIL'}  ${t.player} ${r.background}: ${t.rule} ${v === null ? 'none' : show(v)} (target ${range})`;
+      const line = `${ok ? 'pass' : 'FAIL'}  ${MULTI ? t.career + ' ' : ''}${t.player} ${r.background}: ${t.rule} ${v === null ? 'none' : show(v)} (target ${range})`;
       console.log(line);
       if (!ok) failed.push(line);
     }
@@ -214,7 +220,7 @@ if (CHECK) {
   const drift = [];
   if (base) {
     for (const r of rows) {
-      const key = `${r.name}/${r.background}/${r.strategy}`, b = base.rows[key];
+      const key = `${r.career}/${r.name}/${r.background}/${r.strategy}`, b = base.rows[key];
       if (!b) { drift.push(`${key}: not in the baseline`); continue; }
       for (const e of ENDINGS) {
         const d = r.pct[e] - b.pct[e];
@@ -240,7 +246,7 @@ if (CHECK) {
 
 if (SAVE) {
   const out = { saved: new Date().toISOString().slice(0, 10), games: N, rows: {} };
-  for (const r of rows) out.rows[`${r.name}/${r.background}/${r.strategy}`] = { pct: Object.fromEntries(ENDINGS.map(e => [e, +r.pct[e].toFixed(2)])), fans: r.fans, money: r.money, cash20: r.cash20 };
+  for (const r of rows) out.rows[`${r.career}/${r.name}/${r.background}/${r.strategy}`] = { pct: Object.fromEntries(ENDINGS.map(e => [e, +r.pct[e].toFixed(2)])), fans: r.fans, money: r.money, cash20: r.cash20 };
   fs.writeFileSync(BASELINE_FILE, JSON.stringify(out, null, 2) + '\n');
   console.log(`\nSaved ${rows.length} rows to ${path.relative(process.cwd(), BASELINE_FILE) || BASELINE_FILE}.`);
 }
