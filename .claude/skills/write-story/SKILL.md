@@ -35,10 +35,10 @@ Reuse an existing character where one fits. The cast is the `CAST` list in `inde
 ## 4. Try every choice
 
 ```
-node .claude/skills/write-story/try-story.js <id> [week] [fans] [money] [background]
+node .claude/skills/write-story/try-story.js <id> [week] [fans] [money] [background] [--rel=id:n]
 ```
 
-This prints whether the story can appear for that player, and what each choice does, including both sides of a check or gamble. Try a player who meets `when` and one who is broke (money `0`). The background picks the career: `choir`, `street` or `island` for music, `drama`, `skits` or `theatre` for the actor. Try a city story or crossover with both. Fix anything that warns: a duplicate id, or every choice costing money.
+This prints whether the story can appear for that player, and what each choice does, including both sides of a check or gamble. Try a player who meets `when` and one who is broke (money `0`). The background picks the career: `choir`, `street` or `island` for music, `drama`, `skits` or `theatre` for the actor. Try a city story or crossover with both. For a story that reads a relationship, add `--rel=id:n` to set how a `CAST` character feels about the player first, such as `--rel=kobo:-5` or `--rel=sapa:3,mum:-2`, and try a friend, an enemy and a stranger (no `--rel`). Fix anything that warns: a duplicate id, or every choice costing money.
 
 Then check every card at once:
 

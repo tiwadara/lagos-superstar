@@ -50,7 +50,7 @@ These are the design targets for the music career, with random story choices, fo
 `node simulate.js --check` takes about 2 minutes. It plays 2,000 games per row, for every career, with random story choices and with the money-chaser, then:
 
 1. Tests the targets above.
-2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass.
+2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass. Median money is not compared for a row where a quarter or more of games end in Sapa won, because its median flips between the debt and the positive games from run to run; that row's endings are still compared.
 
 These limits come from measuring noise. On the unchanged game the check passed 12 runs out of 12. It fails when the investor or jingle payout is doubled, or the side hustle pays double. Smaller changes can stay within the noise. Removing the weekly cost of fame, for example, moves the sensible player's week 20 cash by ₦30,000 to ₦50,000, which the check does not reliably catch. So when you change numbers, still compare the full tables yourself.
 
@@ -64,49 +64,49 @@ Commit the new `balance-baseline.json`, update the tables below, and explain the
 
 ## Current baseline
 
-`node simulate.js 2000 --detail`, 8 October 2026, after the replay variety changes (#23, #24, #25, #52): 12 new stories, 9 new follow-ups, weighted and grouped story draws, fan costs on deals, and food, data and transport down from ₦15,000 to ₦12,000 a week.
+`node simulate.js 2000 --detail`, 8 October 2026, after relationships (#28, #29): characters remember how you treated them, and seven new stories react to it (four for music, two for the actor, and one city story for both careers). The new stories only appear once you have met the character, so they come up in 2 to 22% of games. Every ending stayed within about 4 points of the previous baseline (the replay variety changes, #23, #24, #25, #52), and median cash and fans within noise. The money-chaser's lazy actor from a theatre background is close to half Sapa won, so its median money swings across zero between runs: in the check it went from ₦593,001 to −₦173,864, with Sapa won up about 2 points.
 
 | Player | Start | Lagos star | Next rated | Buzzing | Area champion | Upcoming artist | Sapa won | Median fans | Median money |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Sensible | choir | 0.6% | 27.0% | 72.2% | 0.1% | 0.0% | 0.2% | 57,692 | ₦722,789 |
-| Sensible | street | 0.3% | 21.8% | 77.5% | 0.4% | 0.0% | 0.0% | 51,192 | ₦699,827 |
-| Sensible | island | 0.2% | 18.1% | 80.3% | 1.2% | 0.0% | 0.1% | 43,883 | ₦670,064 |
-| Random | choir | 0.1% | 5.1% | 64.7% | 23.8% | 0.0% | 6.5% | 15,749 | ₦362,421 |
-| Random | street | 0.0% | 5.4% | 72.3% | 19.4% | 0.0% | 3.0% | 17,805 | ₦413,507 |
-| Random | island | 0.0% | 0.8% | 55.7% | 40.3% | 0.0% | 3.3% | 11,050 | ₦219,279 |
-| Lazy | choir | 0.0% | 0.0% | 1.1% | 18.4% | 0.0% | 80.5% | 1,946 | −₦425,836 |
-| Lazy | street | 0.0% | 0.0% | 1.6% | 15.8% | 0.0% | 82.6% | 2,101 | −₦421,905 |
-| Lazy | island | 0.0% | 0.0% | 0.6% | 44.4% | 0.1% | 54.9% | 2,964 | −₦406,560 |
+| Sensible | choir | 0.5% | 26.5% | 72.7% | 0.3% | 0.0% | 0.1% | 58,152 | ₦726,806 |
+| Sensible | street | 0.3% | 21.9% | 77.6% | 0.1% | 0.0% | 0.1% | 48,455 | ₦684,052 |
+| Sensible | island | 0.2% | 16.9% | 81.8% | 1.0% | 0.0% | 0.1% | 41,171 | ₦654,679 |
+| Random | choir | 0.0% | 4.9% | 66.3% | 23.6% | 0.0% | 5.3% | 15,993 | ₦347,972 |
+| Random | street | 0.0% | 4.4% | 71.2% | 20.4% | 0.0% | 4.0% | 18,197 | ₦386,215 |
+| Random | island | 0.0% | 0.3% | 57.4% | 39.0% | 0.0% | 3.5% | 11,093 | ₦190,079 |
+| Lazy | choir | 0.0% | 0.0% | 1.1% | 14.6% | 0.0% | 84.3% | 1,829 | −₦425,920 |
+| Lazy | street | 0.0% | 0.0% | 1.7% | 15.4% | 0.0% | 83.0% | 2,142 | −₦422,760 |
+| Lazy | island | 0.0% | 0.0% | 0.9% | 41.3% | 0.1% | 57.7% | 2,950 | −₦408,826 |
 
 Median cash for the sensible player at the end of each week, after rent:
 
 | Start | Week 4 | Week 8 | Week 12 | Week 16 | Week 20 | Week 26 |
 | --- | --- | --- | --- | --- | --- | --- |
-| choir | −₦54k | −₦36k | −₦28k | −₦18k | ₦9k | ₦216k |
-| street | −₦40k | −₦38k | −₦29k | −₦21k | −₦7k | ₦177k |
-| island | ₦64k | −₦37k | −₦32k | −₦24k | −₦7k | ₦171k |
+| choir | −₦51k | −₦37k | −₦30k | −₦17k | −₦1k | ₦200k |
+| street | −₦43k | −₦37k | −₦29k | −₦23k | −₦7k | ₦181k |
+| island | ₦62k | −₦35k | −₦36k | −₦27k | −₦15k | ₦160k |
 
-The endings and money meet their targets. This change moved endings more than 5 points on purpose. With more stories in the pool, the big fan stories (`feature`, `dance`, `skit`) come up less often, and deals now cost fans through their follow-ups. Next rated for the sensible player fell from 29 to 39% to 18 to 27%. Week 20 cash fell with fewer fans, so the weekly food, data and transport cost came down by ₦3,000 to keep the sensible player near zero rather than in debt. The stories that need many fans by mid-game are rarer than before: `visa` 7% of games, `awards` 22%, `brand` 19%, `label` 31%.
+The endings and money meet their targets. The replay variety changes before this moved endings more than 5 points on purpose. With more stories in the pool, the big fan stories (`feature`, `dance`, `skit`) come up less often, and deals now cost fans through their follow-ups. Next rated for the sensible player fell from 29 to 39% to 18 to 27%. Week 20 cash fell with fewer fans, so the weekly food, data and transport cost came down by ₦3,000 to keep the sensible player near zero rather than in debt. The stories that need many fans by mid-game are rarer than before: `visa` 7% of games, `awards` 22%, `brand` 19%, `label` 31%.
 
-A sensible player now sees a median of 20 of the 38 stories in `EVENTS` (53%), down from about 20 of 26. The simulator prints this line on every run.
+A sensible music player now sees a median of 20 of the 43 stories in `EVENTS` open to music (47%), down from 20 of 38 before relationships. The simulator prints this line on every run.
 
 ## Nollywood actor
 
-The actor (#42) has the same targets as music for now. `node simulate.js 2000 --detail --career=actor`, 8 October 2026:
+The actor (#42) has the same targets as music for now. `node simulate.js 2000 --detail --career=actor`, 8 October 2026, after relationships (#28, #29):
 
 | Player | Start | Nollywood star | Leading actor | Familiar face | Skit regular | Extra | Sapa won | Median fans | Median money |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Sensible | drama | 0.3% | 30.8% | 69.0% | 0.0% | 0.0% | 0.0% | 68,875 | ₦856,080 |
-| Sensible | skits | 0.1% | 30.1% | 69.8% | 0.0% | 0.0% | 0.0% | 67,791 | ₦851,677 |
-| Sensible | theatre | 0.3% | 27.7% | 72.1% | 0.0% | 0.0% | 0.0% | 61,799 | ₦836,670 |
-| Random | drama | 0.0% | 1.8% | 60.8% | 28.0% | 0.0% | 9.5% | 13,087 | ₦209,925 |
-| Random | skits | 0.1% | 1.5% | 69.3% | 23.6% | 0.0% | 5.6% | 15,046 | ₦267,869 |
-| Random | theatre | 0.0% | 1.1% | 67.0% | 28.7% | 0.0% | 3.1% | 13,862 | ₦282,453 |
-| Lazy | drama | 0.0% | 0.0% | 0.1% | 2.9% | 0.0% | 97.0% | 1,175 | −₦432,105 |
-| Lazy | skits | 0.0% | 0.0% | 0.2% | 3.5% | 0.0% | 96.3% | 1,419 | −₦426,757 |
-| Lazy | theatre | 0.0% | 0.0% | 0.1% | 11.6% | 0.0% | 88.3% | 1,691 | −₦434,111 |
+| Sensible | drama | 0.2% | 28.7% | 71.0% | 0.0% | 0.0% | 0.0% | 66,062 | ₦844,058 |
+| Sensible | skits | 0.4% | 32.3% | 67.2% | 0.0% | 0.0% | 0.1% | 69,047 | ₦859,287 |
+| Sensible | theatre | 0.2% | 28.0% | 71.8% | 0.1% | 0.0% | 0.0% | 64,072 | ₦841,555 |
+| Random | drama | 0.0% | 2.0% | 59.4% | 28.1% | 0.0% | 10.6% | 12,828 | ₦228,239 |
+| Random | skits | 0.0% | 1.7% | 68.1% | 24.5% | 0.0% | 5.7% | 14,719 | ₦232,922 |
+| Random | theatre | 0.0% | 0.9% | 66.3% | 29.0% | 0.0% | 3.8% | 13,530 | ₦229,439 |
+| Lazy | drama | 0.0% | 0.0% | 0.3% | 2.8% | 0.0% | 97.0% | 1,155 | −₦434,437 |
+| Lazy | skits | 0.0% | 0.0% | 0.3% | 3.6% | 0.0% | 96.2% | 1,398 | −₦426,689 |
+| Lazy | theatre | 0.0% | 0.0% | 0.1% | 11.6% | 0.0% | 88.3% | 1,700 | −₦436,154 |
 
-Median cash for the sensible actor at the end of week 20 is ₦48k to ₦64k, a little above music's, because actors have fewer deal follow-ups that cost money. A sensible actor sees a median of 20 of the 35 stories open to actors (57%).
+Median cash for the sensible actor at the end of week 20 is ₦49k to ₦56k, a little above music's, because actors have fewer deal follow-ups that cost money. A sensible actor sees a median of 20 of the 38 stories open to actors (53%).
 
 The actor's money is tuned so it plays like music: auditions cost ₦30,000, role fees run from ₦8,000 to ₦200,000 by fame, and streaming licences pay half what music streams would. With role fees of ₦20,000 to ₦500,000 and ₦15,000 auditions, the sensible actor reached Leading actor 71% of the time.
 
