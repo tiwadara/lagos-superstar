@@ -63,34 +63,41 @@ Commit the new `balance-baseline.json`, update the tables below, and explain the
 
 ## Current baseline
 
-`node simulate.js 2000 --detail`, 5 October 2026, after the economy changes (#3, #4): smaller bags, streams from recent releases, and weekly costs for fame.
+`node simulate.js 2000 --detail`, 8 October 2026, after the replay variety changes (#23, #24, #25, #52): 12 new stories, 9 new follow-ups, weighted and grouped story draws, fan costs on deals, and food, data and transport down from ₦15,000 to ₦12,000 a week.
 
 | Player | Start | Lagos star | Next rated | Buzzing | Area champion | Upcoming artist | Sapa won | Median fans | Median money |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Sensible | choir | 1.2% | 38.7% | 59.9% | 0.2% | 0.0% | 0.0% | 80,334 | ₦761,784 |
-| Sensible | street | 0.4% | 34.5% | 64.6% | 0.4% | 0.0% | 0.1% | 68,280 | ₦705,086 |
-| Sensible | island | 0.3% | 29.3% | 69.8% | 0.7% | 0.0% | 0.0% | 58,433 | ₦700,595 |
-| Random | choir | 0.0% | 7.4% | 64.3% | 16.9% | 0.0% | 11.4% | 19,047 | ₦724,788 |
-| Random | street | 0.0% | 8.3% | 71.1% | 12.7% | 0.0% | 8.0% | 21,821 | ₦806,397 |
-| Random | island | 0.0% | 1.0% | 59.3% | 31.1% | 0.0% | 8.6% | 12,611 | ₦755,914 |
-| Lazy | choir | 0.0% | 0.0% | 0.7% | 16.6% | 0.0% | 82.8% | 1,660 | −₦431,891 |
-| Lazy | street | 0.0% | 0.0% | 1.1% | 14.8% | 0.0% | 84.1% | 1,819 | −₦435,208 |
-| Lazy | island | 0.0% | 0.0% | 0.9% | 46.1% | 0.0% | 53.0% | 2,851 | −₦406,153 |
+| Sensible | choir | 0.6% | 27.0% | 72.2% | 0.1% | 0.0% | 0.2% | 57,692 | ₦722,789 |
+| Sensible | street | 0.3% | 21.8% | 77.5% | 0.4% | 0.0% | 0.0% | 51,192 | ₦699,827 |
+| Sensible | island | 0.2% | 18.1% | 80.3% | 1.2% | 0.0% | 0.1% | 43,883 | ₦670,064 |
+| Random | choir | 0.1% | 5.1% | 64.7% | 23.8% | 0.0% | 6.5% | 15,749 | ₦362,421 |
+| Random | street | 0.0% | 5.4% | 72.3% | 19.4% | 0.0% | 3.0% | 17,805 | ₦413,507 |
+| Random | island | 0.0% | 0.8% | 55.7% | 40.3% | 0.0% | 3.3% | 11,050 | ₦219,279 |
+| Lazy | choir | 0.0% | 0.0% | 1.1% | 18.4% | 0.0% | 80.5% | 1,946 | −₦425,836 |
+| Lazy | street | 0.0% | 0.0% | 1.6% | 15.8% | 0.0% | 82.6% | 2,101 | −₦421,905 |
+| Lazy | island | 0.0% | 0.0% | 0.6% | 44.4% | 0.1% | 54.9% | 2,964 | −₦406,560 |
 
 Median cash for the sensible player at the end of each week, after rent:
 
 | Start | Week 4 | Week 8 | Week 12 | Week 16 | Week 20 | Week 26 |
 | --- | --- | --- | --- | --- | --- | --- |
-| choir | −₦55k | −₦42k | −₦34k | −₦14k | ₦70k | ₦271k |
-| street | −₦46k | −₦41k | −₦32k | −₦18k | ₦35k | ₦237k |
-| island | ₦50k | −₦42k | −₦40k | −₦20k | ₦43k | ₦243k |
+| choir | −₦54k | −₦36k | −₦28k | −₦18k | ₦9k | ₦216k |
+| street | −₦40k | −₦38k | −₦29k | −₦21k | −₦7k | ₦177k |
+| island | ₦64k | −₦37k | −₦32k | −₦24k | −₦7k | ₦171k |
 
-Before the economy changes, the same measure at week 20 was ₦362k (choir), ₦206k (street) and ₦603k (island), and ₦0.9m to ₦1.5m at week 26.
+The endings and money meet their targets. This change moved endings more than 5 points on purpose. With more stories in the pool, the big fan stories (`feature`, `dance`, `skit`) come up less often, and deals now cost fans through their follow-ups. Next rated for the sensible player fell from 29 to 39% to 18 to 27%. Week 20 cash fell with fewer fans, so the weekly food, data and transport cost came down by ₦3,000 to keep the sensible player near zero rather than in debt. The stories that need many fans by mid-game are rarer than before: `visa` 7% of games, `awards` 22%, `brand` 19%, `label` 31%.
 
-The endings and money meet their targets. The economy changes moved endings more than 5 points on purpose: Next rated for the sensible player fell from about 45 to 55% to about 29 to 39%, because tighter money buys less promo.
+A sensible player now sees a median of 20 of the 38 stories in `EVENTS` (53%), down from about 20 of 26. The simulator prints this line on every run.
 
 ## Known problems
 
-**Taking every bag is still the best strategy** (#52). A sensible player who always takes the choice that leaves the most cash reaches Next rated 73 to 83% of the time and Lagos star 3 to 7%, against 29 to 39% and under 1% with random choices. Cash still buys promo, and the deals add links and hype, while their costs (street cred, cuts on music income) barely touch fans.
+**Taking every bag is still the best strategy** (#52). With `node simulate.js 1000 --stories=all`, the money-chaser reaches Next rated or Lagos star 50 to 68% of the time, against 18 to 25% with random choices and 13 to 22% for the purist. Before this change it was 79 to 89%, against 29 to 39% and 19 to 27%, so the gap narrowed from about 50 points to about 40, short of the 15 the issue asks for.
 
-**Little replay variety.** A sensible player sees about 20 of the 26 stories per game, one of them a week 1 story. The least-seen are `visa` (35% of games), `awards` (44%), `brand` (59%) and `label` (69%).
+Measured with a diagnostic money-chaser that takes its usual choice on some stories and a random one elsewhere:
+
+- No single story explains the gap. Letting the money-chaser decide only one story at a time moves its result by under 2 points.
+- The four big bags (`jingle`, `investor`, `label`, `brand`) on their own were worth about 13 points before this change, and about 3 points after the new fan costs.
+- Most of the gap is compounding. Cash keeps the sensible player out of side hustles (about 17 a game against 24), so it rehearses and records more. Better songs earn more fans per release, and each release adds a share of current fans, so a small early lead grows through the game. Releases account for most of the fan difference, with the same number of releases.
+- Rules tried in a scratch copy and not adopted: promo that weakens when bought two weeks running, promo that adds less hype when hype is already high, street cred counting more in releases, deals costing a move, a weekly tax on cash above ₦500,000, and a release formula that compounds less. Each one shrank the gap in proportion but kept the money-chaser at about 2 to 3 times the others, and most of them lowered every player's results.
+
+Closing the gap to 15 points needs a decision about the economy as a whole, not more story costs. #52 stays open for it.

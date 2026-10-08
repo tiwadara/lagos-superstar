@@ -136,6 +136,8 @@ const weekly = [];   // rows for --detail
 const rows = [];     // rows for --check
 const storyStats = {}; // story id -> { in: {fans, money}, out: {fans, money} }, sensible player only
 const storyIds = [...G.EVENTS, ...G.FOLLOWUPS].map(e => e.id).concat('december');
+const eventIds = new Set(G.EVENTS.map(e => e.id));
+const poolSeen = []; // share of EVENTS each sensible game sees, with the first strategy
 
 for (const strategy of strategies) {
   for (const [name, player] of Object.entries(players)) {
@@ -148,6 +150,7 @@ for (const strategy of strategies) {
         if (!Number.isFinite(s.fans) || !Number.isFinite(s.money)) throw new Error('Broken numbers in a ' + background + ' game');
         count[s.over.title]++;
         fans.push(s.fans); money.push(s.money);
+        if (name === 'sensible' && strategy === strategies[0]) poolSeen.push(s.seen.filter(id => eventIds.has(id)).length);
         for (const w of CHECKPOINTS) if (byWeek[w]) { weeks[w].money.push(byWeek[w].money); weeks[w].fans.push(byWeek[w].fans); }
         if (DETAIL && name === 'sensible') {
           for (const id of storyIds) {
@@ -166,6 +169,9 @@ for (const strategy of strategies) {
     }
   }
 }
+
+const seenMid = median(poolSeen);
+console.log(`\nA sensible player sees a median of ${seenMid} of the ${eventIds.size} stories in EVENTS (${Math.round(seenMid / eventIds.size * 100)}%), plus any follow-ups.`);
 
 if (DETAIL) {
   console.log('\nMedian cash and fans at the end of each week (games still running that week)\n');

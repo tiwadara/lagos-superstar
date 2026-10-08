@@ -470,7 +470,7 @@ const EVENTS=[
         ?{text:'You catch him at the BRT lane. A bystander’s video of your sprint does more numbers than your last single.',fx:{cred:8,hype:12}}
         :{text:'You lose him at the BRT lane, and one slipper on the way. You end up on a torchlight phone for two weeks.',fx:{hype:-12,cred:2}}}
     ]},
-  {id:'talent',title:'Who Get Voice?',who:'TV auditions, National Stadium',when:s=>s.week>=3&&s.fans<20000,
+  {id:'talent',weight:1.5,title:'Who Get Voice?',who:'TV auditions, National Stadium',when:s=>s.week>=3&&s.fans<20000,
     text:'The talent show is in town. The queue started yesterday. Winners get a car; everyone else gets filmed.',
     choices:[
       {label:'Queue from 4am',hint:s=>odds(s,'skill',42),run:s=>chk(s,'skill',42)
@@ -490,8 +490,8 @@ const EVENTS=[
   {id:'producer',title:'Stems hostage',who:'Your producer, Beatz by Sapa',when:s=>s.week>=3&&anySong(s),
     text:'He says you still owe him. Until you pay, he is “holding the stems.” He has also put your unreleased hook on his status.',
     choices:[
-      {label:'Pay him',cost:80000,hint:'Keep the relationship.',run:()=>({text:'He sends the files with a prayer-hands emoji and a new beat “for next time.”',fx:{links:3,skill:1}})},
-      {label:'Call him out online',hint:'Loud and free.',run:()=>({text:'Fans take your side. Producers across Lagos take notes.',fx:{hype:10,links:-6}})},
+      {label:'Pay him',cost:80000,hint:'Keep the relationship.',run:s=>({text:'He sends the files with a prayer-hands emoji and a new beat “for next time.”',fx:{links:3,skill:1,flag:{sapa:s.week,sapaPaid:true}}})},
+      {label:'Call him out online',hint:'Loud and free.',run:s=>({text:'Fans take your side. Producers across Lagos take notes.',fx:{hype:10,links:-6,flag:{sapa:s.week}}})},
       {label:'Learn to make your own beats',hint:'It will take your week.',run:()=>({text:'By Thursday your log drum sounds almost like a log drum.',fx:{skill:5,energyNext:-1}})}
     ]},
   {id:'areaboys',title:'Owo ile',who:'Under the bridge, Ojuelegba',when:s=>s.week>=3&&anySong(s),
@@ -503,7 +503,7 @@ const EVENTS=[
         :{text:'“Who be this one?” The price goes up, and they keep the director’s tripod.',fx:{money:-80000,cred:-2}}},
       {label:'Pack up and run',hint:'Save the camera.',run:()=>({text:'You save the camera. The video is now forty seconds of you looking nervous.',fx:{hype:-8}})}
     ]},
-  {id:'oap',title:'Radio rotation',who:'Smooth Lanre, Vibe 99.9 FM',when:s=>s.week>=3&&s.songs.length>0,
+  {id:'oap',weight:1.5,title:'Radio rotation',who:'Smooth Lanre, Vibe 99.9 FM',when:s=>s.week>=3&&s.songs.length>0,
     text:'He likes your song. He would like it more with a small something. “For logistics.”',
     choices:[
       {label:'Pay for the rotation',cost:150000,hint:'Radio still moves Lagos.',run:()=>({text:'Your song now plays between the traffic updates. Danfo drivers know the hook.',fx:{hype:25,fansUp:[400,0.12]}})},
@@ -513,10 +513,10 @@ const EVENTS=[
   {id:'manager',title:'Aunty Bisi',who:'She has managed three stars and one disaster',when:s=>s.week>=4&&s.fans>=500&&!s.flags.manager,
     text:'“You have talent. You do not have sense yet. I can lend you mine.” She wants 20% of everything you earn from music.',
     choices:[
-      {label:'Sign with Aunty Bisi',hint:'She opens doors and takes her cut. Forever.',run:()=>({text:'Within a week you have a press photo, a schedule and a curfew.',fx:{links:15,flag:{manager:true},note:'Your checks get easier. 20% of music income goes to her'}})},
+      {label:'Sign with Aunty Bisi',hint:'She opens doors and takes her cut. Forever.',run:s=>({text:'Within a week you have a press photo, a schedule and a curfew.',fx:{links:15,flag:{manager:s.week},note:'Your checks get easier. 20% of music income goes to her'}})},
       {label:'Stay your own manager',hint:'Keep 100% of not much.',run:()=>({text:'You answer your own emails. All four of them.',fx:{cred:2}})}
     ]},
-  {id:'feature',title:'A verse for a big man',who:'Zaddy Blaze, three hits deep',when:s=>s.week>=4&&s.fans>=800,
+  {id:'feature',weight:2,title:'A verse for a big man',who:'Zaddy Blaze, three hits deep',when:s=>s.week>=4&&s.fans>=800,
     text:'He wants you on his next single. No fee, and he keeps all the publishing. “It is exposure.”',
     choices:[
       {label:'Take the exposure',hint:'His fans become your fans.',run:()=>({text:'Your verse is the part everyone rewinds. You will never see a kobo from it.',fx:{fansUp:[700,0.35],hype:20}})},
@@ -531,7 +531,7 @@ const EVENTS=[
       {label:'Buy the streams',cost:100000,hint:'Numbers attract numbers. Until someone checks.',run:s=>({text:'Your song is suddenly huge in one town in Vietnam.',fx:{hype:22,flag:{fake:s.week}}})},
       {label:'Walk away',hint:'Stay clean.',run:()=>({text:'You buy a phone charger from him instead. It lasts four days.',fx:{cred:2}})}
     ]},
-  {id:'dance',title:'Ikorodu steps',who:'Three kids and a phone on a stick',when:s=>s.week>=5&&s.songs.length>0,
+  {id:'dance',weight:2,title:'Ikorodu steps',who:'Three kids and a phone on a stick',when:s=>s.week>=5&&s.songs.length>0,
     text:'They have invented a dance to your song. The video has 80,000 views and it is climbing.',
     choices:[
       {label:'Pay them and shoot a proper video',cost:80000,hint:'Do it right.',run:()=>({text:'You show up in Ikorodu with a camera and small chops. The dance now has a name, and it is yours.',fx:{hype:28,fansUp:[500,0.25],cred:5}})},
@@ -551,12 +551,12 @@ const EVENTS=[
     text:'He drops a new track. Second verse, a line about someone who will be “upcoming forever.” Everybody knows who he means.',
     choices:[
       {label:'Reply with a diss by midnight',hint:s=>odds(s,'skill',40),run:s=>chk(s,'skill',40)
-        ?{text:'Your reply is brutal and, worse for him, catchy.',fx:{hype:22,cred:8,fansUp:[300,0.1]}}
-        :{text:'You rhyme “kobo” with “kobo.” Twice.',fx:{hype:8,cred:-6}}},
-      {label:'Ignore him',hint:'It passes.',run:()=>({text:'He claims victory. Lagos is bored of it by Wednesday.',fx:{cred:-2}})},
-      {label:'Call him. Do a song together',hint:'Turn it into marketing.',run:()=>({text:'The beef was “just for the culture,” you both tell interviewers, laughing.',fx:{links:6,hype:12,fansUp:[200,0.06]}})}
+        ?{text:'Your reply is brutal and, worse for him, catchy.',fx:{hype:22,cred:8,fansUp:[300,0.1],flag:{beef:s.week,beefWay:'won'}}}
+        :{text:'You rhyme “kobo” with “kobo.” Twice.',fx:{hype:8,cred:-6,flag:{beef:s.week,beefWay:'lost'}}}},
+      {label:'Ignore him',hint:'It passes.',run:s=>({text:'He claims victory. Lagos is bored of it by Wednesday.',fx:{cred:-2,flag:{beef:s.week,beefWay:'quiet'}}})},
+      {label:'Call him. Do a song together',hint:'Turn it into marketing.',run:s=>({text:'The beef was “just for the culture,” you both tell interviewers, laughing.',fx:{links:6,hype:12,fansUp:[200,0.06],flag:{beef:s.week,beefWay:'truce'}}})}
     ]},
-  {id:'skit',title:'Skit sound',who:'Mama Tobi Comedy, 4 million followers',when:s=>s.songs.length>0&&s.fans>=1000,
+  {id:'skit',weight:2,title:'Skit sound',who:'Mama Tobi Comedy, 4 million followers',when:s=>s.songs.length>0&&s.fans>=1000,
     text:'She wants your song in her next skit. Her manager sends an invoice. You are the one paying.',
     choices:[
       {label:'Pay the invoice',cost:200000,hint:'Four million people.',run:()=>({text:'The skit is about a landlord. Your hook plays when he falls into the gutter. It is everywhere.',fx:{hype:30,fansUp:[600,0.3]}})},
@@ -593,16 +593,16 @@ const EVENTS=[
   {id:'label',title:'The contract',who:'Big Tunde, Gbedu Empire Records',when:s=>s.week>=8&&s.fans>=8000&&!s.flags.signed&&!s.flags.signedGood,
     text:'He slides 47 pages across the desk. ₦1,500,000 advance. Five albums. They own the masters. “Standard,” he says, of a contract that is standard nowhere.',
     choices:[
-      {label:'Sign it',hint:'₦1,500,000 today. Read nothing.',run:s=>{s.recoup=1500000;return {text:'You sign. There is champagne. Somewhere on page 31, the word “recoupable” is waiting for you.',fx:{money:1500000,hype:20,links:12,flag:{signed:true},note:'Your music income now pays back the advance first'}};}},
+      {label:'Sign it',hint:'₦1,500,000 today. Read nothing.',run:s=>{s.recoup=1500000;return {text:'You sign. There is champagne. Somewhere on page 31, the word “recoupable” is waiting for you.',fx:{money:1500000,hype:20,links:12,flag:{signed:s.week},note:'Your music income now pays back the advance first'}};}},
       {label:'Hire a lawyer to negotiate',cost:150000,hint:s=>odds(s,'links',35),run:s=>chk(s,'links',35)
-        ?{text:'Barrister Amaka removes eleven clauses. ₦1m advance, two singles, and you keep your masters.',fx:{money:1000000,hype:12,links:8,flag:{signedGood:true},note:'Gbedu Empire takes 20% of music income'}}
+        ?{text:'Barrister Amaka removes eleven clauses. ₦1m advance, two singles, and you keep your masters.',fx:{money:1000000,hype:12,links:8,flag:{signedGood:s.week},note:'Gbedu Empire takes 20% of music income'}}
         :{text:'Big Tunde does not negotiate with “upcoming artists.” The offer is gone, and so is the lawyer’s fee.',fx:{cred:3}}},
       {label:'Stay independent',hint:'Own everything. Fund everything.',run:()=>({text:'Big Tunde laughs. “They always come back.” You plan to be the one who does not.',fx:{cred:8}})}
     ]},
   {id:'brand',title:'Kogbagidi Herbal Bitters',who:'“For man power and waist pain”',when:s=>s.fans>=15000,
     text:'They want you as brand ambassador. ₦1,200,000. You must drink it on camera and smile afterwards.',
     choices:[
-      {label:'Drink the bitters',hint:'₦1,200,000. The streets will laugh.',run:()=>({text:'Your face is on a billboard at Ojota, holding a small brown bottle. Your smile is doing a lot of work.',fx:{earn:1200000,cred:-8}})},
+      {label:'Drink the bitters',hint:'₦1,200,000. The streets will laugh.',run:s=>({text:'Your face is on a billboard at Ojota, holding a small brown bottle. Your smile is doing a lot of work.',fx:{earn:1200000,cred:-8,flag:{bitters:s.week}}})},
       {label:'Hold out for a bank or a telco',hint:s=>odds(s,'links',45),run:s=>chk(s,'links',45)
         ?{text:'Somebody’s cousin works in marketing at a bank. You are now the face of a savings account.',fx:{earn:2000000,hype:8}}
         :{text:'No bank calls. Kogbagidi signs Lil Kobo.'}},
@@ -612,22 +612,120 @@ const EVENTS=[
     text:'He wants you for three club dates. First, the visa: the fee, the bank statements, the 6am queue. All of it before anyone has even said no.',
     choices:[
       {label:'Apply',cost:400000,hint:'Embassies like links and a fat account.',run:s=>R.p(0.3+s.links/200+(s.money>=2000000?0.15:0))
-        ?{text:'Approved. Three sweaty rooms full of Nigerians who know every word.',fx:{fansUp:[8000,0.3],earn:1500000,hype:25,flag:{intl:true}}}
+        ?{text:'Approved. Three sweaty rooms full of Nigerians who know every word.',fx:{fansUp:[8000,0.3],earn:1500000,hype:25,flag:{intl:s.week}}}
         :{text:'Refused. “Not satisfied you will return.” You were only going for nine days.'}},
       {label:'Stay and build at home',hint:'Lagos first.',run:()=>({text:'You post “Lagos first” and mean about 70% of it.',fx:{cred:3,hype:5}})}
     ]},
-  {id:'awards',title:'Next Rated',who:'The Headliners, nominations night',when:s=>s.week>=16&&s.fans>=25000,
+  {id:'awards',weight:2,title:'Next Rated',who:'The Headliners, nominations night',when:s=>s.week>=16&&s.fans>=25000,
     text:'You are nominated. Voting is by SMS. Voting is also, people whisper, by other means.',
     choices:[
       {label:'Campaign hard',cost:300000,hint:'Hype wins awards.',run:s=>R.p(clamp(0.25+s.hype/200+(s.fans>=100000?0.2:0),0,0.85))
-        ?{text:'You win. You thank God, your mum and your producer, in that order.',fx:{hype:35,fansPct:0.25,links:10,flag:{award:true}}}
+        ?{text:'You win. You thank God, your mum and your producer, in that order.',fx:{hype:35,fansPct:0.25,links:10,flag:{award:s.week}}}
         :{text:'You lose to Lil Kobo. You clap on camera like a professional.',fx:{hype:10}}},
-      {label:'Buy a block of votes',cost:800000,hint:'Almost certain. Not clean.',run:()=>R.p(0.9)
-        ?{text:'You win by a margin that surprises even the organisers. Somebody will ask questions one day.',fx:{hype:35,fansPct:0.25,links:10,cred:-10,flag:{award:true}}}
+      {label:'Buy a block of votes',cost:800000,hint:'Almost certain. Not clean.',run:s=>R.p(0.9)
+        ?{text:'You win by a margin that surprises even the organisers. Somebody will ask questions one day.',fx:{hype:35,fansPct:0.25,links:10,cred:-10,flag:{award:s.week,bought:true}}}
         :{text:'Lil Kobo bought more. You clap on camera like a professional.',fx:{hype:10,cred:-4}}},
       {label:'Leave it to the fans',hint:'Free and honest.',run:s=>R.p(clamp(0.1+s.hype/250+(s.fans>=100000?0.2:0),0,0.7))
-        ?{text:'The fans carry it. You win without spending a kobo, and everyone knows it.',fx:{hype:35,fansPct:0.25,links:10,cred:5,flag:{award:true}}}
+        ?{text:'The fans carry it. You win without spending a kobo, and everyone knows it.',fx:{hype:35,fansPct:0.25,links:10,cred:5,flag:{award:s.week}}}
         :{text:'You lose to Lil Kobo. At least you lost for free.',fx:{hype:8,cred:3}}}
+    ]},
+  {id:'fees',title:'School fees',who:'Your little brother Seyi, on WhatsApp',when:s=>s.week>=6,
+    text:'“Bros, they will drive me from the exam hall on Monday.” ₦100,000 for second semester. Mummy has already told him you are “doing well in Lagos.”',
+    choices:[
+      {label:'Pay the fees',cost:100000,hint:'Family first. Your account feels it.',run:()=>({text:'He sends a voice note of his whole hostel shouting your name. Your mother forwards it to every aunty she knows.',fx:{cred:4,links:2,fansUp:[100,0.03]}})},
+      {label:'Make him your social media manager',hint:'Free. He will want paying one day.',run:()=>({text:'He raises the fees by selling your old shirts online, and posts eleven times a day. Somehow, it works.',fx:{hype:10,cred:-2}})},
+      {label:'Tell him the truth: you are broke too',hint:'Free. The family will hear.',run:()=>({text:'He tells Mummy. Mummy calls every night that week to ask if you are eating.',fx:{energyNext:-1,skill:1}})}
+    ]},
+  {id:'realjob',title:'A real job',who:'Your partner, over suya',when:s=>s.week>=7&&s.fans<10000,
+    text:'“My cousin can get you into the bank. Graduate trainee. You can still sing at weekends.” They mean it kindly, which makes it worse.',
+    choices:[
+      {label:'Go for the interview',hint:'Money now. Less time for music.',run:()=>({text:'You get the job and quit after three weeks, but the salary lands first. Your fans wonder where you went.',fx:{money:150000,energyNext:-1,hype:-8}})},
+      {label:'Bring them to the studio',hint:s=>odds(s,'skill',45),run:s=>chk(s,'skill',45)
+        ?{text:'They watch you build a song from nothing. On the way home they say, quietly, “Okay. I see it.”',fx:{skill:2,hype:5}}
+        :{text:'The session goes badly. They are polite about it, which is the worst part.',fx:{hype:-4}}},
+      {label:'Ask for six more months',hint:'Free. Write about it.',run:()=>({text:'They agree, with a date. You write the most honest song of your life that night.',fx:{skill:3}})}
+    ]},
+  {id:'session',title:'Uncle Gbenga',who:'A saxophonist who played for three military governors',when:s=>s.week>=6&&anySong(s),
+    text:'He heard your song on a bus and found your number. “Your melody is good. Your arrangement is a crime. ₦60,000 and I will fix your next record.”',
+    choices:[
+      {label:'Hire him',cost:60000,hint:'Learn from the best.',run:()=>({text:'He plays one take, packs up, and leaves you with a solo you will copy for years.',fx:{skill:5,cred:2}})},
+      {label:'Ask to sit in on his rehearsal',hint:'Free. Costs you a day.',run:()=>({text:'Six hours with a band of old men who do not miss notes. You leave humbled and better.',fx:{skill:3,energyNext:-1}})},
+      {label:'Tell him your sound is modern',hint:'Keep your money.',run:()=>({text:'“Modern,” he repeats, and hangs up. Somewhere, a saxophone sighs.'})}
+    ]},
+  {id:'camp',cast:['tunde','zaddy'],title:'Writing camp',who:'Gbedu Empire’s songwriting camp, Ikoyi',when:s=>s.week>=8&&s.skill>=35,
+    text:'Twelve writers, one mansion, five days. They pay ₦250,000 a head, and every hook you write belongs to whichever of their stars sings it.',
+    choices:[
+      {label:'Write for their stars',hint:'₦250,000. Your best hook in someone else’s mouth.',run:()=>({text:'Your hook ends up on a Zaddy Blaze single. It plays at every bus stop, and nobody knows it is yours.',fx:{money:250000,skill:3,energyNext:-1,cred:-3,hype:-6}})},
+      {label:'Go, but keep your best hook',hint:s=>odds(s,'links',40),run:s=>chk(s,'links',40)
+        ?{text:'You give them your second-best and make friends in every room. Two producers save your number.',fx:{money:100000,links:8,skill:2,energyNext:-1}}
+        :{text:'They notice you holding back. The fee is cut in half, and you are not invited again.',fx:{money:50000,skill:2,energyNext:-1}}},
+      {label:'Stay home and finish your own songs',hint:'Free.',run:()=>({text:'Five days, three songs, all yours.',fx:{skill:3}})}
+    ]},
+  {id:'samebeat',cast:['sapa','kobo'],title:'Same beat',who:'Beatz by Sapa, sounding guilty',when:s=>s.week>=6&&s.vault.length>0,
+    text:'He sold Lil Kobo the beat from your unreleased song. “Non-exclusive, bro. It was in the small print.” There was no print. Kobo drops on Friday.',
+    choices:[
+      {label:'Demand your money back',hint:s=>odds(s,'cred',35),run:s=>chk(s,'cred',35)
+        ?{text:'He refunds you and, out of shame, offers a free session on a new beat.',fx:{money:40000,flag:{freeStudio:true},note:'Your next recording is free'}}
+        :{text:'He leaves you on read. Kobo’s version is decent, unfortunately.',fx:{hype:-4}}},
+      {label:'Jump on Kobo’s version',hint:'Turn it into an event.',run:()=>({text:'Two artists, one beat, one week. The blogs call it a clash. Everybody streams both.',fx:{hype:15,fansUp:[300,0.1],links:3}})},
+      {label:'Scrap your song and write a better one',hint:'You lose the song. Costs you a day.',run:s=>{s.vault.sort((a,b)=>b.q-a.q).pop();return {text:'You bin the song and spend three nights on a new one. It is better. It is also not recorded yet.',fx:{skill:4,energyNext:-1}};}}
+    ]},
+  {id:'fuel',group:'crisis',title:'Fuel queue',who:'Every filling station from Yaba to Ikeja',when:s=>s.week>=6,
+    text:'There is no fuel anywhere. Jerrycan boys sell at ₦1,500 a litre, danfos have doubled their fares, and your session is in Surulere at 10am.',
+    choices:[
+      {label:'Buy from the jerrycan boys',cost:40000,hint:'Expensive. Keeps your week.',run:()=>({text:'Half of it is water. The gen runs just long enough to finish the session.'})},
+      {label:'Queue all night',hint:'Costs you a day.',run:()=>({text:'You sleep in the queue with a hundred others. By 3am you are leading a sing-along. Somebody films it.',fx:{energyNext:-1,hype:8,fansUp:[150,0.05]}})},
+      {label:'Stay home and write',hint:'No shows this week.',run:()=>({text:'The city stops, so you stop. Two verses come out of the quiet.',fx:{skill:2,hype:-4}})}
+    ]},
+  {id:'flood',group:'crisis',title:'Flood',who:'Lekki, after six hours of rain',when:s=>s.week>=8&&s.fans>=1000,
+    text:'Your show tonight is off. The venue is under knee-deep water, two hundred people have tickets, and the promoter has switched off his phone.',
+    choices:[
+      {label:'Refund the tickets yourself',cost:60000,hint:'Expensive. People remember.',run:()=>({text:'You refund every ticket from your own pocket. Fans post the receipts. Even the promoter is shamed into calling.',fx:{cred:8,hype:6,fansUp:[100,0.04]}})},
+      {label:'Do the show live from your room',hint:'A gamble.',run:()=>R.p(0.5)
+        ?{text:'Two thousand people join a live from a flooded flat. You sing with your feet in a bucket. It is your best show yet.',fx:{hype:16,fansUp:[400,0.12]}}
+        :{text:'NEPA takes light ten minutes in. The live ends with you singing to a dark screen.',fx:{hype:2}}},
+      {label:'Blame the promoter online',hint:'True, and free.',run:()=>({text:'Everyone agrees he is a thief. Nobody gets their money back, and some of them blame you anyway.',fx:{cred:-3,hype:4}})}
+    ]},
+  {id:'okada',title:'Okada ban',who:'Kunle, your okada man, at the junction',when:s=>s.week>=9,
+    text:'Okadas are banned on your side of town. Kunle has carried you to every session for free since week one. The riders are protesting at Ikeja, and he wants you there.',
+    choices:[
+      {label:'Sing at the protest',hint:s=>odds(s,'cred',35),run:s=>chk(s,'cred',35)
+        ?{text:'You sing one song from the back of a bike. The riders know every word. So does the evening news.',fx:{cred:10,hype:14,fansUp:[300,0.1]}}
+        :{text:'The police arrive before the chorus. You spend the night explaining yourself at Area F.',fx:{cred:5,energyNext:-1,money:-30000}}},
+      {label:'Post the hashtag',hint:'Free and safe.',run:()=>({text:'You post the hashtag and go to the studio. Kunle sees it. He does not say anything.',fx:{hype:3,cred:-2}})},
+      {label:'Help him get by',cost:50000,hint:'Quiet help.',run:()=>({text:'He takes it and promises to carry you free for life, as soon as they let him.',fx:{cred:4}})}
+    ]},
+  {id:'collab',cast:'lanre',title:'Credit where due',who:'DJ Ofada, your collaborator',when:s=>s.week>=8&&s.fans>=2000,
+    text:'Your joint single is out. Every platform says “DJ Ofada” and nothing else. Your verse, your hook, no name. “Distributor mistake,” he says, and starts a radio tour.',
+    choices:[
+      {label:'Hire a lawyer to fix the credits',cost:100000,hint:'Do it properly.',run:()=>({text:'One stern letter later, your name is back, and so is your share of the streams.',fx:{earn:120000,cred:3,fansUp:[100,0.03]}})},
+      {label:'Turn up at his radio interview',hint:s=>odds(s,'links',40),run:s=>chk(s,'links',40)
+        ?{text:'Smooth Lanre hands you the mic mid-interview. You sing your verse live. DJ Ofada smiles very hard.',fx:{hype:16,fansUp:[400,0.12],links:3}}
+        :{text:'Security does not know you. You watch the interview from the car park.',fx:{hype:-3}}},
+      {label:'Let it go',hint:'Free. Lesson learned.',run:()=>({text:'You add “I wrote that” to your bio. Three people read it.',fx:{skill:1}})}
+    ]},
+  {id:'copycat',weight:0.7,title:'Mini me',who:'Pikin Melody, seventeen, from Ajegunle',when:s=>s.week>=10&&s.fans>=5000,
+    text:'He has your flow, your ad-libs and somehow your exact shirt. His video has more views than yours this week. The comments are asking who copied who.',
+    choices:[
+      {label:'Co-sign him',hint:'Bring him up. Share the light.',run:()=>({text:'You post him with the words “the future.” His fans become yours, and he calls you “Oga” in every interview.',fx:{fansUp:[400,0.12],cred:5,hype:6}})},
+      {label:'Call him out',hint:'Defend your sound.',run:()=>({text:'Lagos decides you are bullying a teenager. He gets a Zaddy Blaze feature out of it.',fx:{hype:8,cred:-8}})},
+      {label:'Change your sound',hint:'Costs you a day.',run:()=>({text:'You spend the week finding something he cannot copy. It is hard, and it is good for you.',fx:{skill:4,energyNext:-1}})}
+    ]},
+  {id:'ponzi',group:'scam',title:'Double your money',who:'Brother Felix, Double Blessing Investment Club',when:s=>s.week>=6&&s.money>=60000,
+    text:'“Put in ₦100,000 today. In thirty days it is ₦200,000. Pastor’s wife is in it. Your landlord is in it.” He shows you screenshots of bank alerts.',
+    choices:[
+      {label:'Put in ₦100,000',cost:100000,hint:'Double in a month, he says.',run:s=>({text:'He adds you to a WhatsApp group with 4,000 members and a lot of praying hands.',fx:{flag:{ponzi:s.week,ponziIn:100000}}})},
+      {label:'Put in ₦30,000 to test it',cost:30000,hint:'A small bet.',run:s=>({text:'He calls you “a careful investor” and sends a GIF of a lion.',fx:{flag:{ponzi:s.week,ponziIn:30000}}})},
+      {label:'Walk away',hint:'Free.',run:()=>({text:'He tells you poverty is a mindset. You tell him so is honesty.',fx:{cred:1}})}
+    ]},
+  {id:'deposit',group:'scam',title:'Abuja booking',who:'A man who says he runs Capital Groove Fest',when:s=>s.week>=8&&s.fans>=1500,
+    text:'He wants you for a ₦1,000,000 show in Abuja. He only needs a ₦60,000 “booking deposit” to hold the slot, by 5pm today. His profile picture is a sunset.',
+    choices:[
+      {label:'Pay the deposit',cost:60000,hint:'A million-naira show.',run:()=>({text:'He sends a flyer with your name spelt wrong. Then his number stops going through. The fest does not exist.',fx:{cred:-2}})},
+      {label:'Ask around first',hint:s=>odds(s,'links',30),run:s=>chk(s,'links',30)
+        ?{text:'Three artists have already paid him. You post a warning, and promoters thank you in public.',fx:{links:5,cred:4}}
+        :{text:'Nobody has heard of him. You let 5pm pass, just in case.'}},
+      {label:'Tell him to take it from the fee',hint:'Free.',run:()=>({text:'“Ah, that is not how it works.” It is exactly how it works. He blocks you.'})}
     ]}
 ];
 const FOLLOWUPS=[
@@ -645,14 +743,14 @@ const FOLLOWUPS=[
       ?[{label:'Exhale',hint:'Say nothing, ever.',run:()=>({text:'You delete the session files and sleep like a baby.'})}]
       :[
         {label:'Apologise and donate the fee',cost:500000,hint:'Expensive and clean.',run:()=>({text:'Your statement is two paragraphs with no “if anyone was offended.” People notice.',fx:{cred:10,hype:5}})},
-        {label:'Say an artist must eat',hint:'Stand on it.',run:()=>({text:'Half the timeline drags you. The other half quotes you. “Artist must eat” is now a meme.',fx:{cred:-8,hype:12}})},
+        {label:'Say an artist must eat',hint:'Stand on it.',run:()=>({text:'Half the timeline drags you. The other half quotes you. “Artist must eat” is now a meme. Not everyone is laughing.',fx:{cred:-8,hype:6,fansPct:-0.06}})},
         {label:'Go quiet',hint:'Wait it out.',run:()=>({text:'Silence reads as guilt. Some fans leave quietly, too.',fx:{fansPct:-0.08,cred:-5}})}
       ]},
   {id:'investorNotes',title:'Chad has notes',who:'A 2am voice note from Austin',
     when:s=>s.flags.investor&&s.week>=s.flags.investor+3,
     text:'He wants your next single to have “more tropical house, less talking drum,” and a feature from a DJ he met in Ibiza.',
     choices:[
-      {label:'Make Chad’s version',hint:'He owns 30% of you.',run:()=>({text:'It does numbers in Germany. At home, people ask if you are okay.',fx:{cred:-10,hype:12,fansPct:0.06}})},
+      {label:'Make Chad’s version',hint:'He owns 30% of you.',run:()=>({text:'It does numbers in Germany. At home, people ask if you are okay, and some stop listening.',fx:{cred:-10,hype:6,fansPct:-0.06}})},
       {label:'Ignore the notes',hint:'He has lawyers.',run:()=>({text:'He stops replying. Then a letter arrives about “material cooperation.” Your own lawyer is not free.',fx:{money:-300000,cred:5}})},
       {label:'Explain talking drum over suya',hint:s=>odds(s,'cred',30),run:s=>chk(s,'cred',30)
         ?{text:'You take him to a live band in Surulere. He cries a little. The notes stop.',fx:{links:5,cred:3}}
@@ -666,6 +764,101 @@ const FOLLOWUPS=[
         ?{text:'It mostly works. The distributor is too tired to argue.',fx:{cred:-3}}
         :{text:'The distributor posts your receipts. With the Computer Village guy’s name on them.',fx:{cred:-12,hype:5}}},
       {label:'Laugh it off',hint:'“Shout out to my Hanoi fans.”',run:()=>({text:'The joke lands. The shame mostly bounces.',fx:{cred:-5,hype:12,fansPct:0.03}})}
+    ]},
+  {id:'bisiBooking',cast:'bisi',title:'Aunty Bisi’s booking',who:'Aunty Bisi, already in the car',
+    when:s=>s.flags.manager&&s.week>=s.flags.manager+4,
+    text:'She has booked you for a governor’s wife’s sixtieth in Abuja. Three days, all covers, no posting. “The money is good and the people are important. You will thank me.”',
+    choices:[
+      {label:'Go',hint:'Good money. Three quiet days.',run:()=>({text:'You sing “Happy Birthday” in four languages. The fee is real, and so is the silence online.',fx:{earn:300000,links:6,energyNext:-1,hype:-12,cred:-3}})},
+      {label:'Go, and sneak in two of your own',hint:s=>odds(s,'skill',50),run:s=>chk(s,'skill',50)
+        ?{text:'The governor’s wife asks for your song again. Her guests film it. Aunty Bisi pretends it was her idea.',fx:{earn:300000,links:6,energyNext:-1,fansUp:[200,0.03]}}
+        :{text:'She stops the band after one verse. Aunty Bisi does not speak to you on the flight home.',fx:{earn:150000,energyNext:-1,links:-3,hype:-8}}},
+      {label:'Refuse the booking',hint:'She does not like “no.”',run:()=>({text:'She sends someone else and stops taking your calls for a week. Your diary goes quiet.',fx:{cred:3,links:-6}})}
+    ]},
+  {id:'shelved',cast:['tunde','zaddy'],title:'Shelved',who:'Big Tunde, Gbedu Empire Records',
+    when:s=>s.flags.signed&&s.week>=s.flags.signed+3&&s.vault.length>0,
+    text:'He has heard your best new song. He loves it. He is giving it to Zaddy Blaze, and your next single will be a remix of “the label’s priority.” Page 19 says he can.',
+    choices:[
+      {label:'Do as the label says',hint:'They own you. You lose the song.',run:s=>{s.vault.sort((a,b)=>b.q-a.q).shift();return {text:'Zaddy’s version is huge. Your remix is a footnote. Your fans ask where you went.',fx:{hype:-15,fansPct:-0.06,links:4}};}},
+      {label:'Leak your version first',hint:s=>odds(s,'cred',40),run:s=>chk(s,'cred',40)
+        ?{text:'Your version hits the streets a day before Zaddy’s, and the streets pick yours. Big Tunde fines you, then sends flowers.',fx:{hype:18,fansUp:[500,0.06],money:-200000}}
+        :{text:'It leaks, nobody notices, and the label fines you anyway.',fx:{money:-300000,cred:2}}},
+      {label:'Buy the song back',cost:500000,hint:'Expensive. It stays yours.',run:()=>({text:'He takes the money with a smile. “Business, my brother.” The song is yours again.',fx:{cred:3}})}
+    ]},
+  {id:'renegotiate',cast:['tunde','amaka'],title:'New terms',who:'Big Tunde, unannounced, at your session',
+    when:s=>s.flags.signedGood&&s.week>=s.flags.signedGood+3&&s.fans>=10000,
+    text:'“You are doing well. Too well for two singles.” He wants a full album on his schedule. If you say no, the label “may not be able to push” your next release.',
+    choices:[
+      {label:'Take his extra advance',hint:'₦800,000 now. He picks the songs.',run:()=>({text:'The album comes out rushed, with three fillers and a skit. Barrister Amaka refuses to look at you.',fx:{money:800000,cred:-6,hype:-10,fansPct:-0.05}})},
+      {label:'Send Barrister Amaka',cost:150000,hint:s=>odds(s,'links',45),run:s=>chk(s,'links',45)
+        ?{text:'She quotes page 4 at him until he leaves. Your contract stands.',fx:{cred:4,links:4}}
+        :{text:'He sits on your next release for a month. The contract stands, but your fans wait.',fx:{hype:-10,fansPct:-0.03}}},
+      {label:'Say no and promote yourself',hint:'Free. No label push.',run:()=>({text:'He keeps his word: no push. You promote the next single yourself, from your phone.',fx:{hype:-12,cred:5}})}
+    ]},
+  {id:'awardDispute',cast:'kobo',title:'Recount',who:'Lil Kobo, on every platform',
+    when:s=>s.flags.award&&s.week>=s.flags.award+2,
+    text:s=>'He says the awards were rigged and posts a spreadsheet. '+(s.flags.bought?'Row 14 is a payment from your account.':'It is nonsense, but it is a very convincing spreadsheet.'),
+    choices:s=>s.flags.bought?[
+      {label:'Deny everything',hint:'A gamble.',run:()=>R.p(0.4)
+        ?{text:'The spreadsheet has a typo. You make the typo the whole story. Lagos moves on.',fx:{cred:-2}}
+        :{text:'Someone finds the bank alert. The plaque stays. The respect leaves.',fx:{cred:-12,fansPct:-0.08,hype:6}}},
+      {label:'Give the award back',hint:'Clean, and public.',run:()=>({text:'You hand the plaque back on camera. Half of Lagos calls it noble. The other half calls it proof.',fx:{cred:6,fansPct:-0.05,hype:10,flag:{award:false}}})}
+    ]:[
+      {label:'Ask the organisers to publish the count',hint:s=>odds(s,'links',35),run:s=>chk(s,'links',35)
+        ?{text:'They publish it. You won by a mile. Kobo deletes his post, and Lagos does not let him forget.',fx:{cred:6,hype:12}}
+        :{text:'The organisers say nothing. Some people believe the spreadsheet.',fx:{cred:-3}}},
+      {label:'Make a song about it',hint:'Turn it into music.',run:()=>({text:'“Spreadsheet” is two minutes long and very rude. It does numbers.',fx:{hype:16,fansUp:[500,0.04],cred:2}})}
+    ]},
+  {id:'diaspora',title:'Remix request',who:'Your Peckham promoter, at 3am Lagos time',
+    when:s=>s.flags.intl&&s.week>=s.flags.intl+2,
+    text:'The London crowd wants a remix with a UK drill rapper “to cross over.” He has one in mind, and the rapper’s manager wants £300 up front, about ₦600,000.',
+    choices:[
+      {label:'Pay for the remix',cost:600000,hint:'London radio, maybe.',run:()=>({text:'The remix plays on a London station at 2am. Your aunty in Croydon hears it and calls everyone she knows.',fx:{fansUp:[3000,0.08],hype:15}})},
+      {label:'Remix it with a Lagos act instead',hint:'Free. Keep it home.',run:()=>({text:'You call Lil Kobo. The remix is better than the original and twice as Lagos.',fx:{hype:10,cred:4,fansUp:[1000,0.03]}})},
+      {label:'Ignore the request',hint:'They will be home in December anyway.',run:()=>({text:'They come home in December anyway, to every show, in matching outfits.'})}
+    ]},
+  {id:'beefBack',cast:'kobo',title:'Round two',who:'Lil Kobo',
+    when:s=>s.flags.beef&&s.week>=s.flags.beef+4,
+    text:s=>({won:'He has not forgiven your diss. His new single is eleven minutes long, and every line is about you.',lost:'He still performs your “kobo” rhyme at his shows. The crowd shouts it back.',quiet:'Your silence made him bolder. Now he says you stole your flow from him at the open mic.',truce:'Your song together did numbers. He wants another, and this time he wants top billing.'})[s.flags.beefWay]||'Lil Kobo is back, and he has something to say.',
+    choices:s=>s.flags.beefWay==='truce'?[
+      {label:'Give him top billing',hint:'Peace, and a smaller name on the poster.',run:()=>({text:'The song is good. Everybody calls it his song.',fx:{fansUp:[300,0.05],hype:8,cred:-2}})},
+      {label:'Equal billing or nothing',hint:s=>odds(s,'links',40),run:s=>chk(s,'links',40)
+        ?{text:'He agrees. The second song does better than the first.',fx:{fansUp:[400,0.08],hype:12}}
+        :{text:'He finds someone else and posts that you have “gone Hollywood.”',fx:{cred:-2}}}
+    ]:[
+      {label:'Settle it on stage',hint:s=>odds(s,'skill',50),run:s=>chk(s,'skill',50)
+        ?{text:'A battle at a Surulere club. You take it with the second verse. Kobo hugs you afterwards, sweating, and means it.',fx:{cred:10,hype:18,fansUp:[400,0.06]}}
+        :{text:'He wins the room. You lose the battle, and the clip lives forever.',fx:{cred:-6,hype:8}}},
+      {label:'Rise above it',hint:'Free. The streets may call it fear.',run:()=>({text:'You post a photo of yourself in the studio, no caption. The streets debate it for a week.',fx:{cred:-3,skill:2}})}
+    ]},
+  {id:'sapaBack',cast:'sapa',title:'He remembers',who:'Beatz by Sapa',
+    when:s=>s.flags.sapa&&s.week>=s.flags.sapa+4,
+    text:s=>s.flags.sapaPaid?'He has made a beat with your name in the title. “You paid me when nobody paid me. First listen is yours.”':'He has been telling every producer you do not pay. Two studios now want cash up front. Then he calls: “Make we settle?”',
+    choices:s=>s.flags.sapaPaid?[
+      {label:'Take the beat',hint:'Free. A good one.',run:()=>({text:'It is the best beat he has ever made. Your next session is on him.',fx:{skill:2,flag:{freeStudio:true},note:'Your next recording is free'}})},
+      {label:'Make him your producer',cost:100000,hint:'Pay for loyalty.',run:()=>({text:'He moves his laptop into your room. The neighbours learn every beat.',fx:{skill:4,links:4,cred:2}})}
+    ]:[
+      {label:'Pay what you owe, with interest',cost:120000,hint:'Clear your name.',run:()=>({text:'He posts the receipt with the word “respect.” The studios relax.',fx:{links:6,cred:2}})},
+      {label:'Let the studios talk',hint:'Free. Doors get harder.',run:()=>({text:'Studios ask for deposits. One doubles its rate just for you.',fx:{links:-5,cred:-2}})}
+    ]},
+  {id:'bittersRecall',title:'Recall',who:'The evening news',
+    when:s=>s.flags.bitters&&s.week>=s.flags.bitters+3,
+    text:'Kogbagidi Herbal Bitters has been recalled. Lab tests found “industrial quantities” of something. Your face is still on the billboard at Ojota, smiling.',
+    choices:[
+      {label:'Pay to end the contract',cost:500000,hint:'Expensive. Your face comes down.',run:()=>({text:'The billboard comes down overnight. People forget faster than you expected.',fx:{cred:3}})},
+      {label:'Stand by the brand',hint:'You signed for a year.',run:()=>({text:'You say you “trust the process.” The memes are merciless, and some fans go.',fx:{fansPct:-0.1,cred:-8,hype:8}})},
+      {label:'Make a joke video about it',hint:'A gamble.',run:()=>R.p(0.5)
+        ?{text:'You pour the bitters into a flower pot. The flower dies on camera. Lagos forgives you.',fx:{hype:15,fansPct:-0.02,cred:2}}
+        :{text:'Kogbagidi sues for “brand disparagement.” Your lawyer is not free.',fx:{money:-300000,hype:10,fansPct:-0.04}}}
+    ]},
+  {id:'ponziBust',title:'Network glitch',who:'Double Blessing Investment Club, WhatsApp group',
+    when:s=>s.flags.ponzi&&s.week>=s.flags.ponzi+4,
+    text:'“Due to a network glitch, withdrawals are paused.” Brother Felix’s number is off. Four thousand people are typing at once.',
+    choices:[
+      {label:'Write a song about it',hint:'Free. Turn the loss into music.',run:()=>({text:'“Network Glitch” is a sing-along about losing money. Everybody in the group has a reason to share it.',fx:{hype:14,fansUp:[300,0.08],skill:1}})},
+      {label:'Join the march to his office',hint:s=>odds(s,'cred',40),run:s=>chk(s,'cred',40)
+        ?{text:'The crowd breaks in. You get back half of what you put in, partly in office chairs.',fx:{money:Math.round((s.flags.ponziIn||0)/2),cred:3,energyNext:-1}}
+        :{text:'The office is empty except for a calendar of Dubai.',fx:{energyNext:-1}}}
     ]}
 ];
 const DECEMBER={id:'december',title:'December line-ups',who:'Every promoter in Lagos',
@@ -684,9 +877,14 @@ function pickEvent(s){
   if(s.week===22)return DECEMBER;
   const due=FOLLOWUPS.find(e=>!s.seen.includes(e.id)&&e.when(s));
   if(due)return due;
-  const pool=EVENTS.filter(e=>!s.seen.includes(e.id)&&e.when(s));
+  // A story with a group shuts out the rest of its group for the game. Weights default to 1.
+  const used=new Set(EVENTS.filter(e=>e.group&&s.seen.includes(e.id)).map(e=>e.group));
+  const pool=EVENTS.filter(e=>!s.seen.includes(e.id)&&!used.has(e.group)&&e.when(s));
   if(!pool.length||(s.week>1&&!R.p(0.85)))return null;
-  return R.pick(pool);
+  const wt=e=>e.weight===undefined?1:e.weight;
+  let r=R.n(0,pool.reduce((a,e)=>a+wt(e),0));
+  for(const e of pool)if((r-=wt(e))<0)return e;
+  return pool[pool.length-1];
 }
 function choiceState(s,c){
   const cost=c.cost||0;
@@ -717,7 +915,7 @@ function wrapWeek(s){
     const t=takeHome(s,gross);s.money+=t.net;
     lines.push({l:'Streams',v:'+'+naira(t.net),k:'up',sub:t.net<gross?naira(gross-t.net)+' went to '+listOf(t.who):''});
   }else lines.push({l:'Streams',v:'₦0',sub:s.songs.length?'':'You have not released anything yet'});
-  s.money-=15000;lines.push({l:'Food, data, transport',v:naira(-15000),k:'down'});
+  s.money-=12000;lines.push({l:'Food, data, transport',v:naira(-12000),k:'down'});
   const crew=PEOPLE_COST[tierOf(s.fans).name]||0;
   if(crew){s.money-=crew;lines.push({l:'Your people',v:naira(-crew),k:'down',sub:'Stylist, security, and cousins who suddenly remember you'});}
   if(wk%4===0){s.money-=s.rent;lines.push({l:'Rent',v:naira(-s.rent),k:'down'});}
