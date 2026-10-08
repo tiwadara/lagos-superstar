@@ -21,7 +21,7 @@ grep -no "flag:{[a-zA-Z]*" index.html | sort -u     # flags already in use
 grep -n "STAGE_NAMES=" index.html                   # names players can take, never use them for characters
 ```
 
-Reuse an existing character where one fits. The cast is listed in the guide.
+Reuse an existing character where one fits. The cast is the `CAST` list in `index.html`. Tag the card with `cast:'id'` (or a list of ids), and add any new recurring character to `CAST` first.
 
 ## 3. Write the card
 

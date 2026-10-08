@@ -408,9 +408,26 @@ function doAction(s,id){
 }
 
 /* ---------- story events ---------- */
+// Every recurring character, in one place (#27). Stories point at them with cast:'id' or cast:['id','id'].
+// Before inventing a character, check this list. Never reuse a STAGE_NAMES entry.
+const CAST={
+  mum:{name:'Your mother',role:'Retired teacher, prays for you, asks about Tobi',home:'Ibadan'},
+  landlord:{name:'Your landlord',role:'Owns the Yaba compound. Rules, rent reviews, a daughter with birthdays',home:'Yaba'},
+  sikirat:{name:'Iya Sikirat',role:'Food seller at your junction. Trusts singers, keeps a small blue book',home:'Yaba'},
+  sapa:{name:'Beatz by Sapa',role:'Your first producer. Holds stems hostage when unpaid',home:'Surulere'},
+  lanre:{name:'Smooth Lanre',role:'OAP on Vibe 99.9 FM. Plays your song for a small something',home:'Ikeja'},
+  bisi:{name:'Aunty Bisi',role:'Manager of three stars and one disaster. Takes 20%',home:'Lekki'},
+  zaddy:{name:'Zaddy Blaze',role:'Star with three hits. Wants your verse for free',home:'Banana Island'},
+  chief:{name:'Chief Dr. Bamidele Oyelaran',role:'Governorship aspirant with a Ghana-must-go bag',home:'Alimosho'},
+  kobo:{name:'Lil Kobo',role:'Your rival from the open-mic days',home:'Mushin'},
+  mamatobi:{name:'Mama Tobi Comedy',role:'Skit-maker with 4 million followers',home:'Ikorodu'},
+  chad:{name:'Chad Whitlock',role:'Afrowave Capital, Austin. Calls Lagos “Lasgidi”',home:'Austin and VI'},
+  tunde:{name:'Big Tunde',role:'Boss of Gbedu Empire Records. 47-page contracts',home:'Ikoyi'},
+  amaka:{name:'Barrister Amaka',role:'Lawyer who removes eleven clauses',home:'Victoria Island'}
+};
 const anySong=s=>s.vault.length+s.songs.length>0;
 const EVENTS=[
-  {id:'houserules',title:'House rules',who:'Your landlord, on moving day',when:s=>s.week===1,
+  {id:'houserules',cast:'landlord',title:'House rules',who:'Your landlord, on moving day',when:s=>s.week===1,
     text:'“No noise after 10pm. No visitors after 9pm. And no music business people in my compound.” He looks at your speaker for a long time.',
     choices:[
       {label:'Promise to keep it quiet',hint:'Free. Your rehearsals get softer.',run:()=>({text:'You practise in whispers all week. It does wonders for your breath control and nothing for your confidence.',fx:{skill:1,hype:-2}})},
@@ -419,7 +436,7 @@ const EVENTS=[
         ?{text:'Halfway through the chorus he stops frowning. By evening he has told three neighbours about “the singer upstairs.”',fx:{fans:40,hype:6}}
         :{text:'“Hmm. Keep it down after 10.” He walks off humming a different song.',fx:{hype:-2}}}
     ]},
-  {id:'mamaput',title:'Eat now, pay later',who:'Iya Sikirat, the food seller at your junction',when:s=>s.week===1,
+  {id:'mamaput',cast:'sikirat',title:'Eat now, pay later',who:'Iya Sikirat, the food seller at your junction',when:s=>s.week===1,
     text:'“New face! You be musician? Eat now, pay me end of month. I trust singers.” Her amala is the best on the street, and the month is long.',
     choices:[
       {label:'Eat on credit',hint:'₦12,000 of food now. She will come back for it.',run:s=>({text:'You eat like someone with a record deal. She writes your name in a small blue book.',fx:{money:12000,flag:{mamaPut:s.week}}})},
@@ -428,7 +445,7 @@ const EVENTS=[
         ?{text:'Half the junction gathers to listen. She feeds you free for a week and tells everyone your name.',fx:{money:8000,fans:50,hype:5}}
         :{text:'Your voice cracks on the high note. She still gives you a plate, out of pity.',fx:{skill:1}}}
     ]},
-  {id:'mum',title:'Mummy is calling',who:'Your mother, from Ibadan',when:s=>s.week>=2,
+  {id:'mum',cast:'mum',title:'Mummy is calling',who:'Your mother, from Ibadan',when:s=>s.week>=2,
     text:'“Your mate Tobi is now at a bank in Marina. With official car. This music thing, is it paying?”',
     choices:[
       {label:'Send her something',cost:30000,hint:'Peace at home.',run:()=>({text:'She adds you to her prayer points for Friday vigil. You feel strangely lighter.',fx:{flag:{blessing:true},note:'Your next release hits harder'}})},
@@ -487,7 +504,7 @@ const EVENTS=[
         :{text:'“Who is this one?” They hire a live band from Ibadan instead.'}},
       {label:'Decline',hint:'You are an artist, not a jukebox.',run:()=>({text:'You spend Saturday at home, an artist, eating bread.',fx:{cred:2}})}
     ]},
-  {id:'producer',title:'Stems hostage',who:'Your producer, Beatz by Sapa',when:s=>s.week>=3&&anySong(s),
+  {id:'producer',cast:'sapa',title:'Stems hostage',who:'Your producer, Beatz by Sapa',when:s=>s.week>=3&&anySong(s),
     text:'He says you still owe him. Until you pay, he is “holding the stems.” He has also put your unreleased hook on his status.',
     choices:[
       {label:'Pay him',cost:80000,hint:'Keep the relationship.',run:()=>({text:'He sends the files with a prayer-hands emoji and a new beat “for next time.”',fx:{links:3,skill:1}})},
@@ -503,20 +520,20 @@ const EVENTS=[
         :{text:'“Who be this one?” The price goes up, and they keep the director’s tripod.',fx:{money:-80000,cred:-2}}},
       {label:'Pack up and run',hint:'Save the camera.',run:()=>({text:'You save the camera. The video is now forty seconds of you looking nervous.',fx:{hype:-8}})}
     ]},
-  {id:'oap',title:'Radio rotation',who:'Smooth Lanre, Vibe 99.9 FM',when:s=>s.week>=3&&s.songs.length>0,
+  {id:'oap',cast:'lanre',title:'Radio rotation',who:'Smooth Lanre, Vibe 99.9 FM',when:s=>s.week>=3&&s.songs.length>0,
     text:'He likes your song. He would like it more with a small something. “For logistics.”',
     choices:[
       {label:'Pay for the rotation',cost:150000,hint:'Radio still moves Lagos.',run:()=>({text:'Your song now plays between the traffic updates. Danfo drivers know the hook.',fx:{hype:25,fansUp:[400,0.12]}})},
       {label:'Perform at his birthday instead',hint:'Costs you a night.',run:()=>({text:'Three songs at a lounge in Ikeja, paid in small chops. He plays your record twice that week.',fx:{hype:12,links:5,energyNext:-1}})},
       {label:'Refuse. Good music will find its way',hint:'A beautiful principle.',run:()=>({text:'It is a beautiful principle. The radio stays quiet.',fx:{cred:4}})}
     ]},
-  {id:'manager',title:'Aunty Bisi',who:'She has managed three stars and one disaster',when:s=>s.week>=4&&s.fans>=500&&!s.flags.manager,
+  {id:'manager',cast:'bisi',title:'Aunty Bisi',who:'She has managed three stars and one disaster',when:s=>s.week>=4&&s.fans>=500&&!s.flags.manager,
     text:'“You have talent. You do not have sense yet. I can lend you mine.” She wants 20% of everything you earn from music.',
     choices:[
       {label:'Sign with Aunty Bisi',hint:'She opens doors and takes her cut. Forever.',run:()=>({text:'Within a week you have a press photo, a schedule and a curfew.',fx:{links:15,flag:{manager:true},note:'Your checks get easier. 20% of music income goes to her'}})},
       {label:'Stay your own manager',hint:'Keep 100% of not much.',run:()=>({text:'You answer your own emails. All four of them.',fx:{cred:2}})}
     ]},
-  {id:'feature',title:'A verse for a big man',who:'Zaddy Blaze, three hits deep',when:s=>s.week>=4&&s.fans>=800,
+  {id:'feature',cast:'zaddy',title:'A verse for a big man',who:'Zaddy Blaze, three hits deep',when:s=>s.week>=4&&s.fans>=800,
     text:'He wants you on his next single. No fee, and he keeps all the publishing. “It is exposure.”',
     choices:[
       {label:'Take the exposure',hint:'His fans become your fans.',run:()=>({text:'Your verse is the part everyone rewinds. You will never see a kobo from it.',fx:{fansUp:[700,0.35],hype:20}})},
@@ -540,14 +557,14 @@ const EVENTS=[
         ?{text:'It is so bad it is good. Aunties are duetting it.',fx:{hype:22,fansUp:[500,0.15]}}
         :{text:'It is just bad.',fx:{hype:6}}}
     ]},
-  {id:'jingle',title:'His Excellency-to-be',who:'Chief Dr. Bamidele Oyelaran, governorship aspirant',when:s=>s.week>=5&&s.fans>=1500,
+  {id:'jingle',cast:'chief',title:'His Excellency-to-be',who:'Chief Dr. Bamidele Oyelaran, governorship aspirant',when:s=>s.week>=5&&s.fans>=1500,
     text:'He wants a campaign jingle. His aide opens a Ghana-must-go bag: ₦1,200,000, cash. “Just something the youths can dance to.”',
     choices:[
       {label:'Take the bag',hint:'₦1,200,000. Your name on it.',run:s=>({text:'The jingle is, annoyingly, your catchiest work. It plays from every campaign bus in Alimosho.',fx:{money:1200000,cred:-12,links:8,flag:{jingle:s.week}}})},
       {label:'Do it under a fake name for half',hint:'₦600,000. Nobody will know. Probably.',run:s=>({text:'“Lil Mandate” is born. Nobody will ever connect him to you. Probably.',fx:{money:600000,flag:{jingle:s.week,alias:true,blown:R.p(0.5)}}})},
       {label:'Decline, respectfully',hint:'Clean hands.',run:()=>({text:'The aide zips the bag slowly, so you can watch it close.',fx:{cred:6,links:-3}})}
     ]},
-  {id:'beef',title:'Subliminals',who:'Lil Kobo, your mate from the open-mic days',when:s=>s.fans>=1500,
+  {id:'beef',cast:'kobo',title:'Subliminals',who:'Lil Kobo, your mate from the open-mic days',when:s=>s.fans>=1500,
     text:'He drops a new track. Second verse, a line about someone who will be “upcoming forever.” Everybody knows who he means.',
     choices:[
       {label:'Reply with a diss by midnight',hint:s=>odds(s,'skill',40),run:s=>chk(s,'skill',40)
@@ -556,7 +573,7 @@ const EVENTS=[
       {label:'Ignore him',hint:'It passes.',run:()=>({text:'He claims victory. Lagos is bored of it by Wednesday.',fx:{cred:-2}})},
       {label:'Call him. Do a song together',hint:'Turn it into marketing.',run:()=>({text:'The beef was “just for the culture,” you both tell interviewers, laughing.',fx:{links:6,hype:12,fansUp:[200,0.06]}})}
     ]},
-  {id:'skit',title:'Skit sound',who:'Mama Tobi Comedy, 4 million followers',when:s=>s.songs.length>0&&s.fans>=1000,
+  {id:'skit',cast:'mamatobi',title:'Skit sound',who:'Mama Tobi Comedy, 4 million followers',when:s=>s.songs.length>0&&s.fans>=1000,
     text:'She wants your song in her next skit. Her manager sends an invoice. You are the one paying.',
     choices:[
       {label:'Pay the invoice',cost:200000,hint:'Four million people.',run:()=>({text:'The skit is about a landlord. Your hook plays when he falls into the gutter. It is everywhere.',fx:{hype:30,fansUp:[600,0.3]}})},
@@ -572,7 +589,7 @@ const EVENTS=[
         :{text:'You type for nine slides. Slide six is a mistake.',fx:{hype:10,cred:-6}}},
       {label:'Ignore it',hint:'It passes.',run:()=>({text:'It trends until Friday. Then a pastor does something, and Lagos moves on.',fx:{hype:6,cred:-2}})}
     ]},
-  {id:'landlord',title:'Rent review',who:'Your landlord, at your door, 7am',when:s=>s.week>=6,
+  {id:'landlord',cast:'landlord',title:'Rent review',who:'Your landlord, at your door, 7am',when:s=>s.week>=6,
     text:'“Dollar has increased.” You pay in naira. He earns in naira. The building is in naira.',
     choices:[
       {label:'Accept the increase',hint:'₦40,000 more each month.',run:()=>({text:'He pats your shoulder and says you are “like a son.”',fx:{rent:40000}})},
@@ -581,7 +598,7 @@ const EVENTS=[
         ?{text:'He folds. Tenants who pay at all are hard to find.',fx:{cred:1}}
         :{text:'He calls your bluff. You pay the increase, plus a “caution fee.”',fx:{rent:40000,money:-20000}}}
     ]},
-  {id:'investor',title:'Afrobeats to the world',who:'Chad Whitlock, Afrowave Capital, Austin',when:s=>s.week>=7&&s.fans>=3000&&!s.flags.investor,
+  {id:'investor',cast:'chad',title:'Afrobeats to the world',who:'Chad Whitlock, Afrowave Capital, Austin',when:s=>s.week>=7&&s.fans>=3000&&!s.flags.investor,
     text:'He has been in Lagos for four days and calls it “Lasgidi.” He offers $1,000, about ₦1.5m, for 30% of everything you ever earn. “We are going to scale you, bro.”',
     choices:[
       {label:'Take the dollars',hint:'₦1,500,000 now. 30% of you, forever.',run:s=>({text:'You sign on his iPad at a rooftop bar in VI. He calls you “a portfolio company.”',fx:{money:1500000,links:6,flag:{investor:s.week}}})},
@@ -590,7 +607,7 @@ const EVENTS=[
         :{text:'He says he will “circle back.” He does not.'}},
       {label:'Pass',hint:'Nobody owns you.',run:()=>({text:'He funds a skit-maker instead.',fx:{cred:3}})}
     ]},
-  {id:'label',title:'The contract',who:'Big Tunde, Gbedu Empire Records',when:s=>s.week>=8&&s.fans>=8000&&!s.flags.signed&&!s.flags.signedGood,
+  {id:'label',cast:['tunde','amaka'],title:'The contract',who:'Big Tunde, Gbedu Empire Records',when:s=>s.week>=8&&s.fans>=8000&&!s.flags.signed&&!s.flags.signedGood,
     text:'He slides 47 pages across the desk. ₦1,500,000 advance. Five albums. They own the masters. “Standard,” he says, of a contract that is standard nowhere.',
     choices:[
       {label:'Sign it',hint:'₦1,500,000 today. Read nothing.',run:s=>{s.recoup=1500000;return {text:'You sign. There is champagne. Somewhere on page 31, the word “recoupable” is waiting for you.',fx:{money:1500000,hype:20,links:12,flag:{signed:true},note:'Your music income now pays back the advance first'}};}},
@@ -631,14 +648,14 @@ const EVENTS=[
     ]}
 ];
 const FOLLOWUPS=[
-  {id:'mamaPutBack',title:'The blue book',who:'Iya Sikirat, at your door',
+  {id:'mamaPutBack',cast:'sikirat',title:'The blue book',who:'Iya Sikirat, at your door',
     when:s=>s.flags.mamaPut&&s.week>=s.flags.mamaPut+3,
     text:'She has the small blue book open at your page. “₦12,000. Today. I trusted you.”',
     choices:[
       {label:'Pay her',cost:12000,hint:'Square the account.',run:()=>({text:'She crosses out your name, then adds you to her prayer list.',fx:{cred:2}})},
       {label:'Beg for one more week',hint:'Free. The whole street is listening.',run:()=>({text:'She agrees, loudly enough for the whole street to hear what you owe. At the junction, your name is now a warning.',fx:{cred:-5}})}
     ]},
-  {id:'jingleFallout',title:'Rice and ₦1,000 notes',who:'Every timeline in Nigeria',
+  {id:'jingleFallout',cast:'chief',title:'Rice and ₦1,000 notes',who:'Every timeline in Nigeria',
     when:s=>s.flags.jingle&&s.week>=s.flags.jingle+3,
     text:s=>'The Chief has been filmed sharing rice and ₦1,000 notes at a rally, and it is going badly online. '+(s.flags.alias?(s.flags.blown?'Worse: a blog has matched Lil Mandate’s voice to yours.':'The jingle plays under every clip. Nobody has connected Lil Mandate to you.'):'Your jingle is the soundtrack of every clip.'),
     choices:s=>s.flags.alias&&!s.flags.blown
@@ -648,7 +665,7 @@ const FOLLOWUPS=[
         {label:'Say an artist must eat',hint:'Stand on it.',run:()=>({text:'Half the timeline drags you. The other half quotes you. “Artist must eat” is now a meme.',fx:{cred:-8,hype:12}})},
         {label:'Go quiet',hint:'Wait it out.',run:()=>({text:'Silence reads as guilt. Some fans leave quietly, too.',fx:{fansPct:-0.08,cred:-5}})}
       ]},
-  {id:'investorNotes',title:'Chad has notes',who:'A 2am voice note from Austin',
+  {id:'investorNotes',cast:'chad',title:'Chad has notes',who:'A 2am voice note from Austin',
     when:s=>s.flags.investor&&s.week>=s.flags.investor+3,
     text:'He wants your next single to have “more tropical house, less talking drum,” and a feature from a DJ he met in Ibiza.',
     choices:[

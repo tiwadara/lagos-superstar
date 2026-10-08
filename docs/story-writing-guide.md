@@ -15,13 +15,18 @@ The content framework for The Next Lagos Star. Read this before writing or editi
 
 Every person, company, brand, blog, label, radio station and investor is invented. Real places, real foods and real things Lagos lives with (NEPA, danfos, Third Mainland Bridge, Computer Village) are welcome. Never name or clearly imitate a real artist, politician, company or public figure. See [ADR 0007](adr/0007-fictional-people-and-companies.md).
 
-Before adding a new name, check the cast already in the game: Aunty Bisi, Big Tunde of Gbedu Empire, Chad Whitlock of Afrowave Capital, Lil Kobo, Zaddy Blaze, Smooth Lanre of Vibe 99.9 FM, Mama Tobi Comedy, Barrister Amaka, Beatz by Sapa, Chief Dr. Bamidele Oyelaran, Kogbagidi Herbal Bitters, Amebo Central, Eko Rave, SapaLoan, the talent show Who Get Voice?, and Iya Sikirat, the food seller at your junction. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
+Before adding a new name, check the cast already in the game. Every recurring character is listed in `CAST` in `index.html`, with their role and where they live: your mother, your landlord, Iya Sikirat, Beatz by Sapa, Smooth Lanre of Vibe 99.9 FM, Aunty Bisi, Zaddy Blaze, Chief Dr. Bamidele Oyelaran, Lil Kobo, Mama Tobi Comedy, Chad Whitlock of Afrowave Capital, Big Tunde of Gbedu Empire and Barrister Amaka. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
+
+When a story features a cast member, tag the card with `cast: 'bisi'`, or a list such as `cast: ['tunde', 'amaka']`. A new recurring character goes into `CAST` first. `node lint-stories.js` fails on a tag that is not in `CAST` and warns about a cast member who is in no story.
+
+Brands and places that are not people (Kogbagidi Herbal Bitters, Amebo Central, Eko Rave, SapaLoan, the talent show Who Get Voice?) are not in `CAST`, but check the stories before reusing or inventing one.
 
 ## Anatomy of a card
 
 | Field | Rules |
 | --- | --- |
 | `id` | Unique, camelCase, a word or two: `areaboys`, `jingleFallout` |
+| `cast` | Optional. The `CAST` id of the character in the story, or a list of ids |
 | `title` | One to four words. A headline, not a summary: "Checkpoint", "Stems hostage" |
 | `who` | Who is speaking or where we are: "Your landlord, at your door, 7am" |
 | `when` | When the story may appear. Always set a minimum week. Use fan thresholds that line up with the tiers (1,000, 10,000, 100,000) |
@@ -62,7 +67,7 @@ Big payouts are where balance usually breaks. Late-game money already piles up (
 - [ ] At least one choice is free.
 - [ ] No choice is best in every case.
 - [ ] Stat checks show their odds in the hint.
-- [ ] All names are fictional and not already used for something else.
+- [ ] All names are fictional and not already used for something else. Recurring characters are in `CAST` and the card has a `cast` tag.
 - [ ] The text reads well on a phone: 25 to 45 words, one decision.
 - [ ] `node lint-stories.js` reports no errors. It also runs on every pull request.
 - [ ] `node simulate.js` shows no ending more than about 5 points away from the [baseline](balance.md#current-baseline), or the change explains why.

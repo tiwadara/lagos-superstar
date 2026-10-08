@@ -19,7 +19,7 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | Content | `BACKGROUNDS`, `TIERS`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
 | Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `actionState`, `doAction` | No |
-| Stories | `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `pickEvent`, `choiceState`, `choose` | No |
+| Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `pickEvent`, `choiceState`, `choose` | No |
 | End of week | `wrapWeek` | No |
 | Endings | `tally`, `debtEnding`, `finale`, `newGame` | No |
 | Interface | everything inside `if (typeof document !== 'undefined')` | Yes |
@@ -108,7 +108,7 @@ The interface keeps a small `ui` object (`screen`, `sheet`, `prev`, `fresh`, `co
 
 Renaming any of them, adding a `<script>` block before the game script, or using the page above the interface block will break the simulator. Run `node simulate.js 200` after any change to the rules.
 
-`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `STAGE_NAMES` and `BACKGROUNDS`. Both run on every pull request in `.github/workflows/check.yml`.
+`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `STAGE_NAMES`, `BACKGROUNDS` and `CAST`. Both run on every pull request in `.github/workflows/check.yml`.
 
 ## Deploys
 
