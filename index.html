@@ -241,7 +241,7 @@ const TIERS=[
 const tierOf=f=>TIERS.find(t=>f>=t.min);
 const nextTier=f=>{const i=TIERS.findIndex(t=>f>=t.min);return i>0?TIERS[i-1]:null;};
 
-const SLOGANS=['No food for lazy man','God’s time is the best','Shine your eye','E go better','No condition is permanent','Who knows tomorrow?','Let them say','The young shall grow','Sea never dry','Hustle and pray','Lagos no dey sleep','Up we go','Humble yourself','Slow and steady','Back to sender','No shaking'];
+const SLOGANS=['{n} no dey carry last','Who know {n}? Everybody','{n} on the mic tonight','No food for lazy man','God’s time is the best','Shine your eye','E go better','No condition is permanent','Who knows tomorrow?','Let them say','The young shall grow','Sea never dry','Hustle and pray','Lagos no dey sleep','Up we go','Humble yourself','Slow and steady','Back to sender','No shaking'];
 const OPENERS=[
   'Monday. The generator next door starts before your alarm does.',
   'It rained all night. Your street is now a river with okadas in it.',
@@ -254,7 +254,7 @@ const OPENERS=[
   'Somebody’s uncle asks if you can “do something small” for his company. For free.',
   'You wake up to twelve voice notes from a promoter. None of them mention money.',
   'The landlord’s wife says she heard you singing. She does not say if she liked it.',
-  'A danfo conductor shouts your stage name as a bus stop joke. You take it as press.'
+  'A danfo conductor shouts “{n}! Oshodi, Oshodi!” as a bus stop joke. You take it as press.'
 ];
 const SONG_TITLES=['Conductor, My Change','Monday Morning Hold-Up','Jollof and Regret','Two-Bedroom in Lekki','Bolt Driver Cancelled','Sapa Is a Teacher','Agege Bread Love','No Light Again','Third Mainland at 5pm','Small Chops','Shine Your Eye','Mummy’s Prayer','Detty Forever','Yaba Left','Owambe Sunday','Generator Lullaby','One Room, One Dream','Who Send Me?','Island Girl, Mainland Boy','Transfer Has Entered','Keke to Heaven','Low Battery','Aunty, Calm Down','Odogwu in Traffic'];
 const STAGE_NAMES=['Ronke Riddim','Omo Yaba','Temi Gold','Fine Boy Dayo','Queen Ada','Kashy Wonder','Bella Vibez','Young Sapa','Sisi Mainland','Ebuka Flames','Zino Wavy','Lady Shalewa'];
@@ -455,7 +455,7 @@ const EVENTS=[
         :{text:'“Hmm. Keep it down after 10.” He walks off humming a different song.',fx:{hype:-2}}}
     ]},
   {id:'mamaput',title:'Eat now, pay later',who:'Iya Sikirat, the food seller at your junction',when:s=>s.week===1,
-    text:'“New face! You be musician? Eat now, pay me end of month. I trust singers.” Her amala is the best on the street, and the month is long.',
+    text:'“New face! {n}, abi? You be musician? Eat now, pay me end of month. I trust singers.” Her amala is the best on the street, and the month is long.',
     choices:[
       {label:'Eat on credit',hint:'₦12,000 of food now. She will come back for it.',run:s=>({text:'You eat like someone with a record deal. She writes your name in a small blue book.',fx:{money:12000,flag:{mamaPut:s.week}}})},
       {label:'Pay cash like a serious person',hint:'Your usual food money. The street notices.',run:()=>({text:'She nods with respect and adds extra meat. Street cred is built one plate at a time.',fx:{cred:3}})},
@@ -707,7 +707,7 @@ const DECEMBER={id:'december',title:'December line-ups',who:'Every promoter in L
   text:s=>'The Detty December flyers go to print this week. '+(s.fans>=100000?'Three promoters called you before breakfast.':s.fans>=15000?'Your name is “being discussed.”':'Your phone is quiet.'),
   choices:[
     {label:'Wait for the right call',hint:s=>s.fans>=100000?'They are already calling.':s.fans>=15000?'A daytime slot is likely.':'Nobody may call.',run:s=>{
-      if(s.fans>=100000)return {text:'Eko Rave gives you the headline slot on the 27th. Your name is the biggest thing on the flyer.',fx:{hype:10,flag:{dec:'headline'}}};
+      if(s.fans>=100000)return {text:'Eko Rave gives you the headline slot on the 27th. “{n}” is the biggest name on the flyer.',fx:{hype:10,flag:{dec:'headline'}}};
       if(s.fans>=15000)return {text:'Eko Rave offers you 6:15pm on the second stage. A real slot, with a real fee.',fx:{hype:5,flag:{dec:'slot'}}};
       return {text:'Nobody calls. The flyers print without you.',fx:{flag:{dec:'none'}}};
     }},
@@ -835,6 +835,8 @@ if(typeof document!=='undefined'){
   const app=document.getElementById('app'),sheetEl=document.getElementById('sheet');
   const ui={screen:'title',sheet:null,prev:null,fresh:false,confirmRestart:false};
   let S=null;
+  // {n} in any game text becomes the player's stage name when shown (#60).
+  const nm=t=>String(t).replace(/\{n\}/g,S?S.name:'You');
   const h=str=>String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const chipsHtml=chips=>chips&&chips.length?'<div class="chips">'+chips.map(c=>'<span class="chip '+c.k+'">'+h(c.t)+'</span>').join('')+'</div>':'';
   const pipsHtml=(on,total)=>'<span class="pips" aria-hidden="true">'+Array.from({length:total},(_,i)=>'<span class="pip'+(i<on?' on':'')+'"></span>').join('')+'</span>';
@@ -886,12 +888,12 @@ if(typeof document!=='undefined'){
       '<header class="danfo">'+
         '<div class="danfo-top"><h1 class="danfo-name">'+h(s.name)+'</h1><div class="danfo-week">Week '+s.week+' <span>of '+TOTAL_WEEKS+'</span></div></div>'+
         '<div class="danfo-figs"><b class="'+(s.money<0?'owing ':'')+(prev.money!==undefined&&prev.money!==s.money?'bump':'')+'">'+naira(s.money)+'</b><span><b class="'+(prev.fans!==undefined&&prev.fans!==s.fans?'bump':'')+'">'+fansFmt(s.fans)+'</b> fans</span></div>'+
-        '<div class="stripe">'+h(s.slogan)+'</div><div class="stripe-thin"></div>'+
+        '<div class="stripe">'+h(nm(s.slogan))+'</div><div class="stripe-thin"></div>'+
       '</header>'+
       '<main>'+
       '<p class="tier"><b>'+t.name+'.</b> '+(nt?fansFmt(nt.min-s.fans)+' more fans to '+nt.name+'.':'The whole city knows your name.')+'</p>'+
       '<section class="meters" aria-label="Your stats">'+meters.map(([l,v])=>'<div><div class="meter-top"><span>'+l+'</span><b>'+v+'</b></div><div class="bar"><i style="width:'+v+'%"></i></div></div>').join('')+'</section>'+
-      '<section class="latest'+(ui.fresh?' fresh':'')+'" aria-live="polite"><p>'+h(latest?latest.text:s.opener)+'</p>'+(latest?chipsHtml(latest.chips):'')+'</section>'+
+      '<section class="latest'+(ui.fresh?' fresh':'')+'" aria-live="polite"><p>'+h(nm(latest?latest.text:s.opener))+'</p>'+(latest?chipsHtml(latest.chips):'')+'</section>'+
       '<div class="moves-head"><span class="moves-left">'+pipsHtml(s.energy,Math.max(3,s.energy))+' '+(s.energy===1?'1 move left':s.energy+' moves left')+'</span><span class="rent'+(weeksToRent===0?' soon':'')+'">'+rentTxt+'</span></div>'+
       '<p class="goal"><b>Next:</b> '+h(nextGoal(s))+'</p>'+
       (s.week===1?'<p class="tip">Tap a move to spend it. When you are done, end the week and see what Lagos does next.</p>':'')+
@@ -946,9 +948,9 @@ if(typeof document!=='undefined'){
     const o=S.over;
     app.innerHTML=
       '<header><div class="danfo danfo-title end-name"><p>'+h(S.name)+', after '+o.week+' weeks</p><h1 class="title">'+h(o.title)+'</h1></div>'+
-      '<div class="danfo danfo-title" style="padding-top:0"><div class="stripe">'+h(S.slogan||'No condition is permanent')+'</div><div class="stripe-thin"></div></div></header>'+
+      '<div class="danfo danfo-title" style="padding-top:0"><div class="stripe">'+h(nm(S.slogan||'No condition is permanent'))+'</div><div class="stripe-thin"></div></div></header>'+
       '<main class="pad stack">'+
-      '<div><p class="lede">'+h(o.show)+'</p>'+chipsHtml(o.chips)+'</div>'+
+      '<div><p class="lede">'+h(nm(o.show))+'</p>'+chipsHtml(o.chips)+'</div>'+
       '<p class="verdict">'+h(o.verdict)+'</p>'+
       (o.notes.length?'<ul class="notes">'+o.notes.map(n=>'<li>'+h(n)+'</li>').join('')+'</ul>':'')+
       '<ul class="tally">'+o.tally.map(r=>'<li><span>'+h(r[0])+'</span><b>'+h(r[1])+'</b></li>').join('')+'</ul>'+
@@ -977,12 +979,12 @@ if(typeof document!=='undefined'){
       html+=feedbackHtml(true);
     }else if(sh.phase==='event'){
       const ev=sh.ev,choices=val(ev.choices,s);
-      html+='<h2 id="sheet-title" tabindex="-1">'+h(ev.title)+'</h2><p class="who">'+h(ev.who)+'</p><p class="story">'+h(val(ev.text,s))+'</p><div class="choices">'+
+      html+='<h2 id="sheet-title" tabindex="-1">'+h(ev.title)+'</h2><p class="who">'+h(ev.who)+'</p><p class="story">'+h(nm(val(ev.text,s)))+'</p><div class="choices">'+
         choices.map((c,i)=>{const st=choiceState(s,c);return '<button class="choice" data-choice="'+i+'"'+(st.ok?'':' disabled')+'><span class="choice-label">'+h(c.label)+'</span><span class="choice-cost">'+(st.cost?naira(st.cost):'')+'</span><span class="choice-hint">'+h(st.ok?val(c.hint,s)||'':'You cannot afford this.')+'</span></button>';}).join('')+
         '</div>';
     }else{
       if(sh.ev){
-        html+='<h2 id="sheet-title" tabindex="-1">'+h(sh.ev.title)+'</h2><p class="picked">You chose: '+h(sh.res.label)+'</p><p class="story">'+h(sh.res.text||'')+'</p>'+chipsHtml(sh.res.chips);
+        html+='<h2 id="sheet-title" tabindex="-1">'+h(sh.ev.title)+'</h2><p class="picked">You chose: '+h(sh.res.label)+'</p><p class="story">'+h(nm(sh.res.text||''))+'</p>'+chipsHtml(sh.res.chips);
       }else{
         html+='<h2 id="sheet-title" tabindex="-1">A quiet week</h2><p class="story">Nobody called, nothing broke, nobody dragged you online. In Lagos, that is news.</p>';
       }
