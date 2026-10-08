@@ -34,13 +34,15 @@ const careerIds = Object.keys(G.CAREERS);
 const forCard = (e, players) => players.filter(s => !e.careers || e.careers.includes(s.career));
 
 // Test players: weak and broke, strong and rich, for each career and background, late enough that most stories fit.
+// Each is tried as a stranger to the cast, and as everyone's enemy and everyone's ally, to reach stories that read rel(s, id).
 function testPlayers(extraFlags) {
   const out = [];
   for (const cid of careerIds) for (const bg of Object.keys(G.CAREERS[cid].backgrounds)) {
-    for (const level of [0, 100]) {
+    for (const level of [0, 100]) for (const feel of [null, -6, 6]) {
       const s = G.newGame('Test', bg, cid);
       Object.assign(s, { week: 10, fans: level ? 200000 : 50, money: level ? 5000000 : 0, skill: level, hype: level, cred: level, links: level });
       Object.assign(s.flags, extraFlags);
+      if (feel !== null) for (const c of Object.keys(G.CAST)) s.rel[c] = feel;
       out.push(s);
     }
   }
