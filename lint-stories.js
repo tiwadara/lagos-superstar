@@ -58,7 +58,7 @@ for (const { e } of cards) {
 }
 
 // 2. Run every choice to learn which flags stories set, so follow-ups and choice lists can be checked.
-const flagsSet = new Set();
+const flagsSet = new Set(), flagsBy = {}; // every flag set, and the flags each card sets
 function runChoice(e, c, s) {
   const out = [];
   for (let k = 0; k < RUNS; k++) {
@@ -66,7 +66,7 @@ function runChoice(e, c, s) {
     let res;
     try { res = c.run(t) || {}; } catch (x) { err(e.id, `choice "${c.label}" crashed: ${x.message}`); return out; }
     out.push(res);
-    if (res.fx && res.fx.flag) Object.keys(res.fx.flag).forEach(f => flagsSet.add(f));
+    if (res.fx && res.fx.flag) Object.keys(res.fx.flag).forEach(f => { flagsSet.add(f); (flagsBy[e.id] = flagsBy[e.id] || new Set()).add(f); });
   }
   return out;
 }
@@ -146,9 +146,22 @@ for (const { e, kind } of cards) {
   if (e.group !== undefined && (typeof e.group !== 'string' || !e.group)) err(id, 'group must be a name, such as \'scam\'');
   if (kind !== 'event' && (e.weight !== undefined || e.group !== undefined)) warn(id, 'weight and group only change how EVENTS are drawn, so they do nothing here');
 
+  // Seasons (docs/adr/0010-seasons-carry-over.md): once is 'career', and fromSeason is a season number from 2.
+  if (e.once !== undefined && e.once !== 'career') err(id, `once must be 'career', not ${JSON.stringify(e.once)}`);
+  if (e.fromSeason !== undefined && !(Number.isInteger(e.fromSeason) && e.fromSeason >= 2)) err(id, `fromSeason must be a season number from 2, not ${JSON.stringify(e.fromSeason)}`);
+
   // 6. Names players can be given are never used in stories.
   const allText = cardText(e);
   for (const name of G.STAGE_NAMES) if (allText.includes(name)) err(id, `uses "${name}", which is in STAGE_NAMES. Players can be given that name`);
+}
+
+// Follow-ups happen once per career. A story that starts one must too (once: 'career'), or in a later season
+// it would come back without its consequence.
+const waitedFor = {};
+for (const e of G.FOLLOWUPS) for (const m of e.when.toString().matchAll(/flags\.(\w+)/g)) (waitedFor[m[1]] = waitedFor[m[1]] || []).push(e.id);
+for (const e of G.EVENTS) {
+  const starts = [...(flagsBy[e.id] || [])].filter(f => waitedFor[f]);
+  if (starts.length && e.once !== 'career') err(e.id, `sets flag "${starts[0]}", which ${waitedFor[starts[0]][0]} waits for, so it needs once: 'career'`);
 }
 
 // Every cast member appears in at least one story.

@@ -2,12 +2,14 @@
 // Plays thousands of games with no browser, to check balance after you add or
 // change stories.
 //
-// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check] [--seed=N] [--career=ID]
+// Usage: node simulate.js [games per row, default 2000] [--stories=random|money|purist|all] [--detail] [--check] [--seed=N] [--career=ID] [--seasons=2]
 //   --career   play one career only (default every career in CAREERS)
+//   --seasons=2  also play a second season straight after each game's first (docs/adr/0010-seasons-carry-over.md),
+//              and print its results in a table of their own. Season 1 rows are the same games either way.
 //   --stories  how simulated players pick story choices (default random, "all" prints every strategy)
 //   --detail   also print cash and fans by week, and each story's effect on games
-//   --check    play random and money-chasing story choices, compare with TARGETS below and with
-//              balance-baseline.json, and exit with code 1 if anything is missed. About 40 seconds.
+//   --check    play random and money-chasing story choices, then a second season with random choices, compare with
+//              TARGETS below and with balance-baseline.json, and exit with code 1 if anything is missed. About 3 minutes.
 //   --seed=N   play the same games every run, for repeatable results
 //   --save-baseline  play the same games as --check and write balance-baseline.json. Use 4000 games per row
 //              (node simulate.js 4000 --save-baseline) so the baseline itself is steady.
@@ -17,7 +19,7 @@ const path = require('path');
 const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const G = new Function(source + `
-  return { newGame, doAction, actionState, pickEvent, choose, choiceState,
+  return { newGame, newSeason, doAction, actionState, pickEvent, choose, choiceState,
            wrapWeek, finale, val, R, ACTIONS, CAREERS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
 
 // Every career needs an entry in MOVES below.
@@ -95,15 +97,37 @@ const RULES = [
   { player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
   { player: 'lazy', rule: 'ends Sapa won or Area champion', min: 80, value: r => r.pct['Sapa won'] + r.pct['Area champion'] }
 ];
+// Season 2: the same games played on for a second year (docs/adr/0010-seasons-carry-over.md). Thresholds stay the
+// same, so a good first year makes the second easier. A game that ended in Sapa won in season 1 counts as Sapa won here.
+// `held` is the share of games that finished season 1 on a tier and end season 2 on the same tier or a better one.
+// Cash is the median at the end of week 20 of season 2.
+// The reasons for each number are in docs/balance.md.
+const RULES2 = [
+  { player: 'sensible', rule: 'holds or improves its tier', min: 90, value: r => r.held },
+  { player: 'sensible', rule: 'ends Next rated or Lagos star', min: 85, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
+  { player: 'sensible', rule: 'ends Lagos star', max: 10, value: r => r.pct['Lagos star'] },
+  { player: 'sensible', rule: 'ends Sapa won', max: 2, value: r => r.pct['Sapa won'] },
+  { player: 'sensible', rule: 'median cash at week 20', min: 0, max: 1500000, naira: true, value: r => r.cash20 },
+  { player: 'random', rule: 'ends Buzzing or Next rated', min: 75, value: r => r.pct['Buzzing'] + r.pct['Next rated'] },
+  { player: 'random', rule: 'ends Sapa won', min: 2, max: 25, value: r => r.pct['Sapa won'] },
+  { player: 'lazy', rule: 'ends Next rated or Lagos star', max: 0.5, value: r => r.pct['Next rated'] + r.pct['Lagos star'] },
+  { player: 'lazy', rule: 'ends Sapa won', min: 75, value: r => r.pct['Sapa won'] }
+];
 // Every career has the same targets for now, so its ending names line up with music's ranks (ENDINGS below).
-const TARGETS = ['music', 'actor'].flatMap(career => RULES.map(r => ({ career, ...r })));
+const TARGETS = ['music', 'actor'].flatMap(career => [...RULES.map(r => ({ career, season: 1, ...r })), ...RULES2.map(r => ({ career, season: 2, ...r }))]);
 
 // How far --check lets the game move from balance-baseline.json before it fails. Measured noise is well inside these.
 const DRIFT = { endingPoints: 7, relative: 0.3, fansFloor: 2000, moneyFloor: 100000, cashFloor: 45000 };
 
 const CHECKPOINTS = [4, 8, 12, 16, 20, 26];
+// Baseline keys: career/player/background/strategy, with s2/ in front for season 2 rows.
+const rowKey = r => (r.season > 1 ? 's' + r.season + '/' : '') + `${r.career}/${r.name}/${r.background}/${r.strategy}`;
 function play(career, background, player, picker) {
   const s = G.newGame('Test', background, career);
+  return { s, byWeek: playSeason(s, player, picker) };
+}
+// Plays the rest of one season and returns cash and fans at the checkpoints.
+function playSeason(s, player, picker) {
   const byWeek = {};
   while (!s.over && s.week <= G.TOTAL_WEEKS) {
     for (let guard = 0; guard < 20; guard++) {
@@ -120,7 +144,7 @@ function play(career, background, player, picker) {
     if (CHECKPOINTS.includes(wk)) byWeek[wk] = { money: s.money, fans: s.fans };
   }
   if (!s.over) s.over = G.finale(s);
-  return { s, byWeek };
+  return byWeek;
 }
 
 const args = process.argv.slice(2);
@@ -128,6 +152,11 @@ const CHECK = args.includes('--check');
 const SAVE = args.find(a => a.startsWith('--save-baseline'));
 const BASELINE_FILE = SAVE && SAVE.includes('=') ? SAVE.split('=')[1] : path.join(__dirname, 'balance-baseline.json');
 const N = parseInt(args.find(a => /^\d+$/.test(a)), 10) || 2000;
+// --check and --save-baseline always play a second season, with random story choices only, to keep the check quick.
+const seasonsArg = args.find(a => a.startsWith('--seasons='));
+const SEASONS = CHECK || SAVE ? 2 : seasonsArg ? parseInt(seasonsArg.split('=')[1], 10) : 1;
+if (!(SEASONS === 1 || SEASONS === 2)) { console.error('--seasons can be 1 or 2.'); process.exit(1); }
+const twoSeasons = strategy => SEASONS > 1 && (!(CHECK || SAVE) || strategy === 'random');
 const DETAIL = args.includes('--detail');
 const seedArg = args.find(a => a.startsWith('--seed='));
 if (seedArg) G.R.seed(parseInt(seedArg.split('=')[1], 10) || 0);
@@ -154,10 +183,12 @@ console.log(`${N} games per row. ${label}\n`);
 console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stories ' : '') + ENDINGS.map(e => e.padStart(17)).join('') + '   median fans   median money');
 
 const weekly = [];   // rows for --detail
+const weekly2 = [];  // season 2 rows for --detail
 const rows = [];     // rows for --check
 const storyStats = {}; // story id -> { in: {fans, money}, out: {fans, money} }, sensible player only
 // Only the stories the careers being played can draw.
-const playable = e => !e.careers || e.careers.some(c => CAREER_IDS.includes(c));
+// The story counts and story table are about season 1, so they leave out stories that wait for a later season.
+const playable = e => (!e.careers || e.careers.some(c => CAREER_IDS.includes(c))) && !e.fromSeason;
 const storyIds = [...G.EVENTS, ...G.FOLLOWUPS].filter(playable).map(e => e.id).concat('december');
 const eventIds = new Set(G.EVENTS.filter(playable).map(e => e.id));
 const poolSeen = {}; // career -> stories from EVENTS each sensible game sees, with the first strategy
@@ -169,6 +200,10 @@ for (const strategy of strategies) {
       const count = Object.fromEntries(ENDINGS.map(e => [e, 0]));
       const fans = [], money = [];
       const weeks = Object.fromEntries(CHECKPOINTS.map(w => [w, { money: [], fans: [] }]));
+      // Season 2: endings, fans, money, checkpoints, and how many held or improved their tier.
+      const count2 = Object.fromEntries(ENDINGS.map(e => [e, 0])), fans2 = [], money2 = [];
+      const weeks2 = Object.fromEntries(CHECKPOINTS.map(w => [w, { money: [], fans: [] }]));
+      let tiered = 0, held = 0;
       for (let i = 0; i < N; i++) {
         const { s, byWeek } = play(career, background, player, pickers[strategy]);
         if (!Number.isFinite(s.fans) || !Number.isFinite(s.money)) throw new Error('Broken numbers in a ' + background + ' game');
@@ -183,21 +218,48 @@ for (const strategy of strategies) {
             side.fans.push(s.fans); side.money.push(s.money);
           }
         }
+        // Then play on into season 2, once season 1 is recorded.
+        if (twoSeasons(strategy)) {
+          const first = s.over;
+          let byWeek2 = {};
+          if (first.kind === 'end') { G.newSeason(s); byWeek2 = playSeason(s, player, pickers[strategy]); tiered++; if (s.over.kind === 'end' && s.over.rank <= first.rank) held++; }
+          if (!Number.isFinite(s.fans) || !Number.isFinite(s.money)) throw new Error('Broken numbers in a season 2 ' + background + ' game');
+          count2[ENDINGS[s.over.rank]]++;
+          fans2.push(s.fans); money2.push(s.money);
+          for (const w of CHECKPOINTS) if (byWeek2[w]) { weeks2[w].money.push(byWeek2[w].money); weeks2[w].fans.push(byWeek2[w].fans); }
+        }
       }
       fans.sort((a, b) => a - b); money.sort((a, b) => a - b);
       console.log(cl(career) + name.padEnd(10) + background.padEnd(8) + (strategies.length > 1 ? strategy.padEnd(8) : '') + ENDINGS.map(e => pct(count[e]).padStart(17)).join('') +
         String(at(fans, 0.5)).padStart(14) + String(at(money, 0.5)).padStart(15));
       weekly.push({ career, name, background, strategy, weeks });
-      rows.push({ career, name, background, strategy, pct: Object.fromEntries(ENDINGS.map(e => [e, count[e] / N * 100])),
+      rows.push({ season: 1, career, name, background, strategy, pct: Object.fromEntries(ENDINGS.map(e => [e, count[e] / N * 100])),
         fans: at(fans, 0.5), money: at(money, 0.5), cash20: weeks[20].money.length ? median(weeks[20].money) : null });
+      if (twoSeasons(strategy)) {
+        const n2 = fans2.length;
+        fans2.sort((a, b) => a - b); money2.sort((a, b) => a - b);
+        weekly2.push({ career, name, background, strategy, weeks: weeks2 });
+        rows.push({ season: 2, career, name, background, strategy, pct: Object.fromEntries(ENDINGS.map(e => [e, count2[e] / n2 * 100])),
+          fans: at(fans2, 0.5), money: at(money2, 0.5), cash20: weeks2[20].money.length ? median(weeks2[20].money) : null, held: tiered ? held / tiered * 100 : null });
+      }
     }
   }
   }
 }
 
+if (SEASONS > 1) {
+  console.log(`\nSeason 2: the same games played on for a second year, ${N} games per row. A game that ended in Sapa won stays there.`);
+  console.log('"held" is the share of games that ended season 1 on a tier and end season 2 on the same tier or better.\n');
+  console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stories ' : '') + ENDINGS.map(e => e.padStart(17)).join('') + '   median fans   median money    held');
+  for (const r of rows.filter(r => r.season === 2)) {
+    console.log(cl(r.career) + r.name.padEnd(10) + r.background.padEnd(8) + (strategies.length > 1 ? r.strategy.padEnd(8) : '') + ENDINGS.map(e => (r.pct[e].toFixed(1).padStart(5) + '%').padStart(17)).join('') +
+      String(r.fans).padStart(14) + String(r.money).padStart(15) + (r.held === null ? '-' : r.held.toFixed(1) + '%').padStart(8));
+  }
+}
+
 console.log('');
 for (const career of CAREER_IDS) {
-  const seenMid = median(poolSeen[career]), size = G.EVENTS.filter(e => !e.careers || e.careers.includes(career)).length;
+  const seenMid = median(poolSeen[career]), size = G.EVENTS.filter(e => (!e.careers || e.careers.includes(career)) && !e.fromSeason).length;
   console.log(`A sensible ${MULTI ? career + ' ' : ''}player sees a median of ${seenMid} of the ${size} stories in EVENTS (${Math.round(seenMid / size * 100)}%), plus any follow-ups.`);
 }
 
@@ -207,6 +269,14 @@ if (DETAIL) {
   for (const r of weekly) {
     console.log(cl(r.career) + r.name.padEnd(10) + r.background.padEnd(8) + (strategies.length > 1 ? r.strategy.padEnd(8) : '') +
       CHECKPOINTS.map(w => r.weeks[w].money.length ? (short(median(r.weeks[w].money)) + ' / ' + short(median(r.weeks[w].fans)) + 'f').padStart(16) : '-'.padStart(16)).join(''));
+  }
+  if (SEASONS > 1) {
+    console.log('\nSeason 2: median cash and fans at the end of each week (games still running that week)\n');
+    console.log(cl('career') + 'player    start   ' + (strategies.length > 1 ? 'stories ' : '') + CHECKPOINTS.map(w => ('week ' + w).padStart(16)).join(''));
+    for (const r of weekly2) {
+      console.log(cl(r.career) + r.name.padEnd(10) + r.background.padEnd(8) + (strategies.length > 1 ? r.strategy.padEnd(8) : '') +
+        CHECKPOINTS.map(w => r.weeks[w].money.length ? (short(median(r.weeks[w].money)) + ' / ' + short(median(r.weeks[w].fans)) + 'f').padStart(16) : '-'.padStart(16)).join(''));
+    }
   }
   console.log('\nStories, for the sensible player: how often each appears, and the median end of games with it and without it\n');
   console.log('story'.padEnd(16) + 'seen'.padStart(7) + 'fans with'.padStart(12) + 'without'.padStart(10) + 'money with'.padStart(13) + 'without'.padStart(10));
@@ -222,12 +292,12 @@ if (CHECK) {
   console.log('\nBalance targets (docs/balance.md)\n');
   const failed = [];
   for (const t of TARGETS) {
-    for (const r of rows.filter(r => r.career === t.career && r.name === t.player && r.strategy === 'random')) {
+    for (const r of rows.filter(r => r.season === t.season && r.career === t.career && r.name === t.player && r.strategy === 'random')) {
       const v = t.value(r);
       const ok = v !== null && (t.min === undefined || v >= t.min) && (t.max === undefined || v <= t.max);
       const show = x => t.naira ? (v === null ? 'none' : '₦' + Math.round(x).toLocaleString('en-US')) : x.toFixed(1) + '%';
       const range = [t.min !== undefined ? 'at least ' + show(t.min) : '', t.max !== undefined ? 'at most ' + show(t.max) : ''].filter(Boolean).join(' and ');
-      const line = `${ok ? 'pass' : 'FAIL'}  ${MULTI ? t.career + ' ' : ''}${t.player} ${r.background}: ${t.rule} ${v === null ? 'none' : show(v)} (target ${range})`;
+      const line = `${ok ? 'pass' : 'FAIL'}  ${t.season > 1 ? 'season ' + t.season + ' ' : ''}${MULTI ? t.career + ' ' : ''}${t.player} ${r.background}: ${t.rule} ${v === null ? 'none' : show(v)} (target ${range})`;
       console.log(line);
       if (!ok) failed.push(line);
     }
@@ -239,7 +309,7 @@ if (CHECK) {
   const drift = [];
   if (base) {
     for (const r of rows) {
-      const key = `${r.career}/${r.name}/${r.background}/${r.strategy}`, b = base.rows[key];
+      const key = rowKey(r), b = base.rows[key];
       if (!b) { drift.push(`${key}: not in the baseline`); continue; }
       for (const e of ENDINGS) {
         const d = r.pct[e] - b.pct[e];
@@ -251,6 +321,9 @@ if (CHECK) {
         // When a quarter or more of a row's games end in debt, its median money sits between two crowds (deep debt and
         // comfortably positive) and flips between runs. Its endings, compared above, already catch real changes.
         if (k === 'money' && Math.max(r.pct['Sapa won'], b.pct['Sapa won']) >= 25) continue;
+        // In season 2 about half of the sensible games headline December, which pays ₦8,000,000, so end money also sits
+        // between two crowds. Season 2 money is compared through week 20 cash instead, before the December booking.
+        if (k === 'money' && r.season > 1) continue;
         if (Math.abs(r[k] - b[k]) > Math.max(DRIFT.relative * Math.abs(b[k]), floor))
           drift.push(`${key}: ${label} ${Math.round(b[k]).toLocaleString('en-US')} → ${Math.round(r[k]).toLocaleString('en-US')}`);
       }
@@ -268,7 +341,7 @@ if (CHECK) {
 
 if (SAVE) {
   const out = { saved: new Date().toISOString().slice(0, 10), games: N, rows: {} };
-  for (const r of rows) out.rows[`${r.career}/${r.name}/${r.background}/${r.strategy}`] = { pct: Object.fromEntries(ENDINGS.map(e => [e, +r.pct[e].toFixed(2)])), fans: r.fans, money: r.money, cash20: r.cash20 };
+  for (const r of rows) out.rows[rowKey(r)] = { pct: Object.fromEntries(ENDINGS.map(e => [e, +r.pct[e].toFixed(2)])), fans: r.fans, money: r.money, cash20: r.cash20 };
   fs.writeFileSync(BASELINE_FILE, JSON.stringify(out, null, 2) + '\n');
   console.log(`\nSaved ${rows.length} rows to ${path.relative(process.cwd(), BASELINE_FILE) || BASELINE_FILE}.`);
 }

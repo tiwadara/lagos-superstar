@@ -32,7 +32,7 @@ Bug fixes, new stories and balance tweaks do not need one.
 | [0007](0007-fictional-people-and-companies.md) | All people and companies are fictional | Accepted |
 | [0008](0008-careers-share-one-engine.md) | Careers share one city, one engine and one cast | Accepted |
 | [0009](0009-story-data-file.md) | Stories live in their own script file, mostly as data | Proposed |
-| [0010](0010-seasons-carry-over.md) | A season ends in December and the career carries on | Proposed |
+| [0010](0010-seasons-carry-over.md) | A season ends in December and the career carries on | Accepted |
 | [0011](0011-brand-direction.md) | Brand: keep the name, Nollywood poster style, danfo as an accent | Proposed, owner to decide |
 | [0012](0012-portraits-drawn-in-code.md) | Character portraits are drawn in code | Proposed |
 | [0013](0013-leaderboard-on-netlify.md) | The leaderboard runs on Netlify, and ranks weekly challenges by replay | Proposed |

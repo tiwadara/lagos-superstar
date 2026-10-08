@@ -29,10 +29,11 @@ Everything is tracked in GitHub issues.
 
 ## Automatic checks
 
-Every pull request and every push to `main` runs the **Check** workflow (`.github/workflows/check.yml`). It takes about a minute:
+Every pull request and every push to `main` runs the **Check** workflow (`.github/workflows/check.yml`). It takes about three minutes:
 
 1. `node lint-stories.js` checks every story card: unique ids, required fields, a free choice for broke players, known effects, flags that follow-ups wait for, and no names from `STAGE_NAMES`. Long text and stat checks without odds in the hint are warnings and do not fail.
-2. `node simulate.js --check` plays 2,000 games per row and fails if the script is broken, the results contain `NaN`, a balance target in [docs/balance.md](docs/balance.md#targets) is missed, or the game has moved too far from `balance-baseline.json`.
+2. `node test-saves.js` checks that saves made by older versions of the game still load, migrate and play on.
+3. `node simulate.js --check` plays 2,000 games per row, each for two seasons, and fails if the script is broken, the results contain `NaN`, a balance target in [docs/balance.md](docs/balance.md#targets) is missed, or the game has moved too far from `balance-baseline.json`.
 
 A red check means the change would break the live game or its balance: do not merge until it is green.
 

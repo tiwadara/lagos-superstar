@@ -6,6 +6,7 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 
 - `index.html`: the whole game in one file, with no framework and no build. See `docs/architecture.md` for a map of the script.
 - `simulate.js`: plays thousands of games in Node to check balance.
+- `test-saves.js`: checks that saves from older versions still load and play on.
 - `docs/`: design, architecture, story-writing guide, balance, roadmap and ADRs (`docs/adr/`).
 
 ## Commands
@@ -14,8 +15,10 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 node simulate.js 500    # balance numbers, about a second; 2000 by default
 node simulate.js --check    # balance targets and baseline for every career, about 2 minutes; runs on every pull request
 node simulate.js 500 --career=actor    # one career only
+node simulate.js 500 --seasons=2    # play each game on into a second season
+node test-saves.js    # old saves still load and play on; also runs on every pull request
 node lint-stories.js    # checks every story card; also runs on every pull request
-node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [--rel=kobo:-5]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor; --rel sets a relationship first
+node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [season] [--rel=kobo:-5]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor; --rel sets a relationship first
 ```
 
 There is no install, build or test runner. Open `index.html` in a browser to play.
@@ -25,7 +28,7 @@ There is no install, build or test runner. Open `index.html` in a browser to pla
 - Merging to `main` deploys to the live site straight away (`docs/adr/0003-static-hosting-on-netlify.md`). Work on a branch and keep `main` playable.
 - Code above `if (typeof document !== 'undefined')` must never touch the page. `simulate.js` runs it in Node and reads the names listed in `docs/architecture.md`. Do not rename them.
 - After changing rules or stories, run `node simulate.js --check`. If you changed balance on purpose, run `node simulate.js 4000 --save-baseline`, commit `balance-baseline.json`, and update `docs/balance.md`.
-- Changing the shape of the game state can break saved games. Read `docs/adr/0004-saves-in-local-storage.md` first.
+- Changing the shape of the game state can break saved games. Read `docs/adr/0004-saves-in-local-storage.md` first, add any migration to `migrate()`, and run `node test-saves.js`.
 - Every person, company and brand in the game is fictional (`docs/adr/0007-fictional-people-and-companies.md`).
 - Match the existing code style: compact, one-line cards, short helper names.
 - For stories, use the `write-story` skill in `.claude/skills/write-story/`. Tag career-only stories with `careers`, and word city stories for every career with `by(s, {music: ..., actor: ...})`.

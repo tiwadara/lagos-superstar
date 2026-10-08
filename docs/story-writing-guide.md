@@ -46,6 +46,8 @@ Keep the music version exactly as it was when you add an actor version to an exi
 | `choices` | Two or three. A list, or a function of `s` that returns one |
 | `weight` | Optional, `EVENTS` only. How likely the story is against others that fit. Default 1. Raise it for the stories that make a game, such as `feature`, and lower it for rare ones |
 | `group` | Optional, `EVENTS` only. Stories with the same group exclude each other in one game: `fuel` and `flood` are both `'crisis'`, `ponzi` and `deposit` are both `'scam'` |
+| `once` | Optional, `EVENTS` only. `'career'` makes the story happen once per career instead of once per season ([ADR 0010](adr/0010-seasons-carry-over.md)). Needed on any story that sets a flag a follow-up waits for, and on deal offers. The linter checks the first |
+| `fromSeason` | Optional. The first season the story can appear in, such as `2` for a story about last year |
 
 Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` that returns `{ text, fx }`. The `fx` keys are listed in the [README](../README.md#adding-a-story).
 

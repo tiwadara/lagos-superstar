@@ -37,6 +37,7 @@ Players can send playtest feedback from the end screen or the "Send feedback" li
 | `index.html` | The whole game: styles, content, rules and interface in one file |
 | `simulate.js` | Plays thousands of games without a browser, to check balance |
 | `lint-stories.js` | Checks every story card for mistakes. Runs on every pull request with the simulator |
+| `test-saves.js` | Checks that saves from older versions of the game still load and play on. Runs on every pull request |
 | `balance-baseline.json` | The simulator's saved results, which `node simulate.js --check` compares against |
 | `README.md` | This file |
 | `docs/` | Game design, story-writing guide, balance, architecture, roadmap and decision records. Start at [docs/README.md](docs/README.md) |
@@ -136,11 +137,10 @@ It plays 2,000 games for each kind of player (sensible, random, lazy) from each 
 
 Run `node simulate.js --check` to test the balance targets and compare with the saved baseline in `balance-baseline.json`. The same check runs on every pull request.
 
-Pass a number to change how many games are played, for example `node simulate.js 5000`. Add `--detail` to see cash and fans week by week and how much each story moves a game, or `--stories=all` to compare players who pick story choices at random, for the most cash, or to stay clean. [docs/balance.md](docs/balance.md) has the targets and the current numbers.
+Pass a number to change how many games are played, for example `node simulate.js 5000`. Add `--seasons=2` to play each game on into a second season and see those results in a table of their own. Add `--detail` to see cash and fans week by week and how much each story moves a game, or `--stories=all` to compare players who pick story choices at random, for the most cash, or to stay clean. [docs/balance.md](docs/balance.md) has the targets and the current numbers.
 
 ## Ideas for what comes next
 
-- Seasons in place of a single ending, so December is a finale and the career carries on
 - A daily story that every player gets on the same day
 - More careers that share the same city and cast: actor, skit-maker, DJ, producer, video director, colourist, manager, label boss, investor, politician, club owner
 - Recurring characters with a face and a memory of how you treated them

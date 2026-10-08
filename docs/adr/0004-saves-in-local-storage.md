@@ -20,4 +20,5 @@ We will save the whole game state as JSON in `localStorage` under the key `next-
 
 - No backend to run or pay for, and no personal data collected.
 - Progress does not move between devices.
-- Any change to the state shape that old saves cannot handle must bump `v`, and either migrate old saves or accept that they are dropped. Seasons will need this.
+- Any change to the state shape that old saves cannot handle must bump `v`, and either migrate old saves or accept that they are dropped.
+- Seasons ([ADR 0010](0010-seasons-carry-over.md), #33) brought version 2. `load()` now passes every save through `migrate()`, which turns a version 1 save into season 1 of a version 2 save and drops anything it does not recognise. The key stays `next-lagos-star-v1`, so nobody loses a game. `node test-saves.js` keeps real version 1 saves from the live game and checks on every pull request that they still load and play on. A future version adds its own step to `migrate()` and its own saves to that test.
