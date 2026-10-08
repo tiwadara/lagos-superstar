@@ -2,6 +2,17 @@
 
 The content framework for The Next Lagos Star. Read this before writing or editing a story. The mechanics of adding a card are in the [README](../README.md#adding-a-story). This page covers what makes a good one.
 
+## Where stories live
+
+Every story card is in `stories.js`, next to `index.html`, apart from the game rules ([ADR 0009](adr/0009-story-data-file.md)):
+
+- `CAST`: every recurring character.
+- `EVENTS`: stories the game draws at random each week.
+- `FOLLOWUPS`: stories that wait for a flag an earlier choice set.
+- `DECEMBER` and `PREMIERES`: the week-22 December booking, for music and for the actor.
+
+The top of `stories.js` has a commented template card with every field. Copy it into `EVENTS`, change it, and delete the optional lines you do not need. You do not need to read `index.html` to write a story: the helpers a card uses (`by`, `chk`, `odds`, `rel`, `R.p`) are described below.
+
 ## Voice
 
 - **Second person, present tense.** "A hand comes through the danfo window and your phone is gone."
@@ -16,7 +27,7 @@ The content framework for The Next Lagos Star. Read this before writing or editi
 
 Every person, company, brand, blog, label, radio station and investor is invented. Real places, real foods and real things Lagos lives with (NEPA, danfos, Third Mainland Bridge, Computer Village) are welcome. Never name or clearly imitate a real artist, politician, company or public figure. See [ADR 0007](adr/0007-fictional-people-and-companies.md).
 
-Before adding a new name, check the cast already in the game. Every recurring character is listed in `CAST` in `index.html`, with their role and where they live: your mother, your landlord, Iya Sikirat, Beatz by Sapa, Smooth Lanre of Vibe 99.9 FM, Aunty Bisi, Zaddy Blaze, Chief Dr. Bamidele Oyelaran, Lil Kobo, Mama Tobi Comedy, Chad Whitlock of Afrowave Capital, Big Tunde of Gbedu Empire and Barrister Amaka. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
+Before adding a new name, check the cast already in the game. Every recurring character is listed in `CAST` at the top of `stories.js`, with their role and where they live: your mother, your landlord, Iya Sikirat, Beatz by Sapa, Smooth Lanre of Vibe 99.9 FM, Aunty Bisi, Zaddy Blaze, Chief Dr. Bamidele Oyelaran, Lil Kobo, Mama Tobi Comedy, Chad Whitlock of Afrowave Capital, Big Tunde of Gbedu Empire and Barrister Amaka. Reusing a character is often better than inventing one. Do not reuse a name from `STAGE_NAMES` for a character, because players can pick those as their own name.
 
 When a story features a cast member, tag the card with `cast: 'bisi'`, or a list such as `cast: ['tunde', 'amaka']`. A new recurring character goes into `CAST` first. `node lint-stories.js` fails on a tag that is not in `CAST` and warns about a cast member who is in no story.
 
@@ -49,14 +60,18 @@ Keep the music version exactly as it was when you add an actor version to an exi
 | `once` | Optional, `EVENTS` only. `'career'` makes the story happen once per career instead of once per season ([ADR 0010](adr/0010-seasons-carry-over.md)). Needed on any story that sets a flag a follow-up waits for, and on deal offers. The linter checks the first |
 | `fromSeason` | Optional. The first season the story can appear in, such as `2` for a story about last year |
 
-Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` that returns `{ text, fx }`. The `fx` keys are listed in the [README](../README.md#adding-a-story).
+Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` that returns `{ text, fx }`. `fx` holds the effects: money, fans, stats, flags and relationships. Every key is in the effects table in the [README](../README.md#adding-a-story), and the template at the top of `stories.js` lists them too.
+
+`title`, `who`, `text`, `choices`, a choice's `hint` and `when` can each be a plain value or a function of `s`, the game state. Use a function only when the value changes with the player: `when` always is one, such as `s => s.week >= 4 && s.fans >= 1000`.
+
+Keep the compact one-line style of the cards around yours: no spaces around `:` or `=>`, one choice per line, and a stat check's two results on their own lines starting with `?` and `:`.
 
 ## Designing choices
 
 1. **Always include a free choice.** A choice with a `cost` locks when the player cannot afford it, so at least one option must cost nothing. Otherwise a broke player is stuck.
 2. **Each choice trades something different.** Typical axes: money against cred, money against time (`energyNext: -1`), now against later (a deal or a flag), safe against a gamble.
 3. **No option should win in every case.** If you would always pick it, rebalance it or cut it.
-4. **Show the odds.** If a choice depends on a stat, use `chk(s, stat, need)` in `run` and `odds(s, stat, need)` as the `hint`. If it is pure luck, say so in the hint: "A gamble."
+4. **Show the odds.** If a choice depends on a stat, use `chk(s, stat, need)` in `run` and `odds(s, stat, need)` as the `hint`. If it is pure luck, use `R.p(0.5)` (true half the time) in `run` and say so in the hint: "A gamble."
 5. **Say what it costs in the hint.** "Costs you a day.", "₦4,500,000 now. 30% of you, forever."
 6. **Every outcome gets its own line of story.** A result is never just numbers.
 
@@ -68,7 +83,7 @@ Read it back with `rel(s, 'sapa')`, which is 0 for anyone the player has not met
 
 ## Follow-ups
 
-To make a choice come back later, set a flag to the current week (`flag: { jingle: s.week }`) and add a card to `FOLLOWUPS` whose `when` waits for it (`s.flags.jingle && s.week >= s.flags.jingle + 3`). Follow-ups jump the queue: the first one that is due always shows before a random story. Keep the wait between 2 and 6 weeks so it lands before December. Deals and bags should come back with a cost that touches fans or hype, not only cash or cred (see [balance](balance.md#known-problems)).
+To make a choice come back later, set a flag to the current week (`flag: { jingle: s.week }`) and add a card to `FOLLOWUPS` in `stories.js` whose `when` waits for it (`s.flags.jingle && s.week >= s.flags.jingle + 3`). The story that sets the flag needs `once: 'career'`, because a follow-up happens once per career. Search `stories.js` for `flag:{` to see the flags already in use, so you do not reuse one by accident. Follow-ups jump the queue: the first one that is due always shows before a random story. Keep the wait between 2 and 6 weeks so it lands before December. Deals and bags should come back with a cost that touches fans or hype, not only cash or cred (see [balance](balance.md#known-problems)).
 
 ## Sizing rewards
 
@@ -91,5 +106,6 @@ Big payouts are where balance usually breaks. Late-game money already piles up (
 - [ ] Stat checks show their odds in the hint.
 - [ ] All names are fictional and not already used for something else. Recurring characters are in `CAST` and the card has a `cast` tag.
 - [ ] The text reads well on a phone: 25 to 45 words, one decision.
+- [ ] `node .claude/skills/write-story/try-story.js <id>` runs every choice without an error, for a player who fits `when` and one who is broke.
 - [ ] `node lint-stories.js` reports no errors. It also runs on every pull request.
 - [ ] `node simulate.js` shows no ending more than about 5 points away from the [baseline](balance.md#current-baseline), or the change explains why.
