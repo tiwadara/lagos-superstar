@@ -8,11 +8,11 @@ const path = require('path');
 const root = path.join(__dirname, '..', '..', '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, choose, choiceState, val, EVENTS, FOLLOWUPS, DECEMBER };')();
+const G = new Function(source + '\nreturn { newGame, choose, choiceState, val, EVENTS, FOLLOWUPS, DECEMBER, CAREERS };')();
 
 const [id, week = 10, fans = 5000, money = 500000, bg = 'choir'] = process.argv.slice(2);
 if (!id) { console.error('Usage: node try-story.js <story id> [week] [fans] [money] [background]'); process.exit(1); }
-const all = [...G.EVENTS, ...G.FOLLOWUPS, G.DECEMBER];
+const all = [...G.EVENTS, ...G.FOLLOWUPS, ...new Set(Object.values(G.CAREERS).map(c => c.december))];
 const ev = all.find(e => e.id === id);
 if (!ev) { console.error('No story with id "' + id + '". Ids: ' + all.map(e => e.id).join(', ')); process.exit(1); }
 
@@ -20,10 +20,13 @@ const ids = all.map(e => e.id);
 const dupes = ids.filter((x, i) => ids.indexOf(x) !== i);
 if (dupes.length) console.warn('WARNING: duplicate story ids: ' + dupes.join(', '));
 
-const s = G.newGame('Test', bg);
+// The background picks the career: choir, street and island are music; drama, skits and theatre are actor.
+const career = Object.keys(G.CAREERS).find(c => G.CAREERS[c].backgrounds[bg]);
+if (!career) { console.error('No background "' + bg + '". Backgrounds: ' + Object.values(G.CAREERS).map(c => Object.keys(c.backgrounds).join(', ')).join('; ')); process.exit(1); }
+const s = G.newGame('Test', bg, career);
 Object.assign(s, { week: +week, fans: +fans, money: +money });
 const fits = ev.when ? ev.when(s) : true;
-console.log(`"${ev.title}" (${ev.id}) for a ${bg} player in week ${week} with ${fans} fans and ₦${money}`);
+console.log(`"${G.val(ev.title, s)}" (${ev.id}) for a ${bg} player (${career}) in week ${week} with ${fans} fans and ₦${money}`);
 console.log('Can appear now: ' + (fits ? 'yes' : 'no, its when() is false for this player'));
 console.log('Story: ' + G.val(ev.text, s) + '\n');
 

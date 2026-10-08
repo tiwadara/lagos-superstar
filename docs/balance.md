@@ -47,7 +47,7 @@ These are the design targets for the music career, with random story choices, fo
 
 ## The automatic balance check
 
-`node simulate.js --check` takes about 40 seconds. It plays 2,000 games per row with random story choices and with the money-chaser, then:
+`node simulate.js --check` takes about 2 minutes. It plays 2,000 games per row, for every career, with random story choices and with the money-chaser, then:
 
 1. Tests the targets above.
 2. Compares every row with `balance-baseline.json`. It fails if an ending moves more than 7 points, or median fans, median money or the sensible player's week 20 cash move more than 30%. Below a floor (2,000 fans, ₦100,000 money, ₦45,000 week 20 cash), small moves always pass.
@@ -89,6 +89,28 @@ Median cash for the sensible player at the end of each week, after rent:
 The endings and money meet their targets. This change moved endings more than 5 points on purpose. With more stories in the pool, the big fan stories (`feature`, `dance`, `skit`) come up less often, and deals now cost fans through their follow-ups. Next rated for the sensible player fell from 29 to 39% to 18 to 27%. Week 20 cash fell with fewer fans, so the weekly food, data and transport cost came down by ₦3,000 to keep the sensible player near zero rather than in debt. The stories that need many fans by mid-game are rarer than before: `visa` 7% of games, `awards` 22%, `brand` 19%, `label` 31%.
 
 A sensible player now sees a median of 20 of the 38 stories in `EVENTS` (53%), down from about 20 of 26. The simulator prints this line on every run.
+
+## Nollywood actor
+
+The actor (#42) has the same targets as music for now. `node simulate.js 2000 --detail --career=actor`, 8 October 2026:
+
+| Player | Start | Nollywood star | Leading actor | Familiar face | Skit regular | Extra | Sapa won | Median fans | Median money |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Sensible | drama | 0.3% | 30.8% | 69.0% | 0.0% | 0.0% | 0.0% | 68,875 | ₦856,080 |
+| Sensible | skits | 0.1% | 30.1% | 69.8% | 0.0% | 0.0% | 0.0% | 67,791 | ₦851,677 |
+| Sensible | theatre | 0.3% | 27.7% | 72.1% | 0.0% | 0.0% | 0.0% | 61,799 | ₦836,670 |
+| Random | drama | 0.0% | 1.8% | 60.8% | 28.0% | 0.0% | 9.5% | 13,087 | ₦209,925 |
+| Random | skits | 0.1% | 1.5% | 69.3% | 23.6% | 0.0% | 5.6% | 15,046 | ₦267,869 |
+| Random | theatre | 0.0% | 1.1% | 67.0% | 28.7% | 0.0% | 3.1% | 13,862 | ₦282,453 |
+| Lazy | drama | 0.0% | 0.0% | 0.1% | 2.9% | 0.0% | 97.0% | 1,175 | −₦432,105 |
+| Lazy | skits | 0.0% | 0.0% | 0.2% | 3.5% | 0.0% | 96.3% | 1,419 | −₦426,757 |
+| Lazy | theatre | 0.0% | 0.0% | 0.1% | 11.6% | 0.0% | 88.3% | 1,691 | −₦434,111 |
+
+Median cash for the sensible actor at the end of week 20 is ₦48k to ₦64k, a little above music's, because actors have fewer deal follow-ups that cost money. A sensible actor sees a median of 20 of the 35 stories open to actors (57%).
+
+The actor's money is tuned so it plays like music: auditions cost ₦30,000, role fees run from ₦8,000 to ₦200,000 by fame, and streaming licences pay half what music streams would. With role fees of ₦20,000 to ₦500,000 and ₦15,000 auditions, the sensible actor reached Leading actor 71% of the time.
+
+The money-chaser leads here as it does in music (#52): 78 to 82% Leading actor or better against 26 to 33% with random choices. The actor purist does better than in music (42 to 48%), because actor stories have fewer deals to refuse.
 
 ## Known problems
 

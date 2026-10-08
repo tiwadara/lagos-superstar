@@ -2,7 +2,7 @@
 
 A life simulation of the Lagos entertainment industry. You arrive with a one-room in Yaba, a cracked phone and a voice, and you have 26 weeks to get on a Detty December stage.
 
-This is the first playable prototype. It has one career, the music artist. All characters, companies and events are fictional.
+This is a playable prototype with two careers: the music artist and the Nollywood actor. All characters, companies and events are fictional.
 
 ## Play it
 

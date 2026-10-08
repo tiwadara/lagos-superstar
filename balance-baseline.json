@@ -4,237 +4,471 @@
   "rows": {
     "music/sensible/choir/random": {
       "pct": {
-        "Lagos star": 0.47,
-        "Next rated": 26.72,
-        "Buzzing": 72.45,
-        "Area champion": 0.22,
+        "Lagos star": 0.57,
+        "Next rated": 26.65,
+        "Buzzing": 72.5,
+        "Area champion": 0.15,
         "Upcoming artist": 0,
         "Sapa won": 0.13
       },
-      "fans": 58374,
-      "money": 720529,
-      "cash20": 1177
+      "fans": 57563,
+      "money": 722415,
+      "cash20": 5969
     },
     "music/sensible/street/random": {
       "pct": {
-        "Lagos star": 0.3,
-        "Next rated": 22.7,
-        "Buzzing": 76.68,
+        "Lagos star": 0.35,
+        "Next rated": 22,
+        "Buzzing": 77.3,
         "Area champion": 0.3,
         "Upcoming artist": 0,
-        "Sapa won": 0.03
+        "Sapa won": 0.05
       },
-      "fans": 50712,
-      "money": 696040,
-      "cash20": -3757
+      "fans": 50060,
+      "money": 695922,
+      "cash20": -3028
     },
     "music/sensible/island/random": {
       "pct": {
-        "Lagos star": 0.27,
-        "Next rated": 17.7,
-        "Buzzing": 80.92,
-        "Area champion": 1,
+        "Lagos star": 0.18,
+        "Next rated": 18.65,
+        "Buzzing": 79.95,
+        "Area champion": 1.05,
         "Upcoming artist": 0,
-        "Sapa won": 0.1
+        "Sapa won": 0.18
       },
-      "fans": 41863,
-      "money": 661041,
-      "cash20": -7979
+      "fans": 43240,
+      "money": 661640,
+      "cash20": -4948
     },
     "music/random/choir/random": {
       "pct": {
-        "Lagos star": 0.03,
-        "Next rated": 4.63,
-        "Buzzing": 65.28,
-        "Area champion": 23.93,
+        "Lagos star": 0,
+        "Next rated": 4.92,
+        "Buzzing": 66.75,
+        "Area champion": 21.75,
         "Upcoming artist": 0,
-        "Sapa won": 6.15
+        "Sapa won": 6.58
       },
-      "fans": 15727,
-      "money": 361842,
-      "cash20": 24533
+      "fans": 16146,
+      "money": 393790,
+      "cash20": 29508
     },
     "music/random/street/random": {
       "pct": {
-        "Lagos star": 0.03,
-        "Next rated": 4.42,
-        "Buzzing": 73.3,
-        "Area champion": 18.43,
+        "Lagos star": 0,
+        "Next rated": 4.13,
+        "Buzzing": 72.72,
+        "Area champion": 19.7,
         "Upcoming artist": 0,
-        "Sapa won": 3.82
+        "Sapa won": 3.45
       },
-      "fans": 17636,
-      "money": 403571,
-      "cash20": 31094
+      "fans": 17718,
+      "money": 393253,
+      "cash20": 43398
     },
     "music/random/island/random": {
       "pct": {
         "Lagos star": 0,
-        "Next rated": 0.45,
-        "Buzzing": 56.07,
-        "Area champion": 40,
+        "Next rated": 0.53,
+        "Buzzing": 56.03,
+        "Area champion": 39.32,
         "Upcoming artist": 0,
-        "Sapa won": 3.48
+        "Sapa won": 4.13
       },
-      "fans": 11027,
-      "money": 202676,
-      "cash20": -257
+      "fans": 11116,
+      "money": 213292,
+      "cash20": -3221
     },
     "music/lazy/choir/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 1.2,
-        "Area champion": 17.42,
+        "Buzzing": 1.1,
+        "Area champion": 16.93,
         "Upcoming artist": 0,
-        "Sapa won": 81.38
+        "Sapa won": 81.97
       },
-      "fans": 1953,
-      "money": -425336,
-      "cash20": 130000
+      "fans": 1901,
+      "money": -425920,
+      "cash20": 119708
     },
     "music/lazy/street/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 1.73,
-        "Area champion": 15.4,
+        "Buzzing": 1.63,
+        "Area champion": 15.25,
         "Upcoming artist": 0,
-        "Sapa won": 82.88
+        "Sapa won": 83.13
       },
-      "fans": 2114,
+      "fans": 2085,
       "money": -421905,
-      "cash20": 167037
+      "cash20": 137152
     },
     "music/lazy/island/random": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 0.75,
-        "Area champion": 44.98,
-        "Upcoming artist": 0.03,
-        "Sapa won": 54.25
+        "Buzzing": 0.65,
+        "Area champion": 46.25,
+        "Upcoming artist": 0.13,
+        "Sapa won": 52.98
       },
-      "fans": 2966,
-      "money": -405407,
-      "cash20": -15679
+      "fans": 3004,
+      "money": -403426,
+      "cash20": -11508
+    },
+    "actor/sensible/drama/random": {
+      "pct": {
+        "Lagos star": 0.1,
+        "Next rated": 29.65,
+        "Buzzing": 70.23,
+        "Area champion": 0.03,
+        "Upcoming artist": 0,
+        "Sapa won": 0
+      },
+      "fans": 66041,
+      "money": 848650,
+      "cash20": 57055
+    },
+    "actor/sensible/skits/random": {
+      "pct": {
+        "Lagos star": 0.27,
+        "Next rated": 31.13,
+        "Buzzing": 68.55,
+        "Area champion": 0,
+        "Upcoming artist": 0,
+        "Sapa won": 0.05
+      },
+      "fans": 68151,
+      "money": 842863,
+      "cash20": 51518
+    },
+    "actor/sensible/theatre/random": {
+      "pct": {
+        "Lagos star": 0.2,
+        "Next rated": 28.68,
+        "Buzzing": 71.1,
+        "Area champion": 0.03,
+        "Upcoming artist": 0,
+        "Sapa won": 0
+      },
+      "fans": 62811,
+      "money": 846792,
+      "cash20": 52614
+    },
+    "actor/random/drama/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 2.27,
+        "Buzzing": 61.18,
+        "Area champion": 27.43,
+        "Upcoming artist": 0,
+        "Sapa won": 9.13
+      },
+      "fans": 13061,
+      "money": 235031,
+      "cash20": -5090
+    },
+    "actor/random/skits/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 2.2,
+        "Buzzing": 68.35,
+        "Area champion": 22.88,
+        "Upcoming artist": 0,
+        "Sapa won": 6.58
+      },
+      "fans": 15063,
+      "money": 279917,
+      "cash20": 1165
+    },
+    "actor/random/theatre/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 1.2,
+        "Buzzing": 67.35,
+        "Area champion": 28.15,
+        "Upcoming artist": 0,
+        "Sapa won": 3.3
+      },
+      "fans": 13935,
+      "money": 254453,
+      "cash20": 5626
+    },
+    "actor/lazy/drama/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 0.1,
+        "Area champion": 2.97,
+        "Upcoming artist": 0,
+        "Sapa won": 96.92
+      },
+      "fans": 1160,
+      "money": -432399,
+      "cash20": 109790
+    },
+    "actor/lazy/skits/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 0.27,
+        "Area champion": 3.25,
+        "Upcoming artist": 0,
+        "Sapa won": 96.47
+      },
+      "fans": 1416,
+      "money": -428348,
+      "cash20": -708
+    },
+    "actor/lazy/theatre/random": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 0.15,
+        "Area champion": 12.55,
+        "Upcoming artist": 0,
+        "Sapa won": 87.3
+      },
+      "fans": 1715,
+      "money": -434554,
+      "cash20": -33272
     },
     "music/sensible/choir/money": {
       "pct": {
-        "Lagos star": 2.1,
-        "Next rated": 66.72,
-        "Buzzing": 31.18,
-        "Area champion": 0,
+        "Lagos star": 2.33,
+        "Next rated": 66.27,
+        "Buzzing": 31.35,
+        "Area champion": 0.05,
         "Upcoming artist": 0,
         "Sapa won": 0
       },
-      "fans": 149047,
-      "money": 922840,
-      "cash20": 204374
+      "fans": 148382,
+      "money": 932570,
+      "cash20": 195843
     },
     "music/sensible/street/money": {
       "pct": {
-        "Lagos star": 1.88,
-        "Next rated": 59.55,
-        "Buzzing": 38.57,
+        "Lagos star": 2.02,
+        "Next rated": 59.17,
+        "Buzzing": 38.8,
         "Area champion": 0,
         "Upcoming artist": 0,
         "Sapa won": 0
       },
-      "fans": 128800,
-      "money": 870880,
-      "cash20": 191990
+      "fans": 126107,
+      "money": 862170,
+      "cash20": 188583
     },
     "music/sensible/island/money": {
       "pct": {
-        "Lagos star": 0.97,
-        "Next rated": 53.13,
-        "Buzzing": 45.9,
+        "Lagos star": 0.95,
+        "Next rated": 52.05,
+        "Buzzing": 47,
         "Area champion": 0,
         "Upcoming artist": 0,
         "Sapa won": 0
       },
-      "fans": 109659,
-      "money": 833853,
-      "cash20": 178825
+      "fans": 107301,
+      "money": 834446,
+      "cash20": 203870
     },
     "music/random/choir/money": {
       "pct": {
-        "Lagos star": 0.03,
-        "Next rated": 11.65,
-        "Buzzing": 80.5,
-        "Area champion": 7.42,
+        "Lagos star": 0.15,
+        "Next rated": 12,
+        "Buzzing": 80.47,
+        "Area champion": 6.85,
         "Upcoming artist": 0,
-        "Sapa won": 0.4
+        "Sapa won": 0.53
       },
-      "fans": 32105,
-      "money": 1474423,
-      "cash20": 871003
+      "fans": 31317,
+      "money": 1489192,
+      "cash20": 871493
     },
     "music/random/street/money": {
       "pct": {
         "Lagos star": 0,
-        "Next rated": 9.65,
-        "Buzzing": 83.53,
-        "Area champion": 6.48,
+        "Next rated": 9.2,
+        "Buzzing": 83.93,
+        "Area champion": 6.55,
         "Upcoming artist": 0,
-        "Sapa won": 0.35
+        "Sapa won": 0.33
       },
-      "fans": 30523,
-      "money": 1438491,
-      "cash20": 864571
+      "fans": 29365,
+      "money": 1450875,
+      "cash20": 853341
     },
     "music/random/island/money": {
       "pct": {
         "Lagos star": 0,
-        "Next rated": 0.53,
-        "Buzzing": 73.13,
-        "Area champion": 25.82,
+        "Next rated": 0.75,
+        "Buzzing": 72.08,
+        "Area champion": 26.75,
         "Upcoming artist": 0,
-        "Sapa won": 0.53
+        "Sapa won": 0.43
       },
-      "fans": 14422,
-      "money": 1192288,
-      "cash20": 370073
+      "fans": 14182,
+      "money": 1173160,
+      "cash20": 322792
     },
     "music/lazy/choir/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 6.22,
-        "Area champion": 78.72,
+        "Buzzing": 5.5,
+        "Area champion": 78.85,
         "Upcoming artist": 0,
-        "Sapa won": 15.05
+        "Sapa won": 15.65
       },
-      "fans": 5091,
-      "money": 1395400,
-      "cash20": 1127433
+      "fans": 5023,
+      "money": 1406780,
+      "cash20": 1135000
     },
     "music/lazy/street/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 10.55,
-        "Area champion": 67.92,
+        "Buzzing": 11.15,
+        "Area champion": 68.05,
         "Upcoming artist": 0,
-        "Sapa won": 21.52
+        "Sapa won": 20.8
       },
-      "fans": 5703,
-      "money": 1398236,
-      "cash20": 1144000
+      "fans": 5749,
+      "money": 1379780,
+      "cash20": 1140000
     },
     "music/lazy/island/money": {
       "pct": {
         "Lagos star": 0,
         "Next rated": 0,
-        "Buzzing": 2.85,
-        "Area champion": 96.28,
-        "Upcoming artist": 0.4,
-        "Sapa won": 0.47
+        "Buzzing": 2.67,
+        "Area champion": 96.75,
+        "Upcoming artist": 0.2,
+        "Sapa won": 0.38
       },
-      "fans": 4643,
-      "money": 1629000,
-      "cash20": 1236000
+      "fans": 4542,
+      "money": 1636000,
+      "cash20": 1236600
+    },
+    "actor/sensible/drama/money": {
+      "pct": {
+        "Lagos star": 3.25,
+        "Next rated": 79.17,
+        "Buzzing": 17.57,
+        "Area champion": 0,
+        "Upcoming artist": 0,
+        "Sapa won": 0
+      },
+      "fans": 185901,
+      "money": 1231608,
+      "cash20": 181448
+    },
+    "actor/sensible/skits/money": {
+      "pct": {
+        "Lagos star": 2.85,
+        "Next rated": 77.28,
+        "Buzzing": 19.88,
+        "Area champion": 0,
+        "Upcoming artist": 0,
+        "Sapa won": 0
+      },
+      "fans": 182390,
+      "money": 1245956,
+      "cash20": 178876
+    },
+    "actor/sensible/theatre/money": {
+      "pct": {
+        "Lagos star": 2.53,
+        "Next rated": 76.15,
+        "Buzzing": 21.32,
+        "Area champion": 0,
+        "Upcoming artist": 0,
+        "Sapa won": 0
+      },
+      "fans": 177232,
+      "money": 1221426,
+      "cash20": 186983
+    },
+    "actor/random/drama/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 8.6,
+        "Buzzing": 76.83,
+        "Area champion": 11.25,
+        "Upcoming artist": 0,
+        "Sapa won": 3.33
+      },
+      "fans": 25315,
+      "money": 984212,
+      "cash20": 333687
+    },
+    "actor/random/skits/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 7.42,
+        "Buzzing": 83.55,
+        "Area champion": 7.22,
+        "Upcoming artist": 0,
+        "Sapa won": 1.8
+      },
+      "fans": 27870,
+      "money": 1056685,
+      "cash20": 416934
+    },
+    "actor/random/theatre/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 3.5,
+        "Buzzing": 84.97,
+        "Area champion": 10.88,
+        "Upcoming artist": 0,
+        "Sapa won": 0.65
+      },
+      "fans": 22253,
+      "money": 1006822,
+      "cash20": 367302
+    },
+    "actor/lazy/drama/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 0.97,
+        "Area champion": 17.57,
+        "Upcoming artist": 0,
+        "Sapa won": 81.45
+      },
+      "fans": 2039,
+      "money": -429925,
+      "cash20": 685629
+    },
+    "actor/lazy/skits/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 2.38,
+        "Area champion": 19.78,
+        "Upcoming artist": 0,
+        "Sapa won": 77.85
+      },
+      "fans": 2319,
+      "money": -425594,
+      "cash20": 698252
+    },
+    "actor/lazy/theatre/money": {
+      "pct": {
+        "Lagos star": 0,
+        "Next rated": 0,
+        "Buzzing": 1.25,
+        "Area champion": 55.47,
+        "Upcoming artist": 0,
+        "Sapa won": 43.28
+      },
+      "fans": 3896,
+      "money": 593001,
+      "cash20": 678683
     }
   }
 }

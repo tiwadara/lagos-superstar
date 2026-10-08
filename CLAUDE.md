@@ -1,6 +1,6 @@
 # The Next Lagos Star
 
-A life simulation of the Lagos entertainment industry: 26 weeks to get from a one-room in Yaba to a Detty December stage. Live at https://next-lagos-star.netlify.app.
+A life simulation of the Lagos entertainment industry: 26 weeks to get from a one-room in Yaba to a Detty December stage, as a musician or a Nollywood actor. Live at https://next-lagos-star.netlify.app.
 
 ## Files
 
@@ -12,9 +12,10 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 
 ```
 node simulate.js 500    # balance numbers, about a second; 2000 by default
-node simulate.js --check    # balance targets and baseline, about 40 seconds; runs on every pull request
+node simulate.js --check    # balance targets and baseline for every career, about 2 minutes; runs on every pull request
+node simulate.js 500 --career=actor    # one career only
 node lint-stories.js    # checks every story card; also runs on every pull request
-node .claude/skills/write-story/try-story.js <story id>    # run every choice of one story
+node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor
 ```
 
 There is no install, build or test runner. Open `index.html` in a browser to play.
@@ -27,7 +28,8 @@ There is no install, build or test runner. Open `index.html` in a browser to pla
 - Changing the shape of the game state can break saved games. Read `docs/adr/0004-saves-in-local-storage.md` first.
 - Every person, company and brand in the game is fictional (`docs/adr/0007-fictional-people-and-companies.md`).
 - Match the existing code style: compact, one-line cards, short helper names.
-- For stories, use the `write-story` skill in `.claude/skills/write-story/`.
+- For stories, use the `write-story` skill in `.claude/skills/write-story/`. Tag career-only stories with `careers`, and word city stories for every career with `by(s, {music: ..., actor: ...})`.
+- Careers live in `CAREERS` in `index.html` (`docs/adr/0008-careers-share-one-engine.md`). Music must play exactly as before when another career changes: compare `node simulate.js 300 --seed=1 --detail --stories=all --career=music` before and after.
 - Big decisions get an ADR in `docs/adr/`. The ADR README says when.
 
 ## Planning
