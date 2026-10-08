@@ -15,7 +15,7 @@ node simulate.js 500    # balance numbers, about a second; 2000 by default
 node simulate.js --check    # balance targets and baseline for every career, about 2 minutes; runs on every pull request
 node simulate.js 500 --career=actor    # one career only
 node lint-stories.js    # checks every story card; also runs on every pull request
-node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor
+node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [--rel=kobo:-5]    # run every choice of one story; an actor background (drama, skits, theatre) tries it as an actor; --rel sets a relationship first
 ```
 
 There is no install, build or test runner. Open `index.html` in a browser to play.

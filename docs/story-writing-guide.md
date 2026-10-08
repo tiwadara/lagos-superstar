@@ -58,6 +58,12 @@ Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` t
 5. **Say what it costs in the hint.** "Costs you a day.", "₦4,500,000 now. 30% of you, forever."
 6. **Every outcome gets its own line of story.** A result is never just numbers.
 
+## Relationships
+
+Every character in `CAST` remembers how you treated them. A choice that clearly helps or hurts someone adds `rel: { sapa: 2 }` or `rel: { kobo: -3 }` to its `fx`, and the player sees “Beatz by Sapa will remember that”. Keep the values small, ±1 to ±3: a relationship runs from −10 to 10, and it should take a few stories to make an ally or an enemy. `node lint-stories.js` fails on an id that is not in `CAST`.
+
+Read it back with `rel(s, 'sapa')`, which is 0 for anyone the player has not met. Use it to give friends and enemies a different story, such as `text: s => rel(s, 'sapa') >= 2 ? ... : ...`, or different choices, or in `when` to wait for a relationship. Let a neutral player see something sensible too. Try each side with `try-story.js` and `--rel=sapa:3`.
+
 ## Follow-ups
 
 To make a choice come back later, set a flag to the current week (`flag: { jingle: s.week }`) and add a card to `FOLLOWUPS` whose `when` waits for it (`s.flags.jingle && s.week >= s.flags.jingle + 3`). Follow-ups jump the queue: the first one that is due always shows before a random story. Keep the wait between 2 and 6 weeks so it lands before December. Deals and bags should come back with a cost that touches fans or hype, not only cash or cred (see [balance](balance.md#known-problems)).

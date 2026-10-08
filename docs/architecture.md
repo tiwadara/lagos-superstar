@@ -17,7 +17,7 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | --- | --- | --- |
 | Helpers | `TOTAL_WEEKS`, `SAVE_KEY`, the random helpers `R` (seedable with `R.seed(n)`, using `mulberry32`), `clamp`, `val`, money and fan formatting | No |
 | Content | `TIER_MINS`, `tierOf`, `nextTier`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
-| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `apply` (applies effects) | No |
+| Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `rel` and `relWord` (relationships), `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `movesOf`, `nextGoal`, `actionState`, `doAction` | No |
 | Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `forCareer`, `pickEvent`, `choiceState`, `choose` | No |
 | End of week | `streamGross`, `PEOPLE_COST`, `wrapWeek` | No |
@@ -43,6 +43,7 @@ Everything above the interface block must stay free of `document`, `window` and 
 | `rent` | Rent due every fourth week. Starts at ₦100,000 |
 | `vault`, `songs` | Recorded songs not yet out, and released songs. Each is `{ title, q }`, released ones also have `week` |
 | `flags` | Anything a story needs to remember, such as `manager`, `investor`, `signed`, `jingle`, `dec` |
+| `rel` | How each `CAST` character feels about you, by id, from −10 to 10. Set by the `rel` effect, read with `rel(s, id)`. Saves from before relationships have no `rel`: `rel(s, id)` reads 0 and `apply` creates it on the first write. The game screen's details panel lists everyone in it under People, as Enemy, Cold, Neutral, Warm or Ally |
 | `seen` | Ids of stories already shown. Each story appears once per game |
 | `promoWeek`, `lastRelease`, `recoup` | Promo limiter, release fatigue, and the label advance still to pay back |
 | `log`, `opener`, `slogan` | Text shown on the game screen this week |
@@ -68,7 +69,7 @@ The game is built for several careers in one city ([ADR 0008](adr/0008-careers-s
 | `december` | The week 22 booking card | `DECEMBER` | `PREMIERES` |
 | `finaleShow(s, booking)` | The December show text and its effects | `musicFinale` | `actorFinale` |
 | `debtVerdict` | The ending line when Sapa wins | The bank job in Marina | The same job, with impressions |
-| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs and deals" | "acting income", "Your roles and deals" |
+| `words` | Words that shared screens and endings use: the income cuts are taken from, the shelf labels, the tally rows, the sellout line | "music income", "Your songs, deals and people" | "acting income", "Your roles, deals and people" |
 
 Moves in `ACTIONS` with `careers: ['music']` belong to that career; untagged moves (post content, show face, side hustle) are shared, and word themselves for each career. Stories work the same way. Text that differs by career uses `by(s, {music: ..., actor: ...})`, which falls back to the music version. A story's `title`, `who`, `text` and `choices` can all be functions of `s`. `putOut(s)` is the shared release maths, used by music releases and actor shoots. The game state keeps released and unreleased work in `songs` and `vault` for every career.
 

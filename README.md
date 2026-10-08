@@ -94,6 +94,7 @@ Effects you can put in `fx`:
 | `energyNext: -1` | One fewer move next week |
 | `rent` | Change the monthly rent |
 | `flag: { name: value }` | Remember something for later stories |
+| `rel: { kobo: -3 }` | Change how a `CAST` character feels about you. Each stays between −10 and 10, starts at 0, and the player sees “Lil Kobo will remember that” |
 | `note` | Extra line shown to the player |
 
 Two optional fields change how often a story is drawn:
@@ -115,6 +116,12 @@ fx: { flag: { pastor: s.week } }
 
 // in FOLLOWUPS
 when: s => s.flags.pastor && s.week >= s.flags.pastor + 3
+```
+
+To make a story react to how the player treated someone, read `rel(s, 'kobo')` in `when`, `text` or `choices`. It returns a number from −10 to 10, and 0 for anyone the player has not met:
+
+```js
+text: s => rel(s, 'kobo') >= 2 ? 'He sends an olive branch.' : 'He drops a diss track.'
 ```
 
 ## Checking balance

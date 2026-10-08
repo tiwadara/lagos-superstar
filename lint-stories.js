@@ -9,7 +9,7 @@ const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
 const G = new Function(source + '\nreturn { newGame, val, EVENTS, FOLLOWUPS, CAREERS, STAGE_NAMES, CAST };')();
 
-const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note'];
+const FX_KEYS = ['money', 'earn', 'fans', 'fansUp', 'fansPct', 'skill', 'hype', 'cred', 'links', 'energyNext', 'rent', 'flag', 'note', 'rel'];
 const MAX_WORDS = 60;
 // Words that only make sense for a musician. Untagged city stories should not show them to other careers.
 const MUSIC_WORDS = /\b(songs?|singles?|streams?|studio|record(ed|ing)?|verses?|hook|sing(s|ing|er|ers)?|sang|musician|music|album)\b/i;
@@ -105,6 +105,8 @@ for (const { e, kind } of cards) {
         if (typeof res.text !== 'string' || !res.text.trim()) { err(id, `choice "${c.label}" can end with no result text`); break; }
         const bad = Object.keys(res.fx || {}).filter(k => !FX_KEYS.includes(k));
         if (bad.length) { err(id, `choice "${c.label}" uses unknown effect ${bad.join(', ')}. Known: ${FX_KEYS.join(', ')}`); break; }
+        const strangers = Object.keys((res.fx && res.fx.rel) || {}).filter(k => !G.CAST[k]);
+        if (strangers.length) { err(id, `choice "${c.label}" sets rel for ${strangers.join(', ')}, which is not in CAST`); break; }
       }
     }
   }
