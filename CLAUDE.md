@@ -4,7 +4,9 @@ A life simulation of the Lagos entertainment industry: 26 weeks to get from a on
 
 ## Files
 
-- `index.html`: the whole game in one file, with no framework and no build. See `docs/architecture.md` for a map of the script.
+- `index.html`: the game (styles, rules, interface), with no framework and no build. See `docs/architecture.md` for a map of the script.
+- `stories.js`: every story card and the `CAST`, loaded by `index.html` before its own script (`docs/adr/0009-story-data-file.md`). It only defines cards and never touches the page.
+- `load-game.js`: loads both files into Node for the tools below.
 - `simulate.js`: plays thousands of games in Node to check balance.
 - `test-saves.js`: checks that saves from older versions still load and play on.
 - `docs/`: design, architecture, story-writing guide, balance, roadmap and ADRs (`docs/adr/`).
@@ -31,7 +33,7 @@ There is no install, build or test runner. Open `index.html` in a browser to pla
 - Changing the shape of the game state can break saved games. Read `docs/adr/0004-saves-in-local-storage.md` first, add any migration to `migrate()`, and run `node test-saves.js`.
 - Every person, company and brand in the game is fictional (`docs/adr/0007-fictional-people-and-companies.md`).
 - Match the existing code style: compact, one-line cards, short helper names.
-- For stories, use the `write-story` skill in `.claude/skills/write-story/`. Tag career-only stories with `careers`, and word city stories for every career with `by(s, {music: ..., actor: ...})`.
+- Stories live in `stories.js`. For stories, use the `write-story` skill in `.claude/skills/write-story/`. Tag career-only stories with `careers`, and word city stories for every career with `by(s, {music: ..., actor: ...})`.
 - Careers live in `CAREERS` in `index.html` (`docs/adr/0008-careers-share-one-engine.md`). Music must play exactly as before when another career changes: compare `node simulate.js 300 --seed=1 --detail --stories=all --career=music` before and after.
 - Big decisions get an ADR in `docs/adr/`. The ADR README says when.
 

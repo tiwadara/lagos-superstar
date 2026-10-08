@@ -4,14 +4,24 @@ How The Next Lagos Star is built, how a week runs through the code, and what can
 
 ## The short version
 
-- The whole game is one file, `index.html`: styles, content, rules and interface. There is no framework, no build step and no dependencies apart from two Google Fonts. See [ADR 0002](adr/0002-single-html-file-no-framework.md).
+- The game is two files that sit side by side: `index.html` (styles, content, rules and interface) and `stories.js` (the story cards). There is no framework, no build step and no dependencies apart from two Google Fonts. Opening `index.html` from disk still works. See [ADR 0002](adr/0002-single-html-file-no-framework.md) and [ADR 0009](adr/0009-story-data-file.md).
 - Netlify serves the repo root as a static site. Every push to `main` goes live. See [ADR 0003](adr/0003-static-hosting-on-netlify.md).
 - Each player's game is saved in their own browser's `localStorage`. There is no server. See [ADR 0004](adr/0004-saves-in-local-storage.md).
-- `simulate.js` loads the same script out of `index.html` and plays thousands of games in Node to check balance. See [ADR 0006](adr/0006-headless-simulator-for-balance.md).
+- `simulate.js` loads the same scripts, through `load-game.js`, and plays thousands of games in Node to check balance. See [ADR 0006](adr/0006-headless-simulator-for-balance.md).
 
 ## Layout of the script
 
-The `<script>` block in `index.html` runs top to bottom in this order.
+`index.html` loads two scripts, in this order: `<script src="stories.js">`, then its own `<script>` block. They share one set of names, the way a page's classic scripts do.
+
+`stories.js` only defines the story cards. It runs first, so a card may not call anything while the file loads: everything it uses (`by`, `chk`, `odds`, `rel`, `R`, `val` and the rest) is called later, inside the card's functions, when the game script already exists. That is also why `CAREERS` can point straight at `DECEMBER` and `PREMIERES`.
+
+| Part of `stories.js` | What is in it | Touches the page? |
+| --- | --- | --- |
+| Template | A commented template card for writers | No |
+| Cast | `CAST`, every recurring character, and `anySong`, a helper only stories use | No |
+| Stories | `EVENTS`, `FOLLOWUPS`, `DECEMBER` (music's week-22 booking) and `PREMIERES` (the actor's) | No |
+
+The `<script>` block in `index.html` then runs top to bottom in this order.
 
 | Part | What is in it | Touches the page? |
 | --- | --- | --- |
@@ -19,15 +29,14 @@ The `<script>` block in `index.html` runs top to bottom in this order.
 | Content | `TIER_MINS`, `tierOf`, `nextTier`, `SLOGANS`, `OPENERS`, `SONG_TITLES`, `STAGE_NAMES`, `songTitle`, `qWord` | No |
 | Money and checks | `takeHome` (who takes a cut), `chk` and `odds` (stat checks), `rel` and `relWord` (relationships), `REACH` and `apply` (applies effects) | No |
 | Weekly moves | `venue`, the `ACTIONS` list, `movesOf`, `nextGoal`, `actionState`, `doAction` | No |
-| Stories | `CAST`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `forCareer`, `pickEvent`, `choiceState`, `choose` | No |
+| Stories | `forCareer`, `pickEvent`, `choiceState`, `choose`. The cards are in `stories.js` | No |
 | End of week | `streamGross`, `PEOPLE_COST`, `wrapWeek` | No |
 | Careers | `CAREERS`, `careerOf`, and each career's own functions, such as `musicVenue`, `musicGoal` and `musicFinale` | No |
-| End of week | `wrapWeek` | No |
 | Endings | `tally`, `debtEnding`, `finale`, `newGame` | No |
 | Seasons and saves | `YEAR`, `newSeason` (starts the next season), `migrate` (upgrades an older save) | No |
 | Interface | everything inside `if (typeof document !== 'undefined')` | Yes |
 
-Everything above the interface block must stay free of `document`, `window` and `localStorage`. That rule is what lets `simulate.js` run the rules in Node.
+Everything above the interface block, and all of `stories.js`, must stay free of `document`, `window` and `localStorage`. That rule is what lets `simulate.js` run the rules in Node.
 
 ## Game state
 
@@ -140,13 +149,13 @@ While the sheet is open, the rest of the page is `inert`, so keyboard focus stay
 
 ## What the simulator depends on
 
-`simulate.js` extracts the first `<script>…</script>` block with a regex and evaluates it with `new Function`, then reads these names:
+The tools load the game through `load-game.js`. `loadGame(names)` reads `index.html`, takes its `<script>` tags in page order (the file named by `<script src="stories.js">`, then the inline game script), joins them, evaluates them with `new Function`, and returns the names asked for. The interface block skips itself because Node has no `document`. `simulate.js` reads these names:
 
 `newGame`, `newSeason`, `doAction`, `actionState`, `pickEvent`, `choose`, `choiceState`, `wrapWeek`, `finale`, `val`, `R`, `ACTIONS`, `CAREERS`, `TOTAL_WEEKS`, `EVENTS`, `FOLLOWUPS`
 
-Renaming any of them, adding a `<script>` block before the game script, or using the page above the interface block will break the simulator. Run `node simulate.js 200` after any change to the rules.
+Renaming any of them, or using the page above the interface block or in `stories.js`, will break the simulator. The loader only understands a plain `<script>` or a `<script src="…">` that names a local file, so keep any new script tag in one of those two forms. Run `node simulate.js 200` after any change to the rules.
 
-`lint-stories.js` loads the script the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `CAREERS`, `STAGE_NAMES` and `CAST`. `test-saves.js` reads the same names as the simulator, plus `migrate`. All three run on every pull request in `.github/workflows/check.yml`.
+`lint-stories.js` loads the game the same way and reads `newGame`, `val`, `EVENTS`, `FOLLOWUPS`, `CAREERS`, `STAGE_NAMES` and `CAST`. `test-saves.js` reads the same names as the simulator, plus `migrate`. `.claude/skills/write-story/try-story.js` reads `newGame`, `choose`, `choiceState`, `val`, `EVENTS`, `FOLLOWUPS`, `DECEMBER`, `CAREERS` and `CAST`. The first three run on every pull request in `.github/workflows/check.yml`.
 
 ## Deploys
 
@@ -155,7 +164,7 @@ Renaming any of them, adding a `<script>` block before the game script, or using
 | Push or merge to `main` | Netlify deploys to https://next-lagos-star.netlify.app in a few seconds |
 | Pull request | Netlify builds a deploy preview, if previews are on for the project |
 
-Netlify publishes the whole repo root, but `_redirects` returns 404 for everything except the game: the docs, tools, baseline and repo settings. When you add a new file or folder at the root that players don't need, add a line for it to `_redirects`.
+Netlify publishes the whole repo root, but `_redirects` returns 404 for everything except the game, `index.html` and `stories.js`: the docs, tools (including `load-game.js`), baseline and repo settings. When you add a new file or folder at the root that players don't need, add a line for it to `_redirects`.
 
 ## Player feedback
 

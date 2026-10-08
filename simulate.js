@@ -15,12 +15,10 @@
 //              (node simulate.js 4000 --save-baseline) so the baseline itself is steady.
 const fs = require('fs');
 const path = require('path');
+const { loadGame } = require('./load-game');
 
-const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + `
-  return { newGame, newSeason, doAction, actionState, pickEvent, choose, choiceState,
-           wrapWeek, finale, val, R, ACTIONS, CAREERS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
+const G = loadGame(['newGame', 'newSeason', 'doAction', 'actionState', 'pickEvent', 'choose', 'choiceState',
+  'wrapWeek', 'finale', 'val', 'R', 'ACTIONS', 'CAREERS', 'TOTAL_WEEKS', 'EVENTS', 'FOLLOWUPS']);
 
 // Every career needs an entry in MOVES below.
 const can = (s, id) => G.actionState(s, G.ACTIONS.find(a => a.id === id)).ok;

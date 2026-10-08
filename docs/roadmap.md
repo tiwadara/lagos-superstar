@@ -59,7 +59,7 @@ These tasks end in an ADR. See [docs/adr](adr/README.md).
 | --- | --- |
 | [#40](https://github.com/tiwadara/lagos-superstar/issues/40) | Career framework: what is shared and what belongs to each career. Decided in [ADR 0008](adr/0008-careers-share-one-engine.md) |
 | [#62](https://github.com/tiwadara/lagos-superstar/issues/62) | Where leaderboard scores live and how they stay honest. Proposed in [ADR 0013](adr/0013-leaderboard-on-netlify.md) |
-| [#19](https://github.com/tiwadara/lagos-superstar/issues/19) | Data format for stories. Proposed in [ADR 0009](adr/0009-story-data-file.md) |
+| [#19](https://github.com/tiwadara/lagos-superstar/issues/19) | Data format for stories. Decided in [ADR 0009](adr/0009-story-data-file.md) |
 | [#47](https://github.com/tiwadara/lagos-superstar/issues/47) | Brand name, scope and visual direction. Proposed in [ADR 0011](adr/0011-brand-direction.md) |
 | [#30](https://github.com/tiwadara/lagos-superstar/issues/30) | Portrait style for characters. Proposed in [ADR 0012](adr/0012-portraits-drawn-in-code.md) |
 | [#32](https://github.com/tiwadara/lagos-superstar/issues/32) | What carries over between seasons. Decided in [ADR 0010](adr/0010-seasons-carry-over.md) |

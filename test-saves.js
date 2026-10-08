@@ -2,15 +2,12 @@
 // Checks that saves from older versions of the game still load, migrate and play on (#33).
 // Saves are explained in docs/adr/0004-saves-in-local-storage.md, seasons in docs/adr/0010-seasons-carry-over.md.
 // Usage: node test-saves.js     Exits with code 1 if any check fails. Runs on every pull request.
-const fs = require('fs');
-const path = require('path');
 const assert = require('assert');
 
-const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + `
-  return { newGame, newSeason, migrate, doAction, actionState, pickEvent, choose, choiceState,
-           wrapWeek, finale, val, R, ACTIONS, CAREERS, TOTAL_WEEKS, EVENTS, FOLLOWUPS };`)();
+const { loadGame } = require('./load-game');
+
+const G = loadGame(['newGame', 'newSeason', 'migrate', 'doAction', 'actionState', 'pickEvent', 'choose', 'choiceState',
+  'wrapWeek', 'finale', 'val', 'R', 'ACTIONS', 'CAREERS', 'TOTAL_WEEKS', 'EVENTS', 'FOLLOWUPS']);
 
 // Version 1 saves, made by the live game before seasons (main at cdb0050, 8 October 2026) and copied exactly as it
 // wrote them to localStorage: a music game in week 13 with a manager and two follow-ups waiting, an actor and a

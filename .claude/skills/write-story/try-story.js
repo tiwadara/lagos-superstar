@@ -3,13 +3,11 @@
 // Usage: node .claude/skills/write-story/try-story.js <story id> [week] [fans] [money] [background] [season] [--rel=id:n,id:n]
 // Example: node .claude/skills/write-story/try-story.js police 6 2000 150000 street
 // --rel sets how CAST characters feel about the player first, such as --rel=kobo:-5 or --rel=sapa:3,mum:-2
-const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..', '..', '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const source = html.match(/<script>([\s\S]*?)<\/script>/)[1];
-const G = new Function(source + '\nreturn { newGame, choose, choiceState, val, EVENTS, FOLLOWUPS, DECEMBER, CAREERS, CAST };')();
+const { loadGame } = require(path.join(root, 'load-game'));
+const G = loadGame(['newGame', 'choose', 'choiceState', 'val', 'EVENTS', 'FOLLOWUPS', 'DECEMBER', 'CAREERS', 'CAST'], root);
 
 const argv = process.argv.slice(2);
 const [id, week = 10, fans = 5000, money = 500000, bg = 'choir', season = 1] = argv.filter(a => !a.startsWith('--'));

@@ -1,6 +1,6 @@
 # 0009. Stories live in their own script file, mostly as data
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-08
 - **Issue:** #19
 
@@ -26,3 +26,9 @@ We will use option 1. `stories.js` defines `EVENTS`, `FOLLOWUPS` and `DECEMBER`.
 - The game is two files, not one. This amends [ADR 0002](0002-single-html-file-no-framework.md): still no framework and no build, and opening `index.html` from disk still works because both files sit side by side.
 - `simulate.js`, `lint-stories.js` and `try-story.js` must load `stories.js` too. The linter can now check the plain fields directly.
 - Every existing card must convert with identical behaviour, checked with `node simulate.js --seed=N` before and after (#20).
+
+## Implementation notes
+
+- #20 moved the cards as they were, functions and all, with identical results from the simulator. `stories.js` also holds `CAST`, the actor's December card `PREMIERES`, and `anySong`, a helper only stories use. The interpreter for the plain fields (`when`, `check`, `gamble`) is not built yet; until it is, cards keep using functions.
+- `index.html` loads `stories.js` before its own script, so `CAREERS` can refer to `DECEMBER` and `PREMIERES` directly. A card only calls the engine inside its functions, never while the file loads.
+- The tools load both files through one helper, `load-game.js`, which follows the page's `<script>` tags in order. `_redirects` serves `stories.js` and returns 404 for `load-game.js` like the other tools.
