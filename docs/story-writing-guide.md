@@ -60,7 +60,7 @@ Each choice has a `label`, an optional `cost`, an optional `hint`, and a `run` t
 
 ## Relationships
 
-Every character in `CAST` remembers how you treated them. A choice that clearly helps or hurts someone adds `rel: { sapa: 2 }` or `rel: { kobo: -3 }` to its `fx`, and the player sees “Beatz by Sapa will remember that”. Keep the values small, ±1 to ±3: a relationship runs from −10 to 10, and it should take a few stories to make an ally or an enemy. `node lint-stories.js` fails on an id that is not in `CAST`.
+Every character in `CAST` remembers how you treated them. A choice that clearly helps or hurts someone adds `rel: { sapa: 2 }` or `rel: { kobo: -3 }` to its `fx`, and the player sees “Beatz by Sapa will remember that kindly” or “Lil Kobo will hold that against you”. Keep the values small, ±1 to ±3: a relationship runs from −10 to 10, and it should take a few stories to make an ally or an enemy. `node lint-stories.js` fails on an id that is not in `CAST`.
 
 Read it back with `rel(s, 'sapa')`, which is 0 for anyone the player has not met. Use it to give friends and enemies a different story, such as `text: s => rel(s, 'sapa') >= 2 ? ... : ...`, or different choices, or in `when` to wait for a relationship. Let a neutral player see something sensible too. Try each side with `try-story.js` and `--rel=sapa:3`.
 

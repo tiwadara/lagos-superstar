@@ -94,7 +94,7 @@ Effects you can put in `fx`:
 | `energyNext: -1` | One fewer move next week |
 | `rent` | Change the monthly rent |
 | `flag: { name: value }` | Remember something for later stories |
-| `rel: { kobo: -3 }` | Change how a `CAST` character feels about you. Each stays between −10 and 10, starts at 0, and the player sees “Lil Kobo will remember that” |
+| `rel: { kobo: -3 }` | Change how a `CAST` character feels about you. Each stays between −10 and 10, starts at 0, and the player sees “Lil Kobo will hold that against you” (or “… will remember that kindly” for a positive change) |
 | `note` | Extra line shown to the player |
 
 Two optional fields change how often a story is drawn:

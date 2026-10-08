@@ -328,7 +328,7 @@ function apply(s,fx){
   if(fx.energyNext){s.energyNext+=fx.energyNext;chips.push({t:'1 fewer move next week',k:'down'});}
   if(fx.rent){s.rent+=fx.rent;chips.push({t:'Rent is now '+naira(s.rent),k:'down'});}
   if(fx.flag)Object.assign(s.flags,fx.flag);
-  if(fx.rel){s.rel=s.rel||{};for(const id in fx.rel){const d=Math.round(fx.rel[id]);s.rel[id]=clamp((s.rel[id]||0)+d,-10,10);if(d)chips.push({t:CAST[id].name+' will remember that',k:d>0?'up':'down'});}}
+  if(fx.rel){s.rel=s.rel||{};for(const id in fx.rel){const d=Math.round(fx.rel[id]);s.rel[id]=clamp((s.rel[id]||0)+d,-10,10);if(d)chips.push({t:CAST[id].name+(d>0?' will remember that kindly':' will hold that against you'),k:d>0?'up':'down'});}}
   if(fx.note)chips.push({t:fx.note,k:'note'});
   return chips;
 }
