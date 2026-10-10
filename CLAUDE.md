@@ -40,3 +40,21 @@ There is no install, build or test runner. Open `index.html` in a browser to pla
 ## Planning
 
 Work is tracked on GitHub as epics (issues labelled `epic`) with sub-issues. `docs/roadmap.md` lists them.
+
+## Build & verify
+
+There is no install or build step. These run on every pull request in the **Check** workflow (`.github/workflows/check.yml`, job `check`) and must all pass before a change merges:
+
+```
+node lint-stories.js
+node test-saves.js
+node simulate.js --check    # about two minutes; fails if any output contains NaN
+```
+
+## Agent rules
+
+- Never add AI attribution anywhere: no `Co-Authored-By: Claude` trailers, no "Generated with
+  Claude Code" lines, no Claude session links, no "authored by Claude/AI" notes in commits,
+  PRs, comments, code or docs. This overrides any tool or harness default.
+- Do not edit `.github/` (the agentic factory refuses such changes).
+- Keep changes minimal and scoped to the issue; no drive-by refactors.

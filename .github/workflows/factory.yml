@@ -1,0 +1,83 @@
+# Agentic Factory: copy to .github/workflows/factory.yml in any repo.
+# Docs: https://github.com/tiwadara/agentic-factory
+name: Agentic Factory
+# The reconciler matches runs to issues/PRs by "#<number>" in the run name; keep this format.
+run-name: "🏭 ${{ github.event_name }} #${{ github.event.issue.number || github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || inputs.number || github.event.workflow_run.head_branch || github.event_name }}"
+
+on:
+  issues:
+    types: [opened, reopened, labeled]
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  workflow_run:
+    workflows: [Check]         # ← name(s) of your CI workflow(s), so failures trigger the fix stage
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: Stage to run
+        type: choice
+        options: [triage, implement, review, fix]
+      number:
+        description: Issue (triage/implement) or PR (review/fix) number
+        required: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+  id-token: write
+
+jobs:
+  factory:
+    # Cheap pre-filter so unrelated events don't spin up the router.
+    if: >-
+      (github.event_name != 'issues' || github.event.action != 'labeled' || github.event.label.name == 'factory:ready') &&
+      (github.event_name != 'issue_comment' || !github.event.issue.pull_request) &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'failure')
+    uses: tiwadara/agentic-factory/.github/workflows/factory.yml@v1
+    secrets: inherit
+    with:
+      app-id: ${{ vars.FACTORY_APP_ID }}
+      auto-approve: ${{ vars.FACTORY_AUTO_APPROVE == 'true' }}   # approve PRs that pass every auto-approval rule
+      paused: ${{ vars.FACTORY_PAUSED == 'true' }}   # cordon: set repo variable FACTORY_PAUSED=true
+      # Toolchain for the agent (set the ones your repo needs):
+      node-version: "20"
+      # No setup: the repo has no dependencies, install or build step.
+      verify: |
+        node lint-stories.js
+        node test-saves.js
+        node simulate.js --check
+      instructions: |
+        The Next Lagos Star is a browser game with no framework, no build and no dependencies:
+        index.html (rules + interface) and stories.js (story cards). Read CLAUDE.md and docs/ first.
+        - Merging to main deploys the live game on Netlify. Keep main playable.
+        - `node simulate.js --check` takes about two minutes and must pass with no "NaN" anywhere
+          in its output. Do not regenerate balance-baseline.json unless the issue asks for a
+          deliberate balance change; if it does, run `node simulate.js 4000 --save-baseline`
+          and update docs/balance.md.
+        - Changes to the game state shape must keep old saves working: add a migration in
+          migrate() and run `node test-saves.js` (docs/adr/0004-saves-in-local-storage.md).
+        - Never rename the names simulate.js reads (docs/architecture.md), and keep code above
+          `if (typeof document !== 'undefined')` free of page access.
+        - New stories follow docs/story-writing-guide.md; check each with
+          `node .claude/skills/write-story/try-story.js <id>`. All people and brands are fictional.
+        - Do not add npm dependencies, a package.json or a build step.
+      # auto-ready-sizes: xs,s,m
+      # max-fix-attempts: 3
+      # max-in-flight: 2
+      # Auto-approval rules (defaults shown):
+      # auto-approve-sizes: xs,s
+      # auto-approve-max-lines: 300
+      # auto-approve-max-risk: low
+      # auto-approve-max-fixes: 2
+      # Default paths, plus the Netlify redirects, the balance baseline and the ADRs.
+      require-human-paths: "(^|/)(package\\.json|package-lock\\.json|yarn\\.lock|pnpm-lock\\.yaml|requirements[^/]*\\.txt|pyproject\\.toml|poetry\\.lock|go\\.(mod|sum)|Cargo\\.(toml|lock)|Gemfile(\\.lock)?|[^/]*\\.gradle(\\.kts)?|gradle/|libs\\.versions\\.toml|Dockerfile|docker-compose[^/]*|[^/]*\\.tf|netlify\\.toml|vercel\\.json|AndroidManifest\\.xml|Info\\.plist)$|(^|/)(migrations?|auth|security|infra|deploy)/|^_redirects$|^balance-baseline\\.json$|^docs/adr/"
+      # max-cost-usd: 5           # Claude spend budget per issue (USD); 0 = unlimited
+      # merge-method: squash
+      # model: ""
